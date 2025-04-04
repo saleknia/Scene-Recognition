@@ -14,7 +14,7 @@ from torch.nn.modules.loss import CrossEntropyLoss
 warnings.filterwarnings("ignore")
 
 
-def trainer(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_scheduler,logger):
+def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_scheduler,logger):
     # torch.autograd.set_detect_anomaly(True)
     print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
     
