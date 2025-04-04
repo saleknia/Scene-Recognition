@@ -10,8 +10,6 @@ from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
 import random
 from torchvision.models import resnet50, efficientnet_b4, EfficientNet_B4_Weights
 from torch.nn import init
-from .Mobile_netV2_loss import Mobile_netV2_loss
-
 from timm.layers import LayerNorm2d
 
 import torch
