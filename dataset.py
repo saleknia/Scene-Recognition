@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 # Your superclass arrays
 superclass_1 = np.array(['airport_inside', 'auditorium', 'bar', 'bowling', 'casino',
