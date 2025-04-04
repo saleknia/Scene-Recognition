@@ -53,7 +53,7 @@ PIN_MEMORY    = True
 LOAD_MODEL = True
 CONTINUE   = True
 
-TEACHER = False
+TEACHER    = False
 
 SAVE_MODEL = True
 POLY_LR    = True
