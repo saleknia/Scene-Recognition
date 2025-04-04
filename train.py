@@ -57,26 +57,38 @@ def main(args):
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
+        transform_valid = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+        ])
+
         transform_test = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
+        if COARSE_GRAINED:
+            trainset     = Coarse_Grained_Dataset('/content/MIT-67/train', class_to_super=class_to_super,transform=transform_train)
+            validset     = Coarse_Grained_Dataset('/content/MIT-67/valid', class_to_super=class_to_super,transform=transform_valid)
+            testset      = Coarse_Grained_Dataset('/content/MIT-67/test' , class_to_super=class_to_super,transform=transform_test)
+        
+        elif FINE_GRAINED:
 
-        trainset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
-        validset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_test)
-        testset      = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)
+            trainset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
+            validset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
+            testset      = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)
 
-        if FINE_GRAINED:
             trainset     = Fine_Grained_Dataset(trainset, superclasses[SUPER_CLASS_INDEX])
             validset     = Fine_Grained_Dataset(validset, superclasses[SUPER_CLASS_INDEX])
             testset      = Fine_Grained_Dataset(testset , superclasses[SUPER_CLASS_INDEX])
 
-        if COARSE_GRAINED:
-            trainset     = Coarse_Grained_Dataset('/content/MIT-67/train', class_to_super=class_to_super,transform=transform_train)
-            validset     = Coarse_Grained_Dataset('/content/MIT-67/train', class_to_super=class_to_super,transform=transform_test)
-            testset      = Coarse_Grained_Dataset('/content/MIT-67/test' , class_to_super=class_to_super,transform=transform_test)
+        else:
+            trainset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
+            validset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
+            testset      = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
+
 
         train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE , shuffle=True , num_workers=NUM_WORKERS)
         valid_loader = torch.utils.data.DataLoader(validset, batch_size = BATCH_SIZE , shuffle=False, num_workers=NUM_WORKERS)
