@@ -82,7 +82,10 @@ def main(args):
         valid_loader = torch.utils.data.DataLoader(validset, batch_size = BATCH_SIZE , shuffle=False, num_workers=NUM_WORKERS)
         test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1          , shuffle=False, num_workers=NUM_WORKERS)
 
-        NUM_CLASS    = len(trainset.classes)
+        unique_labels = set()
+        for _, label in trainset:
+            unique_labels.add(label)
+        NUM_CLASS = len(unique_labels)
 
         data_loader  = {'train':train_loader,'valid':valid_loader, 'test':test_loader}
 
