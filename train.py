@@ -79,7 +79,7 @@ def main(args):
             testset      = Coarse_Grained_Dataset('/content/MIT-67/test' , class_to_super=class_to_super,transform=transform_test)
 
         train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE , shuffle=True , num_workers=NUM_WORKERS)
-        valid_loader = torch.utils.data.DataLoader(validset, batch_size = 1          , shuffle=True , num_workers=NUM_WORKERS)
+        valid_loader = torch.utils.data.DataLoader(validset, batch_size = 1          , shuffle=False, num_workers=NUM_WORKERS)
         test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1          , shuffle=False, num_workers=NUM_WORKERS)
 
         NUM_CLASS    = len(trainset.classes)
