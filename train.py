@@ -1,4 +1,5 @@
 import sys
+sys.path.append("/content/Scene-Recognition/models") 
 # Instaling Libraries
 import os
 import copy
