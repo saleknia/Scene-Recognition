@@ -6,7 +6,6 @@ import torchvision
 from torchvision.models import efficientnet_v2_m, EfficientNet_V2_M_Weights
 from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
 from torchvision.models import efficientnet_v2_s, EfficientNet_V2_S_Weights
-import ttach as tta
 
 
 import torch
@@ -16,13 +15,6 @@ from torchvision import transforms as trn
 from torch.nn import functional as F
 import os
 from PIL import Image
-
-from .wideresnet import *
-from .wideresnet import recursion_change_bn
-
-from mit_semseg.models import ModelBuilder
-
-
 
 class Mobile_netV2_loss(nn.Module):
     def __init__(self, num_classes=40, pretrained=True):
