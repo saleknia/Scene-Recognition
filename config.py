@@ -59,57 +59,53 @@ SAVE_MODEL = True
 POLY_LR    = True
 DOWNLOAD   = False
 
-task_ids = ['y','n']
-task_id  = input('Do You Want To Perform Normal Training? (y/n)')
-assert (task_id in task_ids),'Answer is Incorrect!'
 
-if task_id == 'y':
+task_ids = ['1','2', '3']
+task_table = tabulate(
+                    tabular_data=[
+                        ['NORMAL_TRAINING',1],
+                        ['COARSE_GRAINED' ,2],
+                        ['FINE_GRAINED'   ,3]],
+                    headers=['Task Name', 'ID'],
+                    tablefmt="fancy_grid"
+                    )
+print(task_table)
+task_id  = input('Choose Training Setup IndexSetup Index: ')
+assert (task_id in task_ids),'Setup Index is Incorrect!'
+task_id = int(task_id)
+
+if task_id == 1:
     NORMAL_TRAINING = True
     COARSE_GRAINED  = False
     FINE_GRAINED    = False
 
-if task_id == 'n':
+if task_id == 2:
     NORMAL_TRAINING = False
+    COARSE_GRAINED  = True
+    FINE_GRAINED    = False
+    DESCRIPTION     = '_COARSE_GRAINED'
+    
+if task_id == 3:
+    NORMAL_TRAINING = False
+    COARSE_GRAINED  = False
+    FINE_GRAINED    = True
 
-    task_ids = ['1','2']
+    task_ids = ['1','2','3']
     task_table = tabulate(
                         tabular_data=[
-                            ['COARSE_GRAINED',1],
-                            ['FINE_GRAINED'  ,2]],
+                            ['Super_class_1' ,1],
+                            ['Super_class_2' ,2],
+                            ['Super_class_3' ,3]],
                         headers=['Task Name', 'ID'],
                         tablefmt="fancy_grid"
                         )
 
     print(task_table)
-    task_id = input('Enter Your Option:  ')
-    assert (task_id in task_ids),'Option is Incorrect!'
-    task_id = int(task_id)
+    task_id = input('Enter Your Super Class:  ')
+    assert (task_id in task_ids),'Super Class Number is Incorrect!'
     
-    if task_id == 1:
-        COARSE_GRAINED  = True
-        FINE_GRAINED    = False
-        DESCRIPTION     = '_COARSE_GRAINED'
-    
-    if task_id == 2:
-        COARSE_GRAINED  = False
-        FINE_GRAINED    = True
-
-        task_ids = ['1','2','3']
-        task_table = tabulate(
-                            tabular_data=[
-                                ['Super_class_1' ,1],
-                                ['Super_class_2' ,2],
-                                ['Super_class_3' ,3]],
-                            headers=['Task Name', 'ID'],
-                            tablefmt="fancy_grid"
-                            )
-
-        print(task_table)
-        task_id = input('Enter Your Super Class:  ')
-        assert (task_id in task_ids),'Super Class Number is Incorrect!'
-        
-        DESCRIPTION = '_FINE_GRAINED_' + task_id
-        SUPER_CLASS_INDEX = int(task_id)
+    DESCRIPTION       = '_FINE_GRAINED_' + task_id
+    SUPER_CLASS_INDEX = int(task_id)
 
 
 os.environ['PYTHONHASHSEED'] = str(SEED)
