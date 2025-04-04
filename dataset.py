@@ -37,7 +37,7 @@ class Coarse_Grained_Dataset(Dataset):
             self.class_to_super[self.original_dataset.classes[orig_label]]
             for _, orig_label in self.original_dataset.imgs
         ]
-        self.classes = torch.unique(self.super_labels)
+        self.classes = [1, 2, 3] # torch.unique(self.super_labels)
 
     def __len__(self):
         return len(self.original_dataset)
