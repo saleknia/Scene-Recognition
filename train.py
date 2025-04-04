@@ -90,9 +90,9 @@ def main(args):
             testset      = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
 
 
-        train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE , shuffle=True , num_workers=NUM_WORKERS)
-        valid_loader = torch.utils.data.DataLoader(validset, batch_size = BATCH_SIZE , shuffle=False, num_workers=NUM_WORKERS)
-        test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1          , shuffle=False, num_workers=NUM_WORKERS)
+        train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
+        valid_loader = torch.utils.data.DataLoader(validset, batch_size = BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
+        test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
 
         NUM_CLASS    = len(trainset.classes)
 
