@@ -16,7 +16,7 @@ def tester_func(model,dataloader,device,ckpt,num_class,logger):
 
     loss_ce_total   = utils.AverageMeter()
 
-    metric  = MulticlassAccuracy(average="macro", num_classes=num_class).to('cuda')
+    metric  = MulticlassAccuracy(average="macro", num_classes=num_class, k=2).to('cuda')
     loss_ce = CrossEntropyLoss(label_smoothing=0.0)
 
     total_batchs = len(dataloader['test'])
