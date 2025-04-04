@@ -31,8 +31,8 @@ def trainer(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_schedu
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
 
-    base_iter      = (epoch_num-1) * total_batchs
-    iter_num       = base_iter
+    base_iter    = (epoch_num-1) * total_batchs
+    iter_num     = base_iter
 
     for batch_idx, (inputs, targets) in enumerate(loader):
 
