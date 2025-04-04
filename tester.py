@@ -31,7 +31,7 @@ def tester_func(model,dataloader,device,ckpt,num_class,logger):
             targets = targets.float()
 
             outputs     = model(inputs)
-            loss        = loss_ce(outputs, targets.unsqueeze(dim=1)) 
+            loss        = loss_ce(outputs, targets.long()) 
             loss_ce_total.update(loss)
    
             predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
