@@ -12,8 +12,9 @@ from utils import print_progress
 warnings.filterwarnings("ignore")
 
 def valid_func(epoch_num,model,dataloader,device,ckpt,num_class,logger):
-    model=model.to(device)
-    model.eval()
+    
+    model = model.to('cuda')
+    model = model.eval()
 
     loss_ce_total   = utils.AverageMeter()
     
@@ -32,6 +33,7 @@ def valid_func(epoch_num,model,dataloader,device,ckpt,num_class,logger):
             targets = targets.float()
 
             outputs = model(inputs)
+            
             loss    = loss_ce(outputs, targets.long()) 
 
             loss_ce_total.update(loss)
