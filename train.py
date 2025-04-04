@@ -32,7 +32,6 @@ from dataset import superclasses, Fine_Grained_Dataset, Coarse_Grained_Dataset
 from config import *
 from tabulate import tabulate
 import warnings
-from TNUI import CreateDataset
 warnings.filterwarnings('ignore')
 
 def main(args):
