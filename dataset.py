@@ -63,6 +63,8 @@ class Fine_Grained_Dataset(Dataset):
             if original_dataset.classes[label] in superclass_classes
         ]
 
+        self.classes = [0] * len(superclass_classes)
+
     def __len__(self):
         return len(self.filtered_indices)
 
