@@ -1,5 +1,5 @@
 import sys
-sys.path.append("/content/Scene-Recognition/models") 
+# sys.path.append("/content/Scene-Recognition/models") 
 # Instaling Libraries
 import os
 import copy
@@ -20,8 +20,8 @@ import torchvision.transforms.functional as TF
 from torch.utils.data import random_split
 import torch.optim as optim
 
-from model.Mobile_netV2 import Mobile_netV2
-from model.Mobile_netV2_loss import Mobile_netV2_loss
+from models.Mobile_netV2 import Mobile_netV2
+from models.Mobile_netV2_loss import Mobile_netV2_loss
 
 import utils
 from utils import color
