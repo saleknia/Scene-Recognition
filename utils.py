@@ -6,6 +6,10 @@ import torch.nn as nn
 import warnings
 warnings.filterwarnings("ignore")
 
+def count_parameters(model):
+    params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    output = params/1000000
+    return output
 
 class color():
    PURPLE = '\033[95m'
