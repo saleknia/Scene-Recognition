@@ -80,9 +80,9 @@ def main(args):
             validset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
             testset      = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)
 
-            trainset     = Fine_Grained_Dataset(trainset, superclasses[SUPER_CLASS_INDEX])
-            validset     = Fine_Grained_Dataset(validset, superclasses[SUPER_CLASS_INDEX])
-            testset      = Fine_Grained_Dataset(testset , superclasses[SUPER_CLASS_INDEX])
+            trainset     = Fine_Grained_Dataset(trainset, superclasses[SUPER_CLASS_INDEX-1])
+            validset     = Fine_Grained_Dataset(validset, superclasses[SUPER_CLASS_INDEX-1])
+            testset      = Fine_Grained_Dataset(testset , superclasses[SUPER_CLASS_INDEX-1])
 
         else:
             trainset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
