@@ -31,9 +31,9 @@ from PIL import Image
 
 from transformers import AutoModelForImageClassification
 
-class Mobile_NetV2_loss(nn.Module):
+class Mobile_netV2_loss(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
-        super(Mobile_NetV2_loss, self).__init__()
+        super(Mobile_netV2_loss, self).__init__()
 
         self.base = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
         self.base.blocks[-1] = nn.Identity()
