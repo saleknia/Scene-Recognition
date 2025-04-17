@@ -60,7 +60,9 @@ class Mobile_netV2_loss(nn.Module):
 
     def forward(self, x_in):
 
-        base = self.base.forward_features(x_in)['x_norm_patchtokens']
+        base = self.base.forward_features(x_in)['x_norm_patchtokens'].permute(0,2,1).reshape(1, 768, 16, 16)
+        # base = self.base(x_in)
+
 
         coarse_grain = self.coarse_grain(base)
         cgc          = self.coarse_grain_classifier(coarse_grain)
