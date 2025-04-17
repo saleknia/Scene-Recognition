@@ -226,16 +226,17 @@ def main(args):
             logger.info(f'No Such file : {checkpoint_path}')
         logger.info('\n')
 
-    #######################################################################################################################################
-    optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE, momentum=0.9, weight_decay=0.0001)   
-    total_batchs   = len(data_loader['train'])
-    max_iterations = NUM_EPOCHS * total_batchs
-    #######################################################################################################################################
+    if args.train=='True':
+        #######################################################################################################################################
+        optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE, momentum=0.9, weight_decay=0.0001)   
+        total_batchs   = len(data_loader['train'])
+        max_iterations = NUM_EPOCHS * total_batchs
+        #######################################################################################################################################
 
-    if POLY_LR is True:
-        lr_scheduler = torch.optim.lr_scheduler.PolynomialLR(optimizer, total_iters=max_iterations, power=0.9)
-    else:
-        lr_scheduler =  None  
+        if POLY_LR is True:
+            lr_scheduler = torch.optim.lr_scheduler.PolynomialLR(optimizer, total_iters=max_iterations, power=0.9)
+        else:
+            lr_scheduler =  None  
 
     if args.train=='True':
         logger.info(50*'*')

@@ -32,7 +32,8 @@ from PIL import Image
 from transformers import AutoModelForImageClassification
 
 class Mobile_netV2(nn.Module):
-    def __init__(self, num_classes=67, pretrained=True):
+
+    def __init__(self, num_classes=3):
         super(Mobile_netV2, self).__init__()
 
         self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
@@ -48,8 +49,37 @@ class Mobile_netV2(nn.Module):
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
 
+        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_COARSE_GRAINED_best.pth', map_location='cuda')
+
+        self.load_state_dict(loaded_data['net'])
+
+        for param in self.parameters():
+            param.requires_grad = False
+
     def forward(self, x_in):
 
         x = self.head(self.model(x_in))
 
         return x
+# class Mobile_netV2(nn.Module):
+#     def __init__(self, num_classes=67, pretrained=True):
+#         super(Mobile_netV2, self).__init__()
+
+#         self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+
+#         for param in self.model.parameters():
+#             param.requires_grad = False
+
+#         for param in self.model.blocks[-1].parameters():
+#             param.requires_grad = True
+
+#         self.head = nn.Sequential(
+#                                     nn.Dropout(p=0.5, inplace=True),
+#                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
+#                                 )
+
+#     def forward(self, x_in):
+
+#         x = self.head(self.model(x_in))
+
+#         return x

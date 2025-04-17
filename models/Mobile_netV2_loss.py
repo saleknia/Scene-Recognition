@@ -35,17 +35,20 @@ class Mobile_netV2_loss(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(Mobile_netV2_loss, self).__init__()
 
-        # self.base = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
-        # self.base.blocks[-1] = nn.Identity()
+        self.base = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+        self.base.blocks[-1] = nn.Identity()
+        self.base = nn.Sequential(
+                                    self.base.patch_embed,
+                                    self.base.blocks
+                                )
+        for param in self.base.parameters():
+            param.requires_grad = False
 
-        # for param in self.base.parameters():
-        #     param.requires_grad = False
+        self.coarse_grain = coarse_grained_model().model.blocks[-1]
 
-        self.coarse_grain = coarse_grained_model()
-
-        self.fine_grain_1 = fine_grained_model(num_classes=23, superclass=1)
-        self.fine_grain_2 = fine_grained_model(num_classes=22, superclass=2)
-        self.fine_grain_3 = fine_grained_model(num_classes=22, superclass=3)
+        self.fine_grain_1 = fine_grained_model(num_classes=23, superclass=1).model.blocks[-1]
+        self.fine_grain_2 = fine_grained_model(num_classes=22, superclass=2).model.blocks[-1]
+        self.fine_grain_3 = fine_grained_model(num_classes=22, superclass=3).model.blocks[-1]
 
         self.coarse_grain_classifier = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
@@ -60,14 +63,15 @@ class Mobile_netV2_loss(nn.Module):
 
     def forward(self, x_in):
 
-        # base = self.base(x_in)
+        base = self.base.forward_features(x_in)['x_norm_patchtokens']
 
-        coarse_grain = self.coarse_grain(x_in)
+        coarse_grain = self.coarse_grain(base)
         cgc          = self.coarse_grain_classifier(coarse_grain)
 
-        fine_grain_1 = self.fine_grain_1(x_in) * cgc[:, 0]
-        fine_grain_2 = self.fine_grain_2(x_in) * cgc[:, 1]
-        fine_grain_3 = self.fine_grain_3(x_in) * cgc[:, 2]
+
+        fine_grain_1 = self.fine_grain_1(base) * cgc[:, 0].unsqueeze(dim=1)
+        fine_grain_2 = self.fine_grain_2(base) * cgc[:, 1].unsqueeze(dim=1)
+        fine_grain_3 = self.fine_grain_3(base) * cgc[:, 2].unsqueeze(dim=1)
 
         combine = torch.cat([fine_grain_1, fine_grain_2, fine_grain_3], dim=1)
 
