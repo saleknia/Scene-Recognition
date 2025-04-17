@@ -1,3 +1,142 @@
+from re import S, X
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision
+from torchvision.models import resnet50, efficientnet_b0, EfficientNet_B0_Weights, efficientnet_b1, EfficientNet_B1_Weights, efficientnet_b2, EfficientNet_B2_Weights, EfficientNet_B3_Weights, efficientnet_b3, EfficientNet_B5_Weights, efficientnet_b4, EfficientNet_B4_Weights, efficientnet_b5, efficientnet_v2_s, EfficientNet_V2_S_Weights
+from torchvision.models.segmentation import DeepLabV3_ResNet50_Weights, DeepLabV3_MobileNet_V3_Large_Weights
+from torchvision.models import efficientnet_v2_m, EfficientNet_V2_M_Weights
+from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
+import random
+from torchvision.models import resnet50, efficientnet_b4, EfficientNet_B4_Weights
+from torch.nn import init
+from timm.layers import LayerNorm2d
+
+import torch
+from torch.autograd import Variable as V
+import torchvision.models as models
+from torchvision import transforms as trn
+from torch.nn import functional as F
+import os
+from PIL import Image
+import timm
+
+from torchvision.transforms import FiveCrop, Lambda
+
+# from efficientvit.cls_model_zoo import create_cls_model
+from timm.layers import LayerNorm2d
+
+from transformers import CLIPProcessor, CLIPModel
+from PIL import Image
+
+from transformers import AutoModelForImageClassification
+
+class Mobile_netV2(nn.Module):
+    def __init__(self, num_classes=67, pretrained=True):
+        super(Mobile_netV2, self).__init__()
+
+        self.base = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+        self.base.blocks[-1] = nn.Identity()
+
+        for param in self.base.parameters():
+            param.requires_grad = False
+
+        self.coarse_grain = coarse_grained_model().model.blocks[-1]
+
+        self.fine_grain_1 = fine_grained_model(num_classes=23, superclass=1).model.blocks[-1]
+        self.fine_grain_2 = fine_grained_model(num_classes=22, superclass=2).model.blocks[-1]
+        self.fine_grain_3 = fine_grained_model(num_classes=22, superclass=3).model.blocks[-1]
+
+        self.coarse_grain_classifier = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=768, out_features=3, bias=True),
+                                    nn.Softmax(dim=1)
+                                )
+
+        self.fine_grain_classifier = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=768*3, out_features=num_classes, bias=True),
+                                )
+
+    def forward(self, x_in):
+
+        base = self.base(x_in)
+
+        coarse_grain = self.coarse_grain(base)
+        cgc          = self.coarse_grain_classifier(coarse_grain)
+
+        fine_grain_0 = self.fine_grain_0(base) * cgc[:, 0]
+        fine_grain_1 = self.fine_grain_1(base) * cgc[:, 1]
+        fine_grain_2 = self.fine_grain_2(base) * cgc[:, 2]
+
+        combine = torch.cat([fine_grain_0, fine_grain_1, fine_grain_2], dim=1)
+
+        x = self.fine_grain_classifier(combine)
+
+        return x
+
+class fine_grained_model(nn.Module):
+
+    def __init__(self, num_classes, superclass):
+        super(fine_grained_model, self).__init__()
+
+        self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+
+        for param in self.model.parameters():
+            param.requires_grad = False
+
+        for param in self.model.blocks[-1].parameters():
+            param.requires_grad = True
+
+        self.head = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                )
+
+        loaded_data = torch.load(f'/content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_FINE_GRAINED_{superclass}_best.pth', map_location='cuda')
+
+        self.load_state_dict(loaded_data['net'])
+
+        for param in self.parameters():
+            param.requires_grad = False
+
+    def forward(self, x_in):
+
+        x = self.model(x_in)
+
+        return x
+
+class coarse_grained_model(nn.Module):
+
+    def __init__(self, num_classes=3):
+        super(coarse_grained_model, self).__init__()
+
+        self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+
+        for param in self.model.parameters():
+            param.requires_grad = False
+
+        for param in self.model.blocks[-1].parameters():
+            param.requires_grad = True
+
+        self.head = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                )
+
+        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_COARSE_GRAINED_best.pth', map_location='cuda')
+
+        self.load_state_dict(loaded_data['net'])
+
+        for param in self.parameters():
+            param.requires_grad = False
+
+    def forward(self, x_in):
+
+        x = self.model(x_in)
+
+        return x
+
 # import torch
 # import torch.nn as nn
 # import torch.nn.functional as F
