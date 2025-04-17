@@ -65,11 +65,11 @@ class Mobile_netV2_loss(nn.Module):
         coarse_grain = self.coarse_grain(x_in)
         cgc          = self.coarse_grain_classifier(coarse_grain)
 
-        fine_grain_0 = self.fine_grain_0(x_in) * cgc[:, 0]
-        fine_grain_1 = self.fine_grain_1(x_in) * cgc[:, 1]
-        fine_grain_2 = self.fine_grain_2(x_in) * cgc[:, 2]
+        fine_grain_1 = self.fine_grain_1(x_in) * cgc[:, 0]
+        fine_grain_2 = self.fine_grain_2(x_in) * cgc[:, 1]
+        fine_grain_3 = self.fine_grain_3(x_in) * cgc[:, 2]
 
-        combine = torch.cat([fine_grain_0, fine_grain_1, fine_grain_2], dim=1)
+        combine = torch.cat([fine_grain_1, fine_grain_2, fine_grain_3], dim=1)
 
         x = self.fine_grain_classifier(combine)
 
