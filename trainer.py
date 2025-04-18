@@ -11,7 +11,7 @@ from torch.autograd import Variable
 from valid import valid_func
 from torcheval.metrics import MulticlassAccuracy
 from torch.nn.modules.loss import CrossEntropyLoss
-labels = torch.load('/content/Scene-Recognition/labels_15.pt').cuda()
+labels = torch.load('/content/Scene-Recognition/labels_20.pt').cuda()
 
 warnings.filterwarnings("ignore")
 
