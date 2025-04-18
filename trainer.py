@@ -43,7 +43,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         ##################################################
         goals = torch.randn((60, 67), device='cuda')
         for count, i in enumerate(targets):
-            goals[count] = labels[i]
+            goals[count] = labels[i.long()]
         ##################################################
         outputs = model(inputs)
         ##################################################
