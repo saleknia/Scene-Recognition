@@ -60,14 +60,7 @@ class Mobile_netV2_loss(nn.Module):
 
     def forward(self, x_in):
 
-        B = x_in.size(0)
-
-        x = self.base.patch_embed(x_in)  # -> [B, num_patches, embed_dim]
-
-        cls_token = self.base.cls_token.expand(B, -1, -1)  # -> [B, 1, embed_dim]
-        x = torch.cat((cls_token, x), dim=1)  # prepend cls token
-
-        x = x + self.base.pos_embed[:, :x.size(1), :]  # add positional embedding
+        x = self.base.prepare_tokens_with_masks(x, None)
 
         for blk in self.base.blocks[:11]:
             x = blk(x)
