@@ -142,7 +142,7 @@ class coarse_grained_model(nn.Module):
     def forward(self, x_in):
         x = self.model.blocks[-1](x_in)
         x = self.model.norm(x)
-        x = self.head(x[:, 0]).softmax(dim=1)     
+        x = torch.softmax(self.head(x[:, 0]), dim=1)     
         return x
 
 # import torch
