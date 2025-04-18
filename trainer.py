@@ -14,7 +14,6 @@ from torch.nn.modules.loss import CrossEntropyLoss
 labels = torch.load('/content/Scene-Recognition/labels_10.pt').cuda()
 
 warnings.filterwarnings("ignore")
-goals = torch.randn((64, 67), device='cuda')
 
 def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_scheduler,logger):
     # torch.autograd.set_detect_anomaly(True)
@@ -42,6 +41,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
 
         targets = targets.float()
         ##################################################
+        goals = torch.randn((inputs.shape[0], 67), device='cuda')
         for count, i in enumerate(targets):
             goals[count] = labels[i.long()]
         ##################################################
