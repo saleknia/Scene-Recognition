@@ -27,7 +27,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
     # accuracy = utils.AverageMeter()
     metric = MulticlassAccuracy(average="macro", num_classes=num_class).to('cuda')
     # accuracy = mAPMeter()
-    loss_ce = CrossEntropyLoss(label_smoothing=0.1)
+    loss_ce = CrossEntropyLoss(label_smoothing=0.0)
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
