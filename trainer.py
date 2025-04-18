@@ -11,9 +11,9 @@ from torch.autograd import Variable
 from valid import valid_func
 from torcheval.metrics import MulticlassAccuracy
 from torch.nn.modules.loss import CrossEntropyLoss
+labels = torch.load('/content/Scene-Recognition/labels_10.pt').cuda()
 
 warnings.filterwarnings("ignore")
-
 
 def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_scheduler,logger):
     # torch.autograd.set_detect_anomaly(True)
@@ -40,9 +40,16 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         inputs, targets = inputs.to(device), targets.to(device)
 
         targets = targets.float()
-        
+        ##################################################
+        goals = torch.randn((60, 67), device='cuda')
+        for count, i in enumerate(targets):
+            goals[count] = labels[i]
+        ##################################################
         outputs = model(inputs)
-        loss    = loss_ce(outputs, targets.long()) 
+        ##################################################
+        loss    = loss_ce(goals, targets.long()) 
+        # loss    = loss_ce(outputs, targets.long()) 
+        ##################################################
         loss_ce_total.update(loss)
 
         predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
