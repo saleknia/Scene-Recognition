@@ -60,7 +60,7 @@ class Mobile_netV2_loss(nn.Module):
 
     def forward(self, x_in):
 
-        x = self.base.prepare_tokens_with_masks(x, None)
+        x = self.base.prepare_tokens_with_masks(x_in, None)
 
         for blk in self.base.blocks[:11]:
             x = blk(x)
