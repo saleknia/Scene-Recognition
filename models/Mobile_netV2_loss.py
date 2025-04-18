@@ -60,9 +60,9 @@ class Mobile_netV2_loss(nn.Module):
 
     def forward(self, x_in):
 
-        B = x.size(0)
+        B = x_in.size(0)
 
-        x = self.base.patch_embed(x)  # -> [B, num_patches, embed_dim]
+        x = self.base.patch_embed(x_in)  # -> [B, num_patches, embed_dim]
 
         cls_token = self.base.cls_token.expand(B, -1, -1)  # -> [B, 1, embed_dim]
         x = torch.cat((cls_token, x), dim=1)  # prepend cls token
@@ -110,14 +110,16 @@ class fine_grained_model(nn.Module):
         for param in self.parameters():
             param.requires_grad = False
         
-        self.model.patch_embed = nn.Identity()
+        # self.model.patch_embed = nn.Identity()
 
-        for i in range(11):
-            self.model.blocks[i] = nn.Identity()
+        # for i in range(11):
+        #     self.model.blocks[i] = nn.Identity()
 
     def forward(self, x_in):
 
-        x = self.model(x_in)
+        x = self.model.blocks[-1](x_in)
+        x = self.model.norm(x)
+        x = x[:, 0]        
 
         return x
 
@@ -146,15 +148,16 @@ class coarse_grained_model(nn.Module):
         for param in self.parameters():
             param.requires_grad = False
 
-        self.model.patch_embed = nn.Identity()
+        # self.model.patch_embed = nn.Identity()
 
-        for i in range(11):
-            self.model.blocks[i] = nn.Identity()
+        # for i in range(11):
+        #     self.model.blocks[i] = nn.Identity()
 
     def forward(self, x_in):
 
-        x = self.model(x_in)
-
+        x = self.model.blocks[-1](x_in)
+        x = self.model.norm(x)
+        x = x[:, 0]        
         return x
 
 # import torch
