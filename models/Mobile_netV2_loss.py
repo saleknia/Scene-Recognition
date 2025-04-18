@@ -47,12 +47,6 @@ class Mobile_netV2_loss(nn.Module):
         self.fine_grain_2 = fine_grained_model(num_classes=22, superclass=2)
         self.fine_grain_3 = fine_grained_model(num_classes=22, superclass=3)
 
-        self.coarse_grain_classifier = nn.Sequential(
-                                    nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=768, out_features=3, bias=True),
-                                    nn.Softmax(dim=1)
-                                )
-
         self.fine_grain_classifier = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
                                     nn.Linear(in_features=768*3, out_features=num_classes, bias=True),
@@ -65,8 +59,7 @@ class Mobile_netV2_loss(nn.Module):
         for blk in self.base.blocks[:11]:
             x = blk(x)
 
-        coarse_grain = self.coarse_grain(x)
-        cgc          = self.coarse_grain_classifier(coarse_grain)
+        cgc = self.coarse_grain(x)
 
         fine_grain_1 = self.fine_grain_1(x) * cgc[:, 0].unsqueeze(dim=1)
         fine_grain_2 = self.fine_grain_2(x) * cgc[:, 1].unsqueeze(dim=1)
@@ -147,10 +140,9 @@ class coarse_grained_model(nn.Module):
         #     self.model.blocks[i] = nn.Identity()
 
     def forward(self, x_in):
-
         x = self.model.blocks[-1](x_in)
         x = self.model.norm(x)
-        x = x[:, 0]        
+        x = self.head(x[:, 0]).softmax(dim=1)     
         return x
 
 # import torch
