@@ -52,6 +52,8 @@ class Mobile_netV2_loss(nn.Module):
                                     nn.Linear(in_features=768*3, out_features=num_classes, bias=True),
                                 )
 
+        self.T = 1.0
+
     def forward(self, x_in):
 
         x = self.base.prepare_tokens_with_masks(x_in, None)
@@ -61,9 +63,11 @@ class Mobile_netV2_loss(nn.Module):
 
         cgc = self.coarse_grain(x)
 
-        fine_grain_1 = self.fine_grain_1(x) * cgc[:, 0].unsqueeze(dim=1)
-        fine_grain_2 = self.fine_grain_2(x) * cgc[:, 1].unsqueeze(dim=1)
-        fine_grain_3 = self.fine_grain_3(x) * cgc[:, 2].unsqueeze(dim=1)
+        select = torch.softmax(cgc / self.T, dim=1)
+
+        fine_grain_1 = self.fine_grain_1(x) * select[:, 0].unsqueeze(dim=1)
+        fine_grain_2 = self.fine_grain_2(x) * select[:, 1].unsqueeze(dim=1)
+        fine_grain_3 = self.fine_grain_3(x) * select[:, 2].unsqueeze(dim=1)
 
         combine = torch.cat([fine_grain_1, fine_grain_2, fine_grain_3], dim=1)
 
@@ -142,12 +146,10 @@ class coarse_grained_model(nn.Module):
         for i in range(11):
             self.model.blocks[i] = nn.Identity()
         
-        self.T = 2.0
-
     def forward(self, x_in):
         x = self.model.blocks[-1](x_in)
         x = self.model.norm(x)
-        x = torch.softmax(self.head(x[:, 0])/self.T, dim=1)     
+        x = self.head(x[:, 0])    
         return x
 
 # import torch
