@@ -48,7 +48,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         if type(outputs)==tuple:
             outputs, aux = outputs[0], outputs[1]
             goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
-            loss = loss_ce(outputs, targets.long()) + loss_ce(aux, goals.long())
+            loss  = loss_ce(outputs, targets.long()) + loss_ce(aux, goals.long())
         else:
             loss = loss_ce(outputs, targets.long())
 

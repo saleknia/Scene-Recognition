@@ -72,7 +72,7 @@ class Mobile_netV2_loss(nn.Module):
         if self.training:
             return x, cgc
         else:
-            return cgc
+            return x
 
 class fine_grained_model(nn.Module):
 
