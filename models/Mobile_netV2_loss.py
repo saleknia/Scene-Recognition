@@ -43,13 +43,13 @@ class Mobile_netV2_loss(nn.Module):
 
         self.coarse_grain = coarse_grained_model()
 
-        self.fine_grain_1 = fine_grained_model(num_classes=23, superclass=1)
-        self.fine_grain_2 = fine_grained_model(num_classes=22, superclass=2)
-        self.fine_grain_3 = fine_grained_model(num_classes=22, superclass=3)
+        self.fine_grain_1 = fine_grained_model()
+        self.fine_grain_2 = fine_grained_model()
+        self.fine_grain_3 = fine_grained_model()
 
         self.fine_grain_classifier = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                    nn.Linear(in_features=768*3, out_features=num_classes, bias=True),
                                 )
 
     def forward(self, x_in):
@@ -65,16 +65,18 @@ class Mobile_netV2_loss(nn.Module):
         fine_grain_2 = self.fine_grain_2(x) * cgc[:, 1].unsqueeze(dim=1)
         fine_grain_3 = self.fine_grain_3(x) * cgc[:, 2].unsqueeze(dim=1)
 
-        # combine = torch.cat([fine_grain_1, fine_grain_2, fine_grain_3], dim=1)
-        combine = fine_grain_1 + fine_grain_2 + fine_grain_3
+        combine = torch.cat([fine_grain_1, fine_grain_2, fine_grain_3], dim=1)
 
         x = self.fine_grain_classifier(combine)
 
-        return x
+        if self.training:
+            return x, cgc
+        else:
+            return cgc
 
 class fine_grained_model(nn.Module):
 
-    def __init__(self, num_classes, superclass):
+    def __init__(self):
         super(fine_grained_model, self).__init__()
 
         self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
@@ -85,22 +87,22 @@ class fine_grained_model(nn.Module):
         for param in self.model.blocks[-1].parameters():
             param.requires_grad = True
 
-        self.head = nn.Sequential(
-                                    nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=768, out_features=num_classes, bias=True),
-                                )
+        # self.head = nn.Sequential(
+        #                             nn.Dropout(p=0.5, inplace=True),
+        #                             nn.Linear(in_features=768, out_features=num_classes, bias=True),
+        #                         )
 
-        loaded_data = torch.load(f'/content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_FINE_GRAINED_{superclass}_best.pth', map_location='cuda')
+        # loaded_data = torch.load(f'/content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_FINE_GRAINED_{superclass}_best.pth', map_location='cuda')
 
-        self.load_state_dict(loaded_data['net'])
+        # self.load_state_dict(loaded_data['net'])
 
-        for param in self.parameters():
-            param.requires_grad = False
+        # for param in self.parameters():
+        #     param.requires_grad = False
         
-        # self.model.patch_embed = nn.Identity()
+        self.model.patch_embed = nn.Identity()
 
-        # for i in range(11):
-        #     self.model.blocks[i] = nn.Identity()
+        for i in range(11):
+            self.model.blocks[i] = nn.Identity()
 
     def forward(self, x_in):
 
@@ -128,22 +130,24 @@ class coarse_grained_model(nn.Module):
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
 
-        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_COARSE_GRAINED_best.pth', map_location='cuda')
+        # loaded_data = torch.load('/content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_COARSE_GRAINED_best.pth', map_location='cuda')
 
-        self.load_state_dict(loaded_data['net'])
+        # self.load_state_dict(loaded_data['net'])
 
-        for param in self.parameters():
-            param.requires_grad = False
+        # for param in self.parameters():
+        #     param.requires_grad = False
 
-        # self.model.patch_embed = nn.Identity()
+        self.model.patch_embed = nn.Identity()
 
-        # for i in range(11):
-        #     self.model.blocks[i] = nn.Identity()
+        for i in range(11):
+            self.model.blocks[i] = nn.Identity()
+        
+        self.T = 1.0
 
     def forward(self, x_in):
         x = self.model.blocks[-1](x_in)
         x = self.model.norm(x)
-        x = torch.softmax(self.head(x[:, 0])/2.0, dim=1)     
+        x = torch.softmax(self.head(x[:, 0])/self.T, dim=1)     
         return x
 
 # import torch

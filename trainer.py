@@ -11,8 +11,11 @@ from torch.autograd import Variable
 from valid import valid_func
 from torcheval.metrics import MulticlassAccuracy
 from torch.nn.modules.loss import CrossEntropyLoss
-labels = torch.load('/content/Scene-Recognition/labels.pt').cuda()
-
+# labels = torch.load('/content/Scene-Recognition/labels.pt').cuda()
+mapping = [0, 1, 0, 1, 0, 2, 2, 1, 0, 1, 0, 2, 0, 2, 0, 1, 1, 2, 0, 0, 1, 2,
+       1, 0, 0, 1, 2, 1, 1, 1, 2, 2, 2, 0, 0, 1, 2, 2, 2, 0, 1, 1, 0, 2,
+       0, 2, 0, 1, 2, 2, 2, 1, 0, 2, 0, 0, 1, 0, 2, 0, 1, 0, 2, 1, 2, 1,
+       1]
 warnings.filterwarnings("ignore")
 
 def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_scheduler,logger):
@@ -40,19 +43,16 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         inputs, targets = inputs.to(device), targets.to(device)
 
         targets = targets.float()
-        ##################################################
-        # goals = torch.randn((inputs.shape[0], 67), device='cuda')
-        # for count, i in enumerate(targets):
-        #     goals[count] = labels[i.long()]
-        # goals = (torch.softmax(outputs, dim=1) + goals) / 2.0
-        ##################################################
         outputs = model(inputs)
-        ##################################################
-        # loss    = loss_ce(outputs, goals) 
-        loss  = loss_ce(outputs, targets.long()) 
-        ##################################################
-        loss_ce_total.update(loss)
 
+        if type(outputs)==tuple:
+            outputs, aux = outputs[0], outputs[1]
+            goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
+            loss = loss_ce(outputs, targets.long()) + loss_ce(aux, goals.long())
+        else:
+            loss = loss_ce(outputs, targets.long())
+
+        loss_ce_total.update(loss)
         predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
         metric.update(predictions, targets.long())
 
