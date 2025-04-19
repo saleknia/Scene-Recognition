@@ -76,7 +76,7 @@ class Mobile_netV2_loss(nn.Module):
         if self.training:
             return x, cgc
         else:
-            return x
+            return cgc
 
 class fine_grained_model(nn.Module):
 
@@ -126,8 +126,8 @@ class coarse_grained_model(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.blocks[-1].parameters():
-            param.requires_grad = True
+        # for param in self.model.blocks[-1].parameters():
+        #     param.requires_grad = True
 
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
