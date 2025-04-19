@@ -52,7 +52,7 @@ class Mobile_netV2_loss(nn.Module):
                                     nn.Linear(in_features=768*3, out_features=num_classes, bias=True),
                                 )
 
-        self.T = 1.0
+        self.T = 2.0
 
     def forward(self, x_in):
 
