@@ -142,7 +142,7 @@ class coarse_grained_model(nn.Module):
         for i in range(11):
             self.model.blocks[i] = nn.Identity()
         
-        self.T = 1.0
+        self.T = 2.0
 
     def forward(self, x_in):
         x = self.model.blocks[-1](x_in)
