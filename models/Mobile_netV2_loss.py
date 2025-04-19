@@ -47,7 +47,7 @@ class Mobile_netV2_loss(nn.Module):
         self.fine_grain_2 = fine_grained_model()
         self.fine_grain_3 = fine_grained_model()
 
-        for param in self.base.parameters():
+        for param in self.parameters():
             param.requires_grad = False
 
         self.fine_grain_classifier = nn.Sequential(
@@ -56,7 +56,7 @@ class Mobile_netV2_loss(nn.Module):
                                 )
 
         self.T = 4.0
-        
+
         loaded_data = torch.load(f'/content/drive/MyDrive/checkpoint/Mobile_NetV2_loss_MIT-67_best.pth', map_location='cuda')
         self.load_state_dict(loaded_data['net'])
 
