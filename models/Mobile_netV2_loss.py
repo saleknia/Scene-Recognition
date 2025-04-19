@@ -57,7 +57,7 @@ class Mobile_netV2_loss(nn.Module):
 
         self.T = 4.0
 
-        loaded_data = torch.load(f'/content/drive/MyDrive/checkpoint/Mobile_NetV2_loss_MIT-67_best.pth', map_location='cuda')
+        loaded_data = torch.load(f'/content/drive/MyDrive/checkpoint/best.pth', map_location='cuda')
         self.load_state_dict(loaded_data['net'])
 
     def forward(self, x_in):
