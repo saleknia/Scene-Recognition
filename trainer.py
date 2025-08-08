@@ -120,7 +120,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         loss_di_total.update(di_loss)
         loss_total.update(loss)
 
-        predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
+        predictions = torch.argmax(input=torch.softmax(outputs[0], dim=1),dim=1).long()
         metric.update(predictions, targets.long())
 
         optimizer.zero_grad()
