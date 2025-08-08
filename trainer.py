@@ -18,7 +18,7 @@ class RKD(nn.Module):
 	Relational Knowledge Distillation
 	https://arxiv.org/pdf/1904.05068.pdf
 	'''
-	def __init__(self, w_dist, w_angle):
+	def __init__(self, w_dist=50, w_angle=100):
 		super(RKD, self).__init__()
 
 		self.w_dist  = 50
