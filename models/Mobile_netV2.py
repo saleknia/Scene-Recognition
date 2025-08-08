@@ -31,6 +31,12 @@ from PIL import Image
 
 from transformers import AutoModelForImageClassification
 
+scene      = models.__dict__['resnet50'](num_classes=365)
+checkpoint = torch.load('/content/resnet50_places365.pth.tar', map_location='cpu')
+state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
+scene.load_state_dict(state_dict)
+scene.fc   = nn.Identity()
+
 class Mobile_netV2(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(Mobile_netV2, self).__init__()
@@ -50,6 +56,15 @@ class Mobile_netV2(nn.Module):
 
     def forward(self, x_in):
 
-        x = self.head(self.model(x_in))
+        features_s = self.model(x_in)
+        
+        features_t = scene(x_in)
 
-        return x
+        x = self.head(features_s)
+
+        if self.training:
+            return x, (features_s, features_t)
+        else:
+            return x
+
+
