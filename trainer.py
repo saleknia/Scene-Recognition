@@ -21,8 +21,8 @@ class RKD(nn.Module):
 	def __init__(self, w_dist=50, w_angle=100):
 		super(RKD, self).__init__()
 
-		self.w_dist  = 50
-		self.w_angle = 0 # 100
+		self.w_dist  = 0
+		self.w_angle = 100
 
 	def forward(self, feat_s, feat_t):
 		loss = (self.w_dist * self.rkd_dist(feat_s, feat_t) + self.w_angle * self.rkd_angle(feat_s, feat_t))
