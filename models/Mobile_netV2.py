@@ -32,7 +32,7 @@ from PIL import Image
 from transformers import AutoModelForImageClassification
 
 scene      = models.__dict__['resnet50'](num_classes=365)
-checkpoint = torch.load('/content/resnet50_places365.pth.tar', map_location='cpu')
+checkpoint = torch.load('/content/drive/MyDrive/places365_pretrained/resnet50_places365.pth.tar', map_location='cpu')
 state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
 scene.load_state_dict(state_dict)
 scene.fc   = nn.Identity()
