@@ -116,8 +116,8 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         else:
             loss = loss_ce(outputs, targets.long())
 
-        loss_ce_total.update(loss_ce)
-        loss_di_total.update(loss_di)
+        loss_ce_total.update(ce_loss)
+        loss_di_total.update(di_loss)
         loss_total.update(loss)
 
         predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
