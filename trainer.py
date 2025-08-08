@@ -25,12 +25,16 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
     model = model.to('cuda')
     model.train()
 
-    loss_ce_total   = utils.AverageMeter()
+    loss_ce_total = utils.AverageMeter()
+    loss_di_total = utils.AverageMeter() 
+    loss_total    = utils.AverageMeter() 
 
     # accuracy = utils.AverageMeter()
     metric = MulticlassAccuracy(average="macro", num_classes=num_class).to('cuda')
     # accuracy = mAPMeter()
-    loss_ce = CrossEntropyLoss(label_smoothing=0.1)
+
+    loss_ce = CrossEntropyLoss(label_smoothing=0.0)
+    loss_di = RKD()
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
@@ -46,13 +50,19 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         outputs = model(inputs)
 
         if type(outputs)==tuple:
-            outputs, aux = outputs[0], outputs[1]
-            goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
-            loss  = loss_ce(outputs, targets.long()) + (loss_ce(aux, goals.long()) * 0.5)
+            # outputs, aux = outputs[0], outputs[1]
+            # goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
+            # loss  = loss_ce(outputs, targets.long()) + (loss_ce(aux, goals.long()) * 0.5)
+            ce_loss = loss_ce(outputs[0], targets.long())
+            di_loss = loss_di(*outputs[1]) 
+            loss    = ce_loss + di_loss
         else:
             loss = loss_ce(outputs, targets.long())
 
-        loss_ce_total.update(loss)
+        loss_ce_total.update(loss_ce)
+        loss_di_total.update(loss_di)
+        loss_total.update(loss)
+
         predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
         metric.update(predictions, targets.long())
 
@@ -67,8 +77,8 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             iteration=batch_idx+1,
             total=total_batchs,
             prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
-            suffix=f'CE_Loss = {loss_ce_total.avg:.4f} , Accuracy = {100 * metric.compute():.4f}',   
-            # suffix=f'CE_loss = {loss_ce_total.avg:.4f} , disparity_loss = {loss_disparity_total.avg:.4f} , Accuracy = {100 * accuracy.value().item():.4f}',                 
+            # suffix=f'CE_Loss = {loss_ce_total.avg:.4f} , Accuracy = {100 * metric.compute():.4f}',   
+            suffix=f'CE_loss = {loss_ce_total.avg:.4f} , distillation_loss = {loss_di_total.avg:.4f} , Accuracy = {100 * metric.compute():.4f}',                 
             # suffix=f'CE_loss = {loss_ce_total.avg:.4f} , disparity_loss = {loss_disparity_total.avg:.4f} , Accuracy = {100 * accuracy.avg:.4f}',   
             bar_length=45
         )  
