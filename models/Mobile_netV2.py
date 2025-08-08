@@ -35,7 +35,7 @@ class Mobile_netV2(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(Mobile_netV2, self).__init__()
 
-        self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+        self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14')
 
         for param in self.model.parameters():
             param.requires_grad = False
