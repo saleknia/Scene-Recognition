@@ -143,11 +143,12 @@ elif task_id==4:
     TASK_NAME = 'Scene-15'
 
 
-model_ids = ['1','2']
+model_ids = ['1','2','3']
 model_table = tabulate(
                     tabular_data=[
                         ['Mobile_netV2'     , 1],
-                        ['Mobile_netV2_loss', 2]],
+                        ['Mobile_netV2_loss', 2],
+                        ['ResNet'           , 3]],
                     headers=['Model Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
@@ -162,6 +163,9 @@ if model_id==1:
 
 elif model_id==2:
     MODEL_NAME = 'Mobile_NetV2_loss'
+
+elif model_id==3:
+    MODEL_NAME = 'ResNet'
 
 if NORMAL_TRAINING:
     CKPT_NAME = MODEL_NAME + '_' + TASK_NAME

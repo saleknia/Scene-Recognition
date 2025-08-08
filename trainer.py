@@ -107,6 +107,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         outputs = model(inputs)
 
         if type(outputs)==tuple:
+            predictions = torch.argmax(input=torch.softmax(outputs[0], dim=1),dim=1).long()
             # outputs, aux = outputs[0], outputs[1]
             # goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
             # loss  = loss_ce(outputs, targets.long()) + (loss_ce(aux, goals.long()) * 0.5)
@@ -114,13 +115,15 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             di_loss = loss_di(*outputs[1]) 
             loss    = ce_loss + di_loss
         else:
-            loss = loss_ce(outputs, targets.long())
+            predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
+            ce_loss = loss_ce(outputs, targets.long())
+            di_loss = 0.0 
+            loss    = ce_loss + di_loss
 
         loss_ce_total.update(ce_loss)
         loss_di_total.update(di_loss)
         loss_total.update(loss)
 
-        predictions = torch.argmax(input=torch.softmax(outputs[0], dim=1),dim=1).long()
         metric.update(predictions, targets.long())
 
         optimizer.zero_grad()

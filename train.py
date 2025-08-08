@@ -190,6 +190,9 @@ def main(args):
     elif MODEL_NAME == 'Mobile_NetV2_loss':
         model = Mobile_netV2_loss(num_classes=NUM_CLASS).to(DEVICE)
 
+    elif MODEL_NAME == 'ResNet':
+        model = ResNet(num_classes=NUM_CLASS).to(DEVICE)
+
     else: 
         raise TypeError('Please enter a valid name for the model type')
 
