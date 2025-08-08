@@ -23,6 +23,8 @@ import torch.optim as optim
 from models.Mobile_netV2 import Mobile_netV2
 from models.Mobile_netV2_loss import Mobile_netV2_loss
 
+from models.ResNet import ResNet
+
 import utils
 from utils import color
 from utils import Save_Checkpoint
