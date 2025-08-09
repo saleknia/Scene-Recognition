@@ -13,6 +13,27 @@ from torcheval.metrics import MulticlassAccuracy
 from torch.nn.modules.loss import CrossEntropyLoss
 # labels = torch.load('/content/Scene-Recognition/labels.pt').cuda()
 
+class SP(nn.Module):
+	'''
+	Similarity-Preserving Knowledge Distillation
+	https://arxiv.org/pdf/1907.09682.pdf
+	'''
+	def __init__(self):
+		super(SP, self).__init__()
+
+	def forward(self, fm_s, fm_t):
+		fm_s = fm_s.view(fm_s.size(0), -1)
+		G_s  = torch.mm(fm_s, fm_s.t())
+		norm_G_s = F.normalize(G_s, p=2, dim=1)
+
+		fm_t = fm_t.view(fm_t.size(0), -1)
+		G_t  = torch.mm(fm_t, fm_t.t())
+		norm_G_t = F.normalize(G_t, p=2, dim=1)
+
+		loss = F.mse_loss(norm_G_s, norm_G_t)
+
+		return loss
+
 class RKD(nn.Module):
 	'''
 	Relational Knowledge Distillation
@@ -91,7 +112,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
     # accuracy = mAPMeter()
 
     loss_ce = CrossEntropyLoss(label_smoothing=0.0)
-    loss_di = RKD()
+    loss_di = SP()
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
@@ -112,7 +133,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             # goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
             # loss  = loss_ce(outputs, targets.long()) + (loss_ce(aux, goals.long()) * 0.5)
             ce_loss = loss_ce(outputs[0], targets.long())
-            di_loss = loss_di(*outputs[1]) 
+            di_loss = loss_di(*outputs[1]) * 3000.0
             loss    = ce_loss + di_loss
         else:
             predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
