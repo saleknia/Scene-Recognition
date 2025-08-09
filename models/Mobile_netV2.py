@@ -20,7 +20,7 @@ from torch.nn import functional as F
 import os
 from PIL import Image
 import timm
-
+import torch.nn as nn
 from torchvision.transforms import FiveCrop, Lambda
 
 # from efficientvit.cls_model_zoo import create_cls_model
@@ -36,6 +36,11 @@ checkpoint = torch.load('/content/drive/MyDrive/places365_pretrained/resnet50_pl
 state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
 scene.load_state_dict(state_dict)
 scene.fc   = nn.Identity()
+
+import timm
+
+obj = timm.create_model("timm/convnextv2_tiny.fcmae_ft_in22k_in1k", pretrained=True)
+obj.head.fc = nn.Identity()
 
 class Mobile_netV2(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
@@ -58,7 +63,7 @@ class Mobile_netV2(nn.Module):
 
         features_s = self.model(x_in)
         
-        # features_t = scene(x_in)
+        features_t = obj(x_in)
 
         x = self.head(features_s)
 
