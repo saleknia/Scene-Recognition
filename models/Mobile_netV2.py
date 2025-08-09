@@ -39,7 +39,7 @@ scene.fc   = nn.Identity()
 
 import timm
 
-obj = timm.create_model("timm/convnextv2_tiny.fcmae_ft_in22k_in1k", pretrained=True).cuda()
+obj         = timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True).cuda()
 obj.head.fc = nn.Identity()
 
 class Mobile_netV2(nn.Module):
