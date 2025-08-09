@@ -29,7 +29,7 @@ class ConvNext(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(ConvNext, self).__init__()
 
-        timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True)
+        self.model = timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True)
 
         for param in self.model.parameters():
             param.requires_grad = False
