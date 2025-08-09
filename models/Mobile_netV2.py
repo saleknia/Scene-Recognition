@@ -58,7 +58,7 @@ class Mobile_netV2(nn.Module):
 
         features_s = self.model(x_in)
         
-        features_t = scene(x_in)
+        # features_t = scene(x_in)
 
         x = self.head(features_s)
 

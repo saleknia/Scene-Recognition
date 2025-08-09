@@ -34,11 +34,11 @@ class ResNet(nn.Module):
         state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
         self.model.load_state_dict(state_dict)
 
-        # for param in self.model.parameters():
-        #     param.requires_grad = False
+        for param in self.model.parameters():
+            param.requires_grad = False
 
-        # for param in self.model.layer4[-1].parameters():
-        #     param.requires_grad = True
+        for param in self.model.layer4.parameters():
+            param.requires_grad = True
 
         self.model.fc   = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
