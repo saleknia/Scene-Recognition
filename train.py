@@ -24,6 +24,7 @@ from models.Mobile_netV2 import Mobile_netV2
 from models.Mobile_netV2_loss import Mobile_netV2_loss
 
 from models.ResNet import ResNet
+from models.ConvNext import ConvNext
 
 import utils
 from utils import color
@@ -194,6 +195,9 @@ def main(args):
 
     elif MODEL_NAME == 'ResNet':
         model = ResNet(num_classes=NUM_CLASS).to(DEVICE)
+
+    elif MODEL_NAME == 'ConvNext':
+        model = ConvNext(num_classes=NUM_CLASS).to(DEVICE)
 
     else: 
         raise TypeError('Please enter a valid name for the model type')
