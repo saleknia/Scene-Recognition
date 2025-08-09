@@ -25,9 +25,9 @@ from torchvision.transforms import FiveCrop, Lambda
 
 from transformers import AutoModelForImageClassification
 
-class ResNet(nn.Module):
+class ConvNext(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
-        super(ResNet, self).__init__()
+        super(ConvNext, self).__init__()
 
         timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True)
 
