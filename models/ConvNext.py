@@ -47,3 +47,4 @@ class ConvNext(nn.Module):
         x = self.model(x_in)
         
         return x
+

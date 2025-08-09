@@ -30,7 +30,7 @@ from transformers import CLIPProcessor, CLIPModel
 from PIL import Image
 
 from transformers import AutoModelForImageClassification
-
+from ConvNext import ConvNext
 # scene      = models.__dict__['resnet50'](num_classes=365).cuda()
 # checkpoint = torch.load('/content/drive/MyDrive/places365_pretrained/resnet50_places365.pth.tar', map_location='cuda')
 # state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
@@ -39,8 +39,9 @@ from transformers import AutoModelForImageClassification
 
 import timm
 
-obj         = timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True).cuda()
-obj.head.fc = nn.Identity()
+obj        = ConvNext().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/ConvNext_best.pth', map_location='cuda')
+obj.load_state_dict(state_dict)
 
 class Mobile_netV2(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
@@ -51,7 +52,7 @@ class Mobile_netV2(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.blocks[-1].parameters():
+        for param in self.model.blocks[9:12].parameters():
             param.requires_grad = True
 
         self.head = nn.Sequential(
@@ -60,16 +61,17 @@ class Mobile_netV2(nn.Module):
                                 )
 
     def forward(self, x_in):
-
-        features_s = self.model(x_in)
         
-        features_t = obj(x_in)
+        x = self.head(self.model(x_in))
+        return x
 
-        x = self.head(features_s)
+        # x_t = obj(x_in)
 
-        if self.training:
-            return x, (features_s, features_t)
-        else:
-            return x
+        # x = self.head(self.model(x_in))
+
+        # if self.training:
+        #     return x, x_t
+        # else:
+        #     return x
 
 
