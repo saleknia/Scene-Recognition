@@ -52,7 +52,7 @@ class Mobile_netV2(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.blocks[9:12].parameters():
+        for param in self.model.blocks[-1].parameters():
             param.requires_grad = True
 
         self.head = nn.Sequential(
@@ -62,16 +62,16 @@ class Mobile_netV2(nn.Module):
 
     def forward(self, x_in):
         
-        x = self.head(self.model(x_in))
-        return x
-
-        # x_t = obj(x_in)
-
         # x = self.head(self.model(x_in))
+        # return x
 
-        # if self.training:
-        #     return x, x_t
-        # else:
-        #     return x
+        x_t = obj(x_in)
+
+        x = self.head(self.model(x_in))
+
+        if self.training:
+            return x, x_t
+        else:
+            return x
 
 
