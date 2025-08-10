@@ -34,13 +34,16 @@ class ConvNext(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.stages[-1].blocks[-1].parameters():
+        for param in self.model.stages[-1].parameters():
             param.requires_grad = True
 
         self.model.head.fc = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
+
+        for param in self.model.head.parameters():
+            param.requires_grad = True
 
     def forward(self, x_in):
 
