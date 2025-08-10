@@ -30,7 +30,7 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
 
         self.model      = models.__dict__['resnet50'](num_classes=365).cuda()
-        checkpoint = torch.load('/content/drive/MyDrive/places365_pretrained/resnet50_places365.pth.tar', map_location='cuda')
+        checkpoint = torch.load('/content/resnet50_places365.pth.tar', map_location='cuda')
         state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
         self.model.load_state_dict(state_dict)
 
