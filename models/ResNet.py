@@ -42,9 +42,7 @@ class ResNet(nn.Module):
 
         self.model.fc   = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=2048, out_features=512        , bias=True),
-                                    nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=512 , out_features=num_classes, bias=True),
+                                    nn.Linear(in_features=2048, out_features=num_classes, bias=True)
                                 )
 
     def forward(self, x_in):
