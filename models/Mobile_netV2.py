@@ -62,17 +62,17 @@ class Mobile_netV2(nn.Module):
 
     def forward(self, x_in):
         
-        # x = self.head(self.model(x_in))
-
-        # return x
-
-        x_t = obj(x_in)
-
         x = self.head(self.model(x_in))
 
-        if self.training:
-            return x, x_t
-        else:
-            return x
+        return x
+
+        # x_t = obj(x_in)
+
+        # x = self.head(self.model(x_in))
+
+        # if self.training:
+        #     return x, x_t
+        # else:
+        #     return x
 
 
