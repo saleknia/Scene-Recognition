@@ -10916,3 +10916,4 @@ No Such file : /content/drive/MyDrive/checkpoint/ResNet_MIT-67_best.pth
 Training Phase
 **************************************************
 Epoch: 1 ---> Train , Loss = 4.2213, Accuracy = 1.60 , lr = 9.548853816214998e-05
+Logging Directory: ./logs/logging
