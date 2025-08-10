@@ -34,24 +34,21 @@ class ResNet(nn.Module):
         state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
         self.model.load_state_dict(state_dict)
 
-        # for param in self.model.parameters():
-        #     param.requires_grad = False
+        for param in self.model.parameters():
+            param.requires_grad = False
 
         # for param in self.model.layer4.parameters():
         #     param.requires_grad = True
 
-        # self.model.fc   = nn.Sequential(
-        #                             nn.Dropout(p=0.5, inplace=True),
-        #                             nn.Linear(in_features=2048, out_features=num_classes, bias=True),
-        #                         )
-
-        self.head = nn.Sequential(
+        self.model.fc   = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=365, out_features=num_classes, bias=True),
+                                    nn.Linear(in_features=2048, out_features=512        , bias=True),
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=512 , out_features=num_classes, bias=True),
                                 )
 
     def forward(self, x_in):
 
-        x = self.head(self.model(x_in))
+        x = self.model(x_in)
         
         return x
