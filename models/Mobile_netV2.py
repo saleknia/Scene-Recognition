@@ -40,7 +40,7 @@ from .ConvNext import ConvNext
 import timm
 
 obj        = ConvNext().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/ConvNext_MIT-67_best.pth', map_location='cuda')
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/ConvNext_best.pth', map_location='cuda')
 obj.load_state_dict(checkpoint['net'])
 
 class Mobile_netV2(nn.Module):
