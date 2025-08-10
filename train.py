@@ -55,7 +55,7 @@ def main(args):
             # transforms.RandomHorizontalFlip(),
             # transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
             # transforms.RandomGrayscale(p=0.2),
-            transforms.RandomSizedCrop(224),
+            transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             # transforms.RandomErasing(p=1.0),
