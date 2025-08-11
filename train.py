@@ -25,6 +25,7 @@ from models.Mobile_netV2_loss import Mobile_netV2_loss
 
 from models.ResNet import ResNet
 from models.ConvNext import ConvNext
+from models.Combine import Combine
 
 import utils
 from utils import color
@@ -203,6 +204,9 @@ def main(args):
     elif MODEL_NAME == 'ConvNext':
         model = ConvNext(num_classes=NUM_CLASS).to(DEVICE)
 
+    elif MODEL_NAME == 'Combine':
+        model = Combine(num_classes=NUM_CLASS).to(DEVICE)
+
     else: 
         raise TypeError('Please enter a valid name for the model type')
 
@@ -269,7 +273,6 @@ def main(args):
                 logger=logger)
 
     if (args.inference=='True') and (os.path.isfile(checkpoint_path)):
-
         loaded_data = torch.load(checkpoint_path, map_location='cuda')
         pretrained  = loaded_data['net']
         model2_dict = model.state_dict()
@@ -285,6 +288,17 @@ def main(args):
         logger.info(f'Best Acc Over Validation Set: {acc:.2f}')
         logger.info(f'Best Epoch: {best_epoch}')
 
+        logger.info(50*'*')
+        logger.info('Inference Phase')
+        logger.info(50*'*')
+        tester_func(
+            model=copy.deepcopy(model),
+            dataloader=data_loader,
+            device=DEVICE,
+            ckpt=None,
+            num_class=NUM_CLASS,
+            logger=logger)
+    else:
         logger.info(50*'*')
         logger.info('Inference Phase')
         logger.info(50*'*')
