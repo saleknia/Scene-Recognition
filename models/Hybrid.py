@@ -73,7 +73,7 @@ class Hybrid(nn.Module):
         obj   = self.obj(x_in)
         scene = self.scene(x_in)
 
-        features = torch.cat([obj, scene], dim=1)
+        features = obj + scene
 
         x = self.head(features)
         
