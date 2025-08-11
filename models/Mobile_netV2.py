@@ -33,16 +33,14 @@ from transformers import AutoModelForImageClassification
 from .ConvNext import ConvNext
 from .ResNet import ResNet
 
-scene      = ResNet().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
-scene.load_state_dict(checkpoint['net'])
-# scene.fc   = nn.Identity()
+# scene      = ResNet().cuda()
+# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
+# scene.load_state_dict(checkpoint['net'])
+# # scene.fc   = nn.Identity()
 
-import timm
-
-obj        = ConvNext().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
-obj.load_state_dict(checkpoint['net'])
+# obj        = ConvNext().cuda()
+# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
+# obj.load_state_dict(checkpoint['net'])
 
 class Mobile_netV2(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
@@ -63,18 +61,18 @@ class Mobile_netV2(nn.Module):
 
     def forward(self, x_in):
         
-        # x = self.head(self.model(x_in))
-
-        # return x
-
-        x_t = obj(x_in)
-
         x = self.head(self.model(x_in))
 
-        if self.training:
-            return x, x_t
-        else:
-            return x
+        return x
+
+        # x_t = obj(x_in)
+
+        # x = self.head(self.model(x_in))
+
+        # if self.training:
+        #     return x, x_t
+        # else:
+        #     return x
 
         # x_t = scene(x_in)
 
