@@ -82,13 +82,13 @@ class Hybrid(nn.Module):
         for param in self.obj.parameters():
             param.requires_grad = False
 
-        for param in self.obj.head.parameters():
+        for param in self.obj.model.head.parameters():
             param.requires_grad = True
 
         for param in self.scene.parameters():
             param.requires_grad = False
 
-        self.obj.head.fc = nn.Sequential(
+        self.obj.model.head.fc = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
                                     nn.Linear(in_features=768, out_features=256, bias=True),
                                 )
