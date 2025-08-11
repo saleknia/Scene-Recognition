@@ -26,13 +26,13 @@ from torchvision.transforms import FiveCrop, Lambda
 from transformers import AutoModelForImageClassification
 from .Mobile_netV2 import Mobile_netV2
 
-# scene      = Mobile_netV2().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_scene.pth', map_location='cuda')
-# scene.load_state_dict(checkpoint['net'])
+scene      = Mobile_netV2().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO.pth', map_location='cuda')
+scene.load_state_dict(checkpoint['net'])
 
-# obj        = Mobile_netV2().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_obj.pth', map_location='cuda')
-# obj.load_state_dict(checkpoint['net'])
+obj        = Mobile_netV2().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_obj.pth', map_location='cuda')
+obj.load_state_dict(checkpoint['net'])
 
 from .ConvNext import ConvNext
 from .ResNet import ResNet
@@ -54,10 +54,9 @@ class Combine(nn.Module):
         self.obj   = obj
 
     def forward(self, x_in):
-        x_in = resize(x_in, (384, 384))
         s = self.scene(x_in).softmax(dim=1)
-        # o = self.obj(x_in).softmax(dim=1)
-        # x = (s + o)
+        o = self.obj(x_in).softmax(dim=1)
+        x = (s + o)
 
-        return s
+        return x
 

@@ -47,7 +47,6 @@ class ResNet(nn.Module):
 
     def forward(self, x_in):
         
-        x_in = resize(x_in, (448, 448))
         x    = self.model(x_in)
         
         return x
