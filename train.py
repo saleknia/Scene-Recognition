@@ -26,6 +26,7 @@ from models.Mobile_netV2_loss import Mobile_netV2_loss
 from models.ResNet import ResNet
 from models.ConvNext import ConvNext
 from models.Combine import Combine
+from models.Hybrid import Hybrid
 
 import utils
 from utils import color

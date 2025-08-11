@@ -41,7 +41,7 @@ if log:
     logger.info(f'Logging Directory: {logging_log}')   
 ##########################################################################
 
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.01
 DEVICE        = "cuda" if torch.cuda.is_available() else "cpu"
 BATCH_SIZE    = 64
 NUM_EPOCHS    = 20
@@ -142,15 +142,15 @@ elif task_id==4:
     NUM_CLASS = 15
     TASK_NAME = 'Scene-15'
 
-
-model_ids = ['1','2','3','4','5']
+model_ids = ['1','2','3','4','5','6']
 model_table = tabulate(
                     tabular_data=[
                         ['Mobile_netV2'     , 1],
                         ['Mobile_netV2_loss', 2],
                         ['ResNet'           , 3],
                         ['ConvNext'         , 4],
-                        ['Combine'          , 5]],
+                        ['Combine'          , 5],
+                        ['Hybrid'           , 6]],
                     headers=['Model Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
@@ -174,6 +174,9 @@ elif model_id==4:
 
 elif model_id==5:
     MODEL_NAME = 'Combine'
+
+elif model_id==6:
+    MODEL_NAME = 'Hybrid'
 
 if NORMAL_TRAINING:
     CKPT_NAME = MODEL_NAME + '_' + TASK_NAME
