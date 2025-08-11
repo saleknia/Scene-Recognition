@@ -15376,3 +15376,4 @@ Final Test ---> Loss = 0.5117 , Accuracy = 87.18
 **************************************************
 
 
+Logging Directory: ./logs/logging

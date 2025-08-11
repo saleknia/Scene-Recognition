@@ -132,7 +132,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             # outputs, aux = outputs[0], outputs[1]
             # goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
             # loss  = loss_ce(outputs, targets.long()) + (loss_ce(aux, goals.long()) * 0.5)
-            T       = 4.0
+            T       = 2.0
             ce_loss = loss_ce(outputs[0], targets.long())
             di_loss = F.kl_div(F.log_softmax(outputs[0]/T, dim=1), F.softmax(outputs[1]/T, dim=1), reduction='batchmean') * T * T
             loss    = ce_loss + di_loss
