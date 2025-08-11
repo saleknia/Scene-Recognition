@@ -94,7 +94,7 @@ class Hybrid(nn.Module):
                                 )
 
 
-        self.scene.fc = nn.Sequential(
+        self.scene.model.fc = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
                                     nn.Linear(in_features=2048, out_features=256, bias=True)
                                 )
