@@ -43,8 +43,8 @@ class Combine(nn.Module):
 
     def forward(self, x_in):
 
-        s = self.scene(x_in).softmax(dim=1)
-        o = self.obj(x_in).softmax(dim=1)
+        s = self.scene(x_in)
+        o = self.obj(x_in)
         x = 0.5 * (s + o)
 
         return x
