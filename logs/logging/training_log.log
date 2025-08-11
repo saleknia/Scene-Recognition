@@ -13597,3 +13597,67 @@ Final Test ---> Loss = 0.3319 , Accuracy = 91.07
 **************************************************
 
 
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════╕
+│ Hyperparameter   │ Value           │
+╞══════════════════╪═════════════════╡
+│ Learning Rate    │ 0.01            │
+├──────────────────┼─────────────────┤
+│ Num Classes      │ 67              │
+├──────────────────┼─────────────────┤
+│ Device           │ cuda            │
+├──────────────────┼─────────────────┤
+│ Batch Size       │ 64              │
+├──────────────────┼─────────────────┤
+│ POLY_LR          │ True            │
+├──────────────────┼─────────────────┤
+│ Num Epochs       │ 20              │
+├──────────────────┼─────────────────┤
+│ Num Workers      │ 4               │
+├──────────────────┼─────────────────┤
+│ Image Height     │ 224             │
+├──────────────────┼─────────────────┤
+│ Image Width      │ 224             │
+├──────────────────┼─────────────────┤
+│ Pin Memory       │ True            │
+├──────────────────┼─────────────────┤
+│ Load Model       │ True            │
+├──────────────────┼─────────────────┤
+│ Save Model       │ True            │
+├──────────────────┼─────────────────┤
+│ Download Dataset │ False           │
+├──────────────────┼─────────────────┤
+│ Model Name       │ ConvNext        │
+├──────────────────┼─────────────────┤
+│ Seed             │ 42              │
+├──────────────────┼─────────────────┤
+│ Task Name        │ MIT-67          │
+├──────────────────┼─────────────────┤
+│ GPU              │ Tesla T4        │
+├──────────────────┼─────────────────┤
+│ Torch            │ 2.6.0+cu124     │
+├──────────────────┼─────────────────┤
+│ Torchvision      │ 0.21.0+cu124    │
+├──────────────────┼─────────────────┤
+│ Checkpoint Name  │ ConvNext_MIT-67 │
+╘══════════════════╧═════════════════╛
+Loading pretrained weights from Hugging Face hub (timm/convnext_tiny.fb_in22k)
+[timm/convnext_tiny.fb_in22k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ ConvNext        │ 15.52 M       │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/ConvNext_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 1.9688, Accuracy = 54.28 , lr = 0.009548853816214994
+Epoch: 2 ---> Train , Loss = 0.7241, Accuracy = 78.76 , lr = 0.009095325760829628
+Epoch: 3 ---> Train , Loss = 0.6058, Accuracy = 82.03 , lr = 0.008639269723028193
+Epoch: 4 ---> Train , Loss = 0.5355, Accuracy = 84.11 , lr = 0.00818052146050859
+Epoch: 5 ---> Train , Loss = 0.4849, Accuracy = 85.79 , lr = 0.00771889506723571
+Epoch: 6 ---> Train , Loss = 0.4260, Accuracy = 87.38 , lr = 0.0072541784693722034
