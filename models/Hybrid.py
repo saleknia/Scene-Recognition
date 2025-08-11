@@ -25,29 +25,56 @@ from torchvision.transforms import FiveCrop, Lambda
 
 from transformers import AutoModelForImageClassification
 
-class ResNet(nn.Module):
+class Hybrid(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
-        super(ResNet, self).__init__()
+        super(Hybrid, self).__init__()
 
-        self.model      = models.__dict__['resnet50'](num_classes=365).cuda()
+        self.scene = models.__dict__['resnet50'](num_classes=365).cuda()
         checkpoint = torch.load('/content/resnet50_places365.pth.tar', map_location='cuda')
         state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
-        self.model.load_state_dict(state_dict)
+        self.scene.load_state_dict(state_dict)
 
-        for param in self.model.parameters():
+        for param in self.scene.parameters():
             param.requires_grad = False
 
-        for param in self.model.layer4[-1].parameters():
+        for param in self.scene.layer4[-1].parameters():
             param.requires_grad = True
 
-        self.model.fc   = nn.Sequential(
+        self.scene.fc = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=2048, out_features=num_classes, bias=True)
+                                    nn.Linear(in_features=2048, out_features=256, bias=True)
                                 )
+        ###########################################
+        ###########################################
+        self.obj = timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True)
+
+        for param in self.obj.parameters():
+            param.requires_grad = False
+
+        for param in self.obj.stages[-1].blocks[-1].parameters():
+            param.requires_grad = True
+
+        self.obj.head.fc = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=768, out_features=256, bias=True),
+                                )
+
+        for param in self.obj.head.parameters():
+            param.requires_grad = True
+        ###########################################
+        ###########################################
+        self.head = nn.Sequential(
+                            nn.Dropout(p=0.5, inplace=True),
+                            nn.Linear(in_features=512, out_features=num_classes, bias=True),
+                        )
 
     def forward(self, x_in):
         
-        x_in = resize(x_in, (448, 448))
-        x    = self.model(x_in)
+        obj   = self.obj(x_in)
+        scene = self.scene(x_in)
+
+        features = torch.cat([obj, scene], dim=1)
+
+        x = self.head(features)
         
         return x
