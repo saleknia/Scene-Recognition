@@ -31,17 +31,18 @@ from PIL import Image
 
 from transformers import AutoModelForImageClassification
 from .ConvNext import ConvNext
-# scene      = models.__dict__['resnet50'](num_classes=365).cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/places365_pretrained/resnet50_places365.pth.tar', map_location='cuda')
-# state_dict = {str.replace(k,'module.',''): v for k,v in checkpoint['state_dict'].items()}
-# scene.load_state_dict(state_dict)
+from .ResNet import ResNet
+
+scene      = ResNet().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
+scene.load_state_dict(checkpoint['net'])
 # scene.fc   = nn.Identity()
 
 import timm
 
-# obj        = ConvNext().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/ConvNext_best.pth', map_location='cuda')
-# obj.load_state_dict(checkpoint['net'])
+obj        = ConvNext().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
+obj.load_state_dict(checkpoint['net'])
 
 class Mobile_netV2(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
@@ -74,5 +75,14 @@ class Mobile_netV2(nn.Module):
             return x, x_t
         else:
             return x
+
+        # x_t = scene(x_in)
+
+        # x = self.head(self.model(x_in))
+
+        # if self.training:
+        #     return x, x_t
+        # else:
+        #     return x
 
 

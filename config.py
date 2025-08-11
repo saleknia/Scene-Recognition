@@ -60,7 +60,7 @@ POLY_LR    = True
 DOWNLOAD   = False
 
 
-task_ids = ['1','2', '3']
+task_ids = ['1','2','3']
 task_table = tabulate(
                     tabular_data=[
                         ['NORMAL_TRAINING',1],
@@ -143,13 +143,14 @@ elif task_id==4:
     TASK_NAME = 'Scene-15'
 
 
-model_ids = ['1','2','3','4']
+model_ids = ['1','2','3','4','5']
 model_table = tabulate(
                     tabular_data=[
                         ['Mobile_netV2'     , 1],
                         ['Mobile_netV2_loss', 2],
                         ['ResNet'           , 3],
-                        ['ConvNext'         , 4]],
+                        ['ConvNext'         , 4],
+                        ['Combine'          , 5]],
                     headers=['Model Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
@@ -170,6 +171,9 @@ elif model_id==3:
 
 elif model_id==4:
     MODEL_NAME = 'ConvNext'
+
+elif model_id==5:
+    MODEL_NAME = 'Combine'
 
 if NORMAL_TRAINING:
     CKPT_NAME = MODEL_NAME + '_' + TASK_NAME
