@@ -27,7 +27,7 @@ from transformers import AutoModelForImageClassification
 from .Mobile_netV2 import Mobile_netV2
 
 scene      = Mobile_netV2().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO.pth', map_location='cuda')
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_scene.pth', map_location='cuda')
 scene.load_state_dict(checkpoint['net'])
 
 obj        = Mobile_netV2().cuda()
