@@ -14509,3 +14509,278 @@ Final Test ---> Loss = 0.3719 , Accuracy = 88.96
 **************************************************
 
 
+Logging Directory: ./logs/logging
+╒══════════════════╤═══════════════╕
+│ Hyperparameter   │ Value         │
+╞══════════════════╪═══════════════╡
+│ Learning Rate    │ 0.01          │
+├──────────────────┼───────────────┤
+│ Num Classes      │ 67            │
+├──────────────────┼───────────────┤
+│ Device           │ cuda          │
+├──────────────────┼───────────────┤
+│ Batch Size       │ 64            │
+├──────────────────┼───────────────┤
+│ POLY_LR          │ True          │
+├──────────────────┼───────────────┤
+│ Num Epochs       │ 20            │
+├──────────────────┼───────────────┤
+│ Num Workers      │ 4             │
+├──────────────────┼───────────────┤
+│ Image Height     │ 224           │
+├──────────────────┼───────────────┤
+│ Image Width      │ 224           │
+├──────────────────┼───────────────┤
+│ Pin Memory       │ True          │
+├──────────────────┼───────────────┤
+│ Load Model       │ True          │
+├──────────────────┼───────────────┤
+│ Save Model       │ True          │
+├──────────────────┼───────────────┤
+│ Download Dataset │ False         │
+├──────────────────┼───────────────┤
+│ Model Name       │ Hybrid        │
+├──────────────────┼───────────────┤
+│ Seed             │ 42            │
+├──────────────────┼───────────────┤
+│ Task Name        │ MIT-67        │
+├──────────────────┼───────────────┤
+│ GPU              │ Tesla T4      │
+├──────────────────┼───────────────┤
+│ Torch            │ 2.6.0+cu124   │
+├──────────────────┼───────────────┤
+│ Torchvision      │ 0.21.0+cu124  │
+├──────────────────┼───────────────┤
+│ Checkpoint Name  │ Hybrid_MIT-67 │
+╘══════════════════╧═══════════════╛
+Loading pretrained weights from Hugging Face hub (timm/convnext_tiny.fb_in22k)
+[timm/convnext_tiny.fb_in22k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ Hybrid          │ 9.98 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/Hybrid_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Logging Directory: ./logs/logging
+╒══════════════════╤═══════════════╕
+│ Hyperparameter   │ Value         │
+╞══════════════════╪═══════════════╡
+│ Learning Rate    │ 0.01          │
+├──────────────────┼───────────────┤
+│ Num Classes      │ 67            │
+├──────────────────┼───────────────┤
+│ Device           │ cuda          │
+├──────────────────┼───────────────┤
+│ Batch Size       │ 64            │
+├──────────────────┼───────────────┤
+│ POLY_LR          │ True          │
+├──────────────────┼───────────────┤
+│ Num Epochs       │ 20            │
+├──────────────────┼───────────────┤
+│ Num Workers      │ 4             │
+├──────────────────┼───────────────┤
+│ Image Height     │ 224           │
+├──────────────────┼───────────────┤
+│ Image Width      │ 224           │
+├──────────────────┼───────────────┤
+│ Pin Memory       │ True          │
+├──────────────────┼───────────────┤
+│ Load Model       │ True          │
+├──────────────────┼───────────────┤
+│ Save Model       │ True          │
+├──────────────────┼───────────────┤
+│ Download Dataset │ False         │
+├──────────────────┼───────────────┤
+│ Model Name       │ Hybrid        │
+├──────────────────┼───────────────┤
+│ Seed             │ 42            │
+├──────────────────┼───────────────┤
+│ Task Name        │ MIT-67        │
+├──────────────────┼───────────────┤
+│ GPU              │ Tesla T4      │
+├──────────────────┼───────────────┤
+│ Torch            │ 2.6.0+cu124   │
+├──────────────────┼───────────────┤
+│ Torchvision      │ 0.21.0+cu124  │
+├──────────────────┼───────────────┤
+│ Checkpoint Name  │ Hybrid_MIT-67 │
+╘══════════════════╧═══════════════╛
+Loading pretrained weights from Hugging Face hub (timm/convnext_tiny.fb_in22k)
+[timm/convnext_tiny.fb_in22k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ Hybrid          │ 9.97 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/Hybrid_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 2.4481, Accuracy = 44.10 , lr = 0.009548853816214994
+Epoch: 2 ---> Train , Loss = 0.9384, Accuracy = 73.49 , lr = 0.009095325760829628
+Epoch: 3 ---> Train , Loss = 0.7725, Accuracy = 77.31 , lr = 0.008639269723028193
+Epoch: 4 ---> Train , Loss = 0.6670, Accuracy = 80.31 , lr = 0.00818052146050859
+Epoch: 5 ---> Train , Loss = 0.6470, Accuracy = 80.48 , lr = 0.00771889506723571
+Epoch: 6 ---> Train , Loss = 0.5952, Accuracy = 82.35 , lr = 0.0072541784693722034
+Epoch: 7 ---> Train , Loss = 0.5431, Accuracy = 82.91 , lr = 0.006786127592581252
+Epoch: 8 ---> Train , Loss = 0.5438, Accuracy = 83.52 , lr = 0.006314458674893548
+Epoch: 9 ---> Train , Loss = 0.5219, Accuracy = 84.68 , lr = 0.005838837929199803
+Epoch: 10 ---> Train , Loss = 0.4778, Accuracy = 85.42 , lr = 0.00535886731268147
+Epoch: 11 ---> Train , Loss = 0.4788, Accuracy = 84.98 , lr = 0.00487406439178996
+Epoch: 12 ---> Train , Loss = 0.4681, Accuracy = 85.78 , lr = 0.004383832905540873
+Epoch: 13 ---> Train , Loss = 0.4578, Accuracy = 86.14 , lr = 0.003887417987987637
+Epoch: 14 ---> Train , Loss = 0.4269, Accuracy = 86.85 , lr = 0.0033838346190165035
+Epoch: 15 ---> Train , Loss = 0.3999, Accuracy = 87.84 , lr = 0.0028717458874925918
+Epoch: 16 ---> Train , Loss = 0.4039, Accuracy = 87.99 , lr = 0.002349237886176039
+Epoch: 17 ---> Train , Loss = 0.4074, Accuracy = 87.32 , lr = 0.0018133520731367446
+Epoch: 18 ---> Train , Loss = 0.3898, Accuracy = 87.96 , lr = 0.0012589254117941653
+Epoch: 19 ---> Train , Loss = 0.3938, Accuracy = 88.01 , lr = 0.0006746414238367816
+Epoch: 20 ---> Train , Loss = 0.3746, Accuracy = 88.47 , lr = 0.0
+**************************************************
+Best Acc Over Validation Set: 88.47
+Best Epoch: 20
+**************************************************
+Inference Phase
+**************************************************
+Final Test ---> Loss = 0.3843 , Accuracy = 88.20
+**************************************************
+
+
+Logging Directory: ./logs/logging
+╒══════════════════╤═══════════════╕
+│ Hyperparameter   │ Value         │
+╞══════════════════╪═══════════════╡
+│ Learning Rate    │ 0.01          │
+├──────────────────┼───────────────┤
+│ Num Classes      │ 67            │
+├──────────────────┼───────────────┤
+│ Device           │ cuda          │
+├──────────────────┼───────────────┤
+│ Batch Size       │ 64            │
+├──────────────────┼───────────────┤
+│ POLY_LR          │ True          │
+├──────────────────┼───────────────┤
+│ Num Epochs       │ 20            │
+├──────────────────┼───────────────┤
+│ Num Workers      │ 4             │
+├──────────────────┼───────────────┤
+│ Image Height     │ 224           │
+├──────────────────┼───────────────┤
+│ Image Width      │ 224           │
+├──────────────────┼───────────────┤
+│ Pin Memory       │ True          │
+├──────────────────┼───────────────┤
+│ Load Model       │ True          │
+├──────────────────┼───────────────┤
+│ Save Model       │ True          │
+├──────────────────┼───────────────┤
+│ Download Dataset │ False         │
+├──────────────────┼───────────────┤
+│ Model Name       │ Hybrid        │
+├──────────────────┼───────────────┤
+│ Seed             │ 42            │
+├──────────────────┼───────────────┤
+│ Task Name        │ MIT-67        │
+├──────────────────┼───────────────┤
+│ GPU              │ Tesla T4      │
+├──────────────────┼───────────────┤
+│ Torch            │ 2.6.0+cu124   │
+├──────────────────┼───────────────┤
+│ Torchvision      │ 0.21.0+cu124  │
+├──────────────────┼───────────────┤
+│ Checkpoint Name  │ Hybrid_MIT-67 │
+╘══════════════════╧═══════════════╛
+Loading pretrained weights from Hugging Face hub (timm/convnext_tiny.fb_in22k)
+[timm/convnext_tiny.fb_in22k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ Hybrid          │ 9.97 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+
+
+**************************************************
+Best Acc Over Validation Set: 88.47
+Best Epoch: 20
+**************************************************
+Inference Phase
+**************************************************
+Final Test ---> Loss = 1.4475 , Accuracy = 70.28
+**************************************************
+
+
+Logging Directory: ./logs/logging
+╒══════════════════╤═══════════════╕
+│ Hyperparameter   │ Value         │
+╞══════════════════╪═══════════════╡
+│ Learning Rate    │ 0.01          │
+├──────────────────┼───────────────┤
+│ Num Classes      │ 67            │
+├──────────────────┼───────────────┤
+│ Device           │ cuda          │
+├──────────────────┼───────────────┤
+│ Batch Size       │ 64            │
+├──────────────────┼───────────────┤
+│ POLY_LR          │ True          │
+├──────────────────┼───────────────┤
+│ Num Epochs       │ 20            │
+├──────────────────┼───────────────┤
+│ Num Workers      │ 4             │
+├──────────────────┼───────────────┤
+│ Image Height     │ 224           │
+├──────────────────┼───────────────┤
+│ Image Width      │ 224           │
+├──────────────────┼───────────────┤
+│ Pin Memory       │ True          │
+├──────────────────┼───────────────┤
+│ Load Model       │ True          │
+├──────────────────┼───────────────┤
+│ Save Model       │ True          │
+├──────────────────┼───────────────┤
+│ Download Dataset │ False         │
+├──────────────────┼───────────────┤
+│ Model Name       │ Hybrid        │
+├──────────────────┼───────────────┤
+│ Seed             │ 42            │
+├──────────────────┼───────────────┤
+│ Task Name        │ MIT-67        │
+├──────────────────┼───────────────┤
+│ GPU              │ Tesla T4      │
+├──────────────────┼───────────────┤
+│ Torch            │ 2.6.0+cu124   │
+├──────────────────┼───────────────┤
+│ Torchvision      │ 0.21.0+cu124  │
+├──────────────────┼───────────────┤
+│ Checkpoint Name  │ Hybrid_MIT-67 │
+╘══════════════════╧═══════════════╛
+Loading pretrained weights from Hugging Face hub (timm/convnext_tiny.fb_in22k)
+[timm/convnext_tiny.fb_in22k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ Hybrid          │ 9.97 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+
+
+**************************************************
+Best Acc Over Validation Set: 88.47
+Best Epoch: 20
+**************************************************
+Inference Phase
+**************************************************
+Final Test ---> Loss = 0.4734 , Accuracy = 86.05
+**************************************************
+
+
+Logging Directory: ./logs/logging
