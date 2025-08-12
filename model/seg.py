@@ -31,6 +31,7 @@ class seg(nn.Module):
     def forward(self, x_in):
 
         x = self.model(x_in)
+        x = x['stage_final']
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.dropout(x)
