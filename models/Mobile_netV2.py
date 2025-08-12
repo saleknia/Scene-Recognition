@@ -69,7 +69,7 @@ class Mobile_netV2(nn.Module):
 
         # x = self.head(self.model(x_in))
 
-        # return x
+        return x
 
         # x_t = obj(x_in)
 
