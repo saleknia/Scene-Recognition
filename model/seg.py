@@ -7,8 +7,8 @@ class seg(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(seg, self).__init__()
 
-        model = create_efficientvit_seg_model(name="efficientvit-seg-b3-ade20k", pretrained=True)
-        # model.load_state_dict(torch.load('/content/efficientvit_seg_b3_ade20k.pt')['state_dict'])
+        model = create_efficientvit_seg_model(name="efficientvit-seg-b3-ade20k", pretrained=False)
+        model.load_state_dict(torch.load('/content/efficientvit_seg_b3_ade20k.pt')['state_dict'])
         model = model.backbone
 
         model.input_stem.op_list[0].conv.stride  = (1, 1)
