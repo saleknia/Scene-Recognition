@@ -24,14 +24,17 @@ class seg(nn.Module):
         for param in self.model.stages[-1].op_list[-1].parameters():
             param.requires_grad = True
 
-        self.avgpool = nn.AvgPool2d(14, stride=14)
+        self.avgpool = nn.AvgPool2d(28, stride=28)
+        # self.avgpool = nn.AvgPool2d(14, stride=14)
         self.dropout = nn.Dropout(0.5)
-        self.head    = nn.Linear(384, num_classes)
+        self.head    = nn.Linear(512, num_classes)
 
     def forward(self, x_in):
 
         x = self.model(x_in)
+        print(x.keys())
         x = x['stage_final']
+        print(x.shape)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.dropout(x)
