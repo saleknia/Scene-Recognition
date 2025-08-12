@@ -27,7 +27,7 @@ class seg(nn.Module):
         self.avgpool = nn.AvgPool2d(28, stride=28)
         # self.avgpool = nn.AvgPool2d(14, stride=14)
         self.dropout = nn.Dropout(0.5)
-        self.head    = nn.Linear(512, num_classes)
+        self.head    = nn.Linear(384, num_classes)
 
     def forward(self, x_in):
 
