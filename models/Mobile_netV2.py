@@ -65,6 +65,8 @@ class Mobile_netV2(nn.Module):
 
     def forward(self, x_in):
         
+        x = self.model(x_in)
+
         # x = self.head(self.model(x_in))
 
         # return x
@@ -78,14 +80,14 @@ class Mobile_netV2(nn.Module):
         # else:
         #     return x
 
-        x_t = scene(x_in)
+        # x_t = scene(x_in)
 
-        x = self.head(self.model(x_in))
+        # x = self.head(self.model(x_in))
 
-        if self.training:
-            return x, x_t
-        else:
-            return x
+        # if self.training:
+        #     return x, x_t
+        # else:
+        #     return x
 
         # x_t = Hybrid(x_in)
 

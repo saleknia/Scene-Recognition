@@ -54,16 +54,24 @@ class Combine(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(Combine, self).__init__()
 
-        self.base  = base
+        # self.base  = base
         self.scene = scene
         self.obj   = obj
 
-    def forward(self, x_in):
-        s = self.scene(x_in).softmax(dim=1)
-        o = self.obj(x_in).softmax(dim=1)
-        b = self.base(x_in).softmax(dim=1)
+        for param in self.parameters():
+            param.requires_grad = False
 
-        x = (s + o + b) 
+        self.head = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=768*2, out_features=num_classes, bias=True),
+                                )
+
+    def forward(self, x_in):
+        s = self.scene(x_in)
+        o = self.obj(x_in)
+        x = torch.cat([s, o], dim=1)
+
+        x = self.head(x) 
 
         return x
 
