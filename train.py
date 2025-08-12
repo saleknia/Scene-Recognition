@@ -27,6 +27,7 @@ from models.ResNet import ResNet
 from models.ConvNext import ConvNext
 from models.Combine import Combine
 from models.Hybrid import Hybrid
+from models.seg import seg
 
 import utils
 from utils import color
@@ -210,6 +211,9 @@ def main(args):
 
     elif MODEL_NAME == 'Hybrid':
         model = Hybrid(num_classes=NUM_CLASS).to(DEVICE)
+
+    elif MODEL_NAME == 'seg':
+        model = seg(num_classes=NUM_CLASS).to(DEVICE)
 
     else: 
         raise TypeError('Please enter a valid name for the model type')
