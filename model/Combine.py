@@ -60,8 +60,8 @@ class Combine(nn.Module):
         for param in self.parameters():
             param.requires_grad = False
 
-        self.cross_attn_obj_to_scene = nn.MultiheadAttention(embed_dim=dim, num_heads=8, batch_first=True)
-        self.cross_attn_scene_to_obj = nn.MultiheadAttention(embed_dim=dim, num_heads=8, batch_first=True)
+        # self.cross_attn_obj_to_scene = nn.MultiheadAttention(embed_dim=dim, num_heads=8, batch_first=True)
+        # self.cross_attn_scene_to_obj = nn.MultiheadAttention(embed_dim=dim, num_heads=8, batch_first=True)
         # self.fusion_fc = nn.Linear(2*dim, dim)  # combine fused features
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
@@ -69,25 +69,32 @@ class Combine(nn.Module):
                                 )
     def forward(self, x_in):
 
-        obj_tokens = self.obj_branch.model.forward_features(x_in)['x_norm_patchtokens']      # [B, No, D]
-        scene_tokens = self.scene_branch.model.forward_features(x_in)['x_norm_patchtokens']  # [B, Ns, D]
+        # obj_tokens = self.obj_branch.model.forward_features(x_in)['x_norm_patchtokens']      # [B, No, D]
+        # scene_tokens = self.scene_branch.model.forward_features(x_in)['x_norm_patchtokens']  # [B, Ns, D]
         
-        # Cross attention: objects attend to scene
-        obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
+        # # Cross attention: objects attend to scene
+        # obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
         
-        # Cross attention: scene attends to objects
-        scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
+        # # Cross attention: scene attends to objects
+        # scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
 
-        # obj_with_scene = obj_tokens   + obj_with_scene
-        # scene_with_obj = scene_tokens + scene_with_obj
+        # # obj_with_scene = obj_tokens   + obj_with_scene
+        # # scene_with_obj = scene_tokens + scene_with_obj
 
-        # Pool and fuse
-        obj_feat   = obj_with_scene.mean(dim=1)
-        scene_feat = scene_with_obj.mean(dim=1)
-        fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
-        x = self.head(fused_feat)
+        # # Pool and fuse
+        # obj_feat   = obj_with_scene.mean(dim=1)
+        # scene_feat = scene_with_obj.mean(dim=1)
+        # fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
+        # x = self.head(fused_feat)
 
         # x = self.scene_branch(x_in) + self.obj_branch(x_in) 
+
+        obj_tokens   = self.obj_branch.model(x_in)
+        scene_tokens = self.scene_branch.model(x_in)
+        
+        fused_feat   = torch.cat([obj_tokens, scene_tokens], dim=-1)
+
+        x = self.head(fused_feat)
 
         return x
 
