@@ -53,25 +53,36 @@ from .ResNet import ResNet
 class Combine(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(Combine, self).__init__()
+        dim = 768
+        self.obj_branch = obj  # distilled from object-based teacher
+        self.scene_branch = scene  # distilled from scene-based teacher
 
-        # self.base  = base
-        self.scene = scene
-        self.obj   = obj
-
-        for param in self.parameters():
+        for param in self.model.parameters():
             param.requires_grad = False
 
+        self.cross_attn_obj_to_scene = nn.MultiheadAttention(dim, heads=4, batch_first=True)
+        self.cross_attn_scene_to_obj = nn.MultiheadAttention(dim, heads=4, batch_first=True)
+        # self.fusion_fc = nn.Linear(2*dim, dim)  # combine fused features
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=768*2, out_features=num_classes, bias=True),
+                                    nn.Linear(in_features=dim*2, out_features=num_classes, bias=True),
                                 )
-
     def forward(self, x_in):
-        s = self.scene(x_in)
-        o = self.obj(x_in)
-        # x = torch.cat([s, o], dim=1)
 
-        # x = self.head(x) 
-        x = (s + o)
+        obj_tokens = self.obj_branch.model.forward_features(x_in)['x_norm_patchtokens']      # [B, No, D]
+        scene_tokens = self.scene_branch.model.forward_features(x_in)['x_norm_patchtokens']  # [B, Ns, D]
+        
+        # Cross attention: objects attend to scene
+        obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
+        
+        # Cross attention: scene attends to objects
+        scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
+        
+        # Pool and fuse
+        obj_feat = obj_with_scene.mean(dim=1)
+        scene_feat = scene_with_obj.mean(dim=1)
+        fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
+        # fused_feat = self.fusion_fc(fused_feat)
+        x = self.head(fused_feat)
         return x
 
