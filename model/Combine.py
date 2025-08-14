@@ -57,7 +57,7 @@ class Combine(nn.Module):
         self.obj_branch = obj  # distilled from object-based teacher
         self.scene_branch = scene  # distilled from scene-based teacher
 
-        for param in self.model.parameters():
+        for param in self.parameters():
             param.requires_grad = False
 
         self.cross_attn_obj_to_scene = nn.MultiheadAttention(dim, heads=4, batch_first=True)
