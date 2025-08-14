@@ -77,7 +77,10 @@ class Combine(nn.Module):
         
         # Cross attention: scene attends to objects
         scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
-        
+
+        obj_with_scene = obj_tokens   + obj_with_scene
+        scene_with_obj = scene_tokens + scene_with_obj
+
         # Pool and fuse
         obj_feat   = obj_with_scene.mean(dim=1)
         scene_feat = scene_with_obj.mean(dim=1)
