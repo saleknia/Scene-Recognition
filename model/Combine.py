@@ -60,8 +60,8 @@ class Combine(nn.Module):
         for param in self.parameters():
             param.requires_grad = False
 
-        self.cross_attn_obj_to_scene = nn.MultiheadAttention(dim, heads=4, batch_first=True)
-        self.cross_attn_scene_to_obj = nn.MultiheadAttention(dim, heads=4, batch_first=True)
+        self.cross_attn_obj_to_scene = nn.MultiheadAttention(embed_dim=dim, num_heads=4, batch_first=True)
+        self.cross_attn_scene_to_obj = nn.MultiheadAttention(embed_dim=dim, num_heads=4, batch_first=True)
         # self.fusion_fc = nn.Linear(2*dim, dim)  # combine fused features
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
