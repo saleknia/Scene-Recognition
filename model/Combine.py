@@ -54,7 +54,7 @@ class Combine(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(Combine, self).__init__()
         dim = 768
-        self.obj_branch = obj  # distilled from object-based teacher
+        self.obj_branch   = obj  # distilled from object-based teacher
         self.scene_branch = scene  # distilled from scene-based teacher
 
         for param in self.parameters():
@@ -69,20 +69,22 @@ class Combine(nn.Module):
                                 )
     def forward(self, x_in):
 
-        obj_tokens = self.obj_branch.model.forward_features(x_in)['x_norm_patchtokens']      # [B, No, D]
-        scene_tokens = self.scene_branch.model.forward_features(x_in)['x_norm_patchtokens']  # [B, Ns, D]
+        # obj_tokens = self.obj_branch.model.forward_features(x_in)['x_norm_patchtokens']      # [B, No, D]
+        # scene_tokens = self.scene_branch.model.forward_features(x_in)['x_norm_patchtokens']  # [B, Ns, D]
         
-        # Cross attention: objects attend to scene
-        obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
+        # # Cross attention: objects attend to scene
+        # obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
         
-        # Cross attention: scene attends to objects
-        scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
+        # # Cross attention: scene attends to objects
+        # scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
         
-        # Pool and fuse
-        obj_feat = obj_with_scene.mean(dim=1)
-        scene_feat = scene_with_obj.mean(dim=1)
-        fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
-        # fused_feat = self.fusion_fc(fused_feat)
-        x = self.head(fused_feat)
+        # # Pool and fuse
+        # obj_feat   = obj_with_scene.mean(dim=1)
+        # scene_feat = scene_with_obj.mean(dim=1)
+        # fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
+        # x = self.head(fused_feat)
+
+        x = self.scene_branch(x_in) #+ self.obj_branch(x_in) 
+
         return x
 
