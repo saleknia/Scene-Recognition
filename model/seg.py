@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from efficientvit.seg_model_zoo import create_efficientvit_seg_model
+# from efficientvit.seg_model_zoo import create_efficientvit_seg_model
 
 
 class seg(nn.Module):
