@@ -10,7 +10,7 @@ class DINOV3(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(DINOV3, self).__init__()
 
-        model = torch.hub.load('/content/dinov3', 'dinov3_convnext_tiny', source='local', weights='/content/drive/MyDrive/dinov3_convnext_tiny_pretrain_lvd1689m-21b726bb.pth')
+        model = torch.hub.load('/content/dinov3', 'dinov3_convnext_small', source='local', weights='/content/drive/MyDrive/dinov3_convnext_small_pretrain_lvd1689m-296db49d.pth')
         
         self.model = model
         
@@ -33,15 +33,15 @@ class DINOV3(nn.Module):
 
     def forward(self, x_in):
     
-        # x = self.head(self.model(x_in))
-
-        x_t = obj(x_in)
-
         x = self.head(self.model(x_in))
 
-        if self.training:
-            return x, x_t
-        else:
-            return x
+        # x_t = obj(x_in)
+
+        # x = self.head(self.model(x_in))
+
+        # if self.training:
+        #     return x, x_t
+        # else:
+        #     return x
         
         return x
