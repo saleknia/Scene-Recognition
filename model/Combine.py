@@ -85,7 +85,9 @@ class Combine(nn.Module):
         # Pool and fuse
         obj_feat   = obj_with_scene.mean(dim=1)
         scene_feat = scene_with_obj.mean(dim=1)
+
         fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
+        
         x          = self.head(fused_feat)
 
         # obj_tokens   = self.obj_branch.model(x_in)
