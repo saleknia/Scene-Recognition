@@ -28,6 +28,7 @@ from model.ConvNext import ConvNext
 from model.Combine import Combine
 from model.Hybrid import Hybrid
 from model.seg import seg
+from model.DINOV3 import DINOV3
 
 import utils
 from utils import color
@@ -214,6 +215,9 @@ def main(args):
 
     elif MODEL_NAME == 'seg':
         model = seg(num_classes=NUM_CLASS).to(DEVICE)
+
+    elif MODEL_NAME == 'DINOV3':
+        model = DINOV3(num_classes=NUM_CLASS).to(DEVICE)
 
     else: 
         raise TypeError('Please enter a valid name for the model type')

@@ -34,9 +34,9 @@ from .ConvNext import ConvNext
 from .ResNet import ResNet
 from .Hybrid import Hybrid
 
-scene      = ResNet().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
-scene.load_state_dict(checkpoint['net'])
+# scene      = ResNet().cuda()
+# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
+# scene.load_state_dict(checkpoint['net'])
 
 # obj        = ConvNext().cuda()
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
