@@ -73,35 +73,44 @@ class Combine(nn.Module):
                                 
     def forward(self, x_in):
 
-        obj_tokens   = self.obj_branch.model.forward_features(x_in)['x_norm_patchtokens']    # [B, No, D]
-        scene_tokens = self.scene_branch.model.forward_features(x_in)['x_norm_patchtokens']  # [B, Ns, D]
-        
+        obj_features   = self.obj_branch.model.forward_features(x_in)
+        scene_features = self.scene_branch.model.forward_features(x_in)
+
+        obj_patch_tokens   = obj_features['x_norm_patchtokens']    # [B, No, D]
+        scene_patch_tokens = scene_features['x_norm_patchtokens']  # [B, Ns, D]
+
+        obj_cls_tokens   = obj_features['x_norm_clstoken'].unsqueeze(dim=1)    # [B, 1, D]
+        scene_cls_tokens = scene_features['x_norm_clstoken'].unsqueeze(dim=1)  # [B, 1, D]
+
+        obj_tokens   = obj_patch_tokens   + obj_cls_tokens
+        scene_tokens = scene_patch_tokens + scene_cls_tokens
+
         # Cross attention: objects attend to scene
-        # obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
+        obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
         
         # Cross attention: scene attends to objects
-        # scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
+        scene_with_obj, _ = self.cross_attn_obj_to_scene(scene_tokens, obj_tokens, obj_tokens)
 
-        # obj_with_scene = obj_tokens   + obj_with_scene
-        # scene_with_obj = scene_tokens + scene_with_obj
+        obj_with_scene = obj_tokens   + obj_with_scene
+        scene_with_obj = scene_tokens + scene_with_obj
 
         # Pool and fuse
-        # obj_feat   = obj_with_scene.mean(dim=1)
-        # scene_feat = scene_with_obj.mean(dim=1)
+        obj_feat   = obj_with_scene.mean(dim=1)
+        scene_feat = scene_with_obj.mean(dim=1)
 
-        # fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
+        fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
 
-        # x          = self.head(fused_feat)
+        x          = self.head(fused_feat)
 
         # obj_tokens   = self.obj_branch.model(x_in)
         # scene_tokens = self.scene_branch.model(x_in)
         
         # fused_feat   = torch.cat([obj_tokens, scene_tokens], dim=-1)
 
-        obj_feat   = obj_tokens.mean(dim=1)
-        scene_feat = scene_tokens.mean(dim=1)
-        fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
-        x          = self.head(fused_feat)
+        # obj_feat   = obj_tokens.mean(dim=1)
+        # scene_feat = scene_tokens.mean(dim=1)
+        # fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
+        # x          = self.head(fused_feat)
 
         return x
 
