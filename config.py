@@ -41,7 +41,7 @@ if log:
     logger.info(f'Logging Directory: {logging_log}')   
 ##########################################################################
 
-LEARNING_RATE = 0.00001
+LEARNING_RATE = 0.0001
 DEVICE        = "cuda" if torch.cuda.is_available() else "cpu"
 BATCH_SIZE    = 64
 NUM_EPOCHS    = 20
