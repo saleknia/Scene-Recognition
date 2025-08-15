@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 from .ConvNext import ConvNext
 
-# obj        = ConvNext().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/object.pth', map_location='cuda')
-# obj.load_state_dict(checkpoint['net'])
+obj        = ConvNext().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/object.pth', map_location='cuda')
+obj.load_state_dict(checkpoint['net'])
 
 class DINOV3(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
@@ -33,15 +33,15 @@ class DINOV3(nn.Module):
 
     def forward(self, x_in):
     
-        x = self.head(self.model(x_in))
-
-        # x_t = obj(x_in)
-
         # x = self.head(self.model(x_in))
 
-        # if self.training:
-        #     return x, x_t
-        # else:
-        #     return x
+        x_t = obj(x_in)
+
+        x = self.head(self.model(x_in))
+
+        if self.training:
+            return x, x_t
+        else:
+            return x
         
         return x
