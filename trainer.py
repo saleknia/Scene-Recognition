@@ -132,7 +132,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             # outputs, aux = outputs[0], outputs[1]
             # goals = torch.tensor([mapping[x] for x in targets.long()]).long().cuda()
             # loss  = loss_ce(outputs, targets.long()) + (loss_ce(aux, goals.long()) * 0.5)
-            T       = 2.0
+            T       = 1.0
             ce_loss = loss_ce(outputs[0], targets.long())
             di_loss = F.kl_div(F.log_softmax(outputs[0]/T, dim=1), F.softmax(outputs[1]/T, dim=1), reduction='batchmean') * T * T
             loss    = ce_loss + di_loss
@@ -169,7 +169,8 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
     Acc = 100 * metric.compute()
         
     logger.info(f'Epoch: {epoch_num} ---> Train , Loss = {loss_ce_total.avg:.4f}, Accuracy = {Acc:.2f} , lr = {optimizer.param_groups[0]["lr"]}')
-    # valid_func(epoch_num,copy.deepcopy(model),dataloader,device,ckpt,num_class,logger)
+    if epoch_num % 5 ==0:
+        valid_func(epoch_num,copy.deepcopy(model),dataloader,device,ckpt,num_class,logger)
     if ckpt is not None:
        ckpt.save_best(acc=Acc, epoch=epoch_num, net=model)
 
