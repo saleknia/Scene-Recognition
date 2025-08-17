@@ -76,12 +76,14 @@ class Mobile_netV2(nn.Module):
 
         x = self.head(features)
 
-        features_t = obj(x_in)
+        # features_t = obj(x_in)
 
-        if self.training:
-            return x, (features, features_t)
-        else:
-            return x
+        # if self.training:
+        #     return x, (features, features_t)
+        # else:
+        #     return x
+
+        return x
 
         # x_t = scene(x_in)
 
@@ -101,4 +103,3 @@ class Mobile_netV2(nn.Module):
         # else:
         #     return x
 
-        return x
