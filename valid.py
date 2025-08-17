@@ -54,5 +54,5 @@ def valid_func(epoch_num,model,dataloader,device,ckpt,num_class,logger):
     logger.info(f'Epoch: {epoch_num} ---> Train , Loss = {loss_ce_total.avg:.4f}, Accuracy = {Acc:.2f}')
 
     # Save checkpoint
-    if ckpt is not None:
-        ckpt.save_best(acc=Acc, epoch=epoch_num, net=model)
+    # if ckpt is not None:
+    #     ckpt.save_best(acc=Acc, epoch=epoch_num, net=model)
