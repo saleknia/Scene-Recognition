@@ -39,9 +39,10 @@ checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_locat
 scene.load_state_dict(checkpoint['net'])
 scene.model.fc = nn.Identity()
 
-# obj        = ConvNext().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
-# obj.load_state_dict(checkpoint['net'])
+obj        = ConvNext().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
+obj.load_state_dict(checkpoint['net'])
+obj.model.head.fc = nn.Identity()
 
 # Hybrid     = Hybrid().cuda()
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/Hybrid.pth', map_location='cuda')
@@ -75,7 +76,7 @@ class Mobile_netV2(nn.Module):
 
         x = self.head(features)
 
-        features_t = scene(x_in)
+        features_t = obj(x_in)
 
         if self.training:
             return x, (features, features_t)
