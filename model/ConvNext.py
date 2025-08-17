@@ -45,6 +45,9 @@ class ConvNext(nn.Module):
         for param in self.model.head.parameters():
             param.requires_grad = True
 
+        checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
+        self.load_state_dict(checkpoint['net'])
+
     def forward(self, x_in):
 
         x = self.model(x_in)

@@ -67,9 +67,8 @@ class Mobile_netV2(nn.Module):
 
     def forward(self, x_in):
 
-        o = obj(x_in).softmax(dim=1)
-        s = scene(x_in).softmax(dim=1)
-        x = (s + o)
+        o = obj(x_in)
+        s = scene(x_in)
 
         # x = self.model(x_in)
 
@@ -87,7 +86,7 @@ class Mobile_netV2(nn.Module):
         # else:
         #     return x
 
-        return x
+        return s
 
         # x_t = scene(x_in)
 

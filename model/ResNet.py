@@ -45,6 +45,9 @@ class ResNet(nn.Module):
                                     nn.Linear(in_features=2048, out_features=num_classes, bias=True)
                                 )
 
+        checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
+        self.load_state_dict(checkpoint['net'])
+
     def forward(self, x_in):
         
         x = self.model(x_in)
