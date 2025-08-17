@@ -34,9 +34,10 @@ from .ConvNext import ConvNext
 from .ResNet import ResNet
 from .Hybrid import Hybrid
 
-# scene      = ResNet().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
-# scene.load_state_dict(checkpoint['net'])
+scene      = ResNet().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
+scene.load_state_dict(checkpoint['net'])
+scene.model.fc = nn.Identity()
 
 # obj        = ConvNext().cuda()
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
@@ -69,13 +70,15 @@ class Mobile_netV2(nn.Module):
 
         # x = self.head(self.model(x_in))
 
-        x = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
-        x = self.head(x.mean(dim=1))
+        features = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
+        features = features.mean(dim=1)
 
-        x_t = obj(x_in)
+        x = self.head(features)
+
+        features_t = scene(x_in)
 
         if self.training:
-            return x, x_t
+            return x, (features, features_t)
         else:
             return x
 

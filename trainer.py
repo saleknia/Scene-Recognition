@@ -46,7 +46,7 @@ class RKD(nn.Module):
 		self.w_angle = 100
 
 	def forward(self, feat_s, feat_t):
-		loss = (self.w_dist * self.rkd_dist(feat_s, feat_t) + self.w_angle * self.rkd_angle(feat_s, feat_t))
+		loss = (self.w_dist * self.rkd_dist(feat_s, feat_t) + self.w_angle * self.rkd_angle(feat_s, feat_t)) / 2.0
 		return loss
 
 	def rkd_dist(self, feat_s, feat_t):
@@ -112,7 +112,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
     # accuracy = mAPMeter()
 
     loss_ce = CrossEntropyLoss(label_smoothing=0.0)
-    loss_di = SP()
+    loss_di = RKD()
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
@@ -134,7 +134,8 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             # loss  = loss_ce(outputs, targets.long()) + (loss_ce(aux, goals.long()) * 0.5)
             T       = 2.0
             ce_loss = loss_ce(outputs[0], targets.long())
-            di_loss = F.kl_div(F.log_softmax(outputs[0]/T, dim=1), F.softmax(outputs[1]/T, dim=1), reduction='batchmean') * T * T
+            # di_loss = F.kl_div(F.log_softmax(outputs[0]/T, dim=1), F.softmax(outputs[1]/T, dim=1), reduction='batchmean') * T * T
+            di_loss = loss_di(*outputs[1])
             loss    = ce_loss + di_loss
         else:
             predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()
