@@ -32,7 +32,7 @@ class SP(nn.Module):
 
 		loss = F.mse_loss(norm_G_s, norm_G_t)
 
-		return loss
+		return loss * 1000.0
 
 class RKD(nn.Module):
 	'''
