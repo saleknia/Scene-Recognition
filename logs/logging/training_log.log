@@ -20551,3 +20551,172 @@ No Such file : /content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_best.pth
 **************************************************
 Training Phase
 **************************************************
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════════╕
+│ Hyperparameter   │ Value               │
+╞══════════════════╪═════════════════════╡
+│ Learning Rate    │ 0.0001              │
+├──────────────────┼─────────────────────┤
+│ Num Classes      │ 67                  │
+├──────────────────┼─────────────────────┤
+│ Device           │ cuda                │
+├──────────────────┼─────────────────────┤
+│ Batch Size       │ 64                  │
+├──────────────────┼─────────────────────┤
+│ POLY_LR          │ True                │
+├──────────────────┼─────────────────────┤
+│ Num Epochs       │ 20                  │
+├──────────────────┼─────────────────────┤
+│ Num Workers      │ 4                   │
+├──────────────────┼─────────────────────┤
+│ Image Height     │ 224                 │
+├──────────────────┼─────────────────────┤
+│ Image Width      │ 224                 │
+├──────────────────┼─────────────────────┤
+│ Pin Memory       │ True                │
+├──────────────────┼─────────────────────┤
+│ Load Model       │ True                │
+├──────────────────┼─────────────────────┤
+│ Save Model       │ True                │
+├──────────────────┼─────────────────────┤
+│ Download Dataset │ False               │
+├──────────────────┼─────────────────────┤
+│ Model Name       │ Mobile_NetV2        │
+├──────────────────┼─────────────────────┤
+│ Seed             │ 42                  │
+├──────────────────┼─────────────────────┤
+│ Task Name        │ MIT-67              │
+├──────────────────┼─────────────────────┤
+│ GPU              │ Tesla T4            │
+├──────────────────┼─────────────────────┤
+│ Torch            │ 2.6.0+cu124         │
+├──────────────────┼─────────────────────┤
+│ Torchvision      │ 0.21.0+cu124        │
+├──────────────────┼─────────────────────┤
+│ Checkpoint Name  │ Mobile_NetV2_MIT-67 │
+╘══════════════════╧═════════════════════╛
+using MLP layer as FFN
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ Mobile_NetV2    │ 7.14 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 1.6873, Accuracy = 57.89 , lr = 9.548853816214998e-05
+Epoch: 2 ---> Train , Loss = 0.6052, Accuracy = 82.64 , lr = 9.095325760829628e-05
+Epoch: 3 ---> Train , Loss = 0.4622, Accuracy = 86.12 , lr = 8.639269723028193e-05
+Epoch: 4 ---> Train , Loss = 0.3818, Accuracy = 88.73 , lr = 8.180521460508592e-05
+Epoch: 5 ---> Train , Loss = 0.3557, Accuracy = 89.51 , lr = 7.718895067235715e-05
+Epoch: 5 ---> Train , Loss = 0.1609, Accuracy = 95.15
+Epoch: 6 ---> Train , Loss = 0.2947, Accuracy = 90.76 , lr = 7.254178469372209e-05
+Epoch: 7 ---> Train , Loss = 0.2704, Accuracy = 91.90 , lr = 6.78612759258125e-05
+Epoch: 8 ---> Train , Loss = 0.2548, Accuracy = 92.53 , lr = 6.314458674893548e-05
+Epoch: 9 ---> Train , Loss = 0.2303, Accuracy = 93.28 , lr = 5.8388379291997974e-05
+Epoch: 10 ---> Train , Loss = 0.2205, Accuracy = 93.68 , lr = 5.358867312681461e-05
+Epoch: 10 ---> Train , Loss = 0.0715, Accuracy = 98.13
+Epoch: 11 ---> Train , Loss = 0.2043, Accuracy = 94.18 , lr = 4.8740643917899494e-05
+Epoch: 12 ---> Train , Loss = 0.1953, Accuracy = 94.27 , lr = 4.383832905540864e-05
+Epoch: 13 ---> Train , Loss = 0.1858, Accuracy = 94.95 , lr = 3.8874179879876254e-05
+Epoch: 14 ---> Train , Loss = 0.1596, Accuracy = 95.74 , lr = 3.3838346190164965e-05
+Epoch: 15 ---> Train , Loss = 0.1572, Accuracy = 95.82 , lr = 2.8717458874925867e-05
+Epoch: 15 ---> Train , Loss = 0.0453, Accuracy = 98.87
+Epoch: 16 ---> Train , Loss = 0.1559, Accuracy = 95.68 , lr = 2.3492378861760372e-05
+Epoch: 17 ---> Train , Loss = 0.1534, Accuracy = 95.91 , lr = 1.8133520731367437e-05
+Epoch: 18 ---> Train , Loss = 0.1542, Accuracy = 95.68 , lr = 1.2589254117941653e-05
+Epoch: 19 ---> Train , Loss = 0.1301, Accuracy = 96.52 , lr = 6.74641423836782e-06
+Epoch: 20 ---> Train , Loss = 0.1295, Accuracy = 96.26 , lr = 0.0
+Epoch: 20 ---> Train , Loss = 0.0321, Accuracy = 99.41
+**************************************************
+Best Acc Over Validation Set: 96.52
+Best Epoch: 19
+**************************************************
+Inference Phase
+**************************************************
+Final Test ---> Loss = 0.2935 , Accuracy = 91.25
+**************************************************
+
+
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════╕
+│ Hyperparameter   │ Value           │
+╞══════════════════╪═════════════════╡
+│ Learning Rate    │ 0.0001          │
+├──────────────────┼─────────────────┤
+│ Num Classes      │ 67              │
+├──────────────────┼─────────────────┤
+│ Device           │ cuda            │
+├──────────────────┼─────────────────┤
+│ Batch Size       │ 64              │
+├──────────────────┼─────────────────┤
+│ POLY_LR          │ True            │
+├──────────────────┼─────────────────┤
+│ Num Epochs       │ 20              │
+├──────────────────┼─────────────────┤
+│ Num Workers      │ 4               │
+├──────────────────┼─────────────────┤
+│ Image Height     │ 224             │
+├──────────────────┼─────────────────┤
+│ Image Width      │ 224             │
+├──────────────────┼─────────────────┤
+│ Pin Memory       │ True            │
+├──────────────────┼─────────────────┤
+│ Load Model       │ True            │
+├──────────────────┼─────────────────┤
+│ Save Model       │ True            │
+├──────────────────┼─────────────────┤
+│ Download Dataset │ False           │
+├──────────────────┼─────────────────┤
+│ Model Name       │ ConvNext        │
+├──────────────────┼─────────────────┤
+│ Seed             │ 42              │
+├──────────────────┼─────────────────┤
+│ Task Name        │ MIT-67          │
+├──────────────────┼─────────────────┤
+│ GPU              │ Tesla T4        │
+├──────────────────┼─────────────────┤
+│ Torch            │ 2.6.0+cu124     │
+├──────────────────┼─────────────────┤
+│ Torchvision      │ 0.21.0+cu124    │
+├──────────────────┼─────────────────┤
+│ Checkpoint Name  │ ConvNext_MIT-67 │
+╘══════════════════╧═════════════════╛
+Loading pretrained weights from Hugging Face hub (timm/convnext_tiny.fb_in22k)
+[timm/convnext_tiny.fb_in22k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ ConvNext        │ 15.52 M       │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/ConvNext_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 3.2763, Accuracy = 30.92 , lr = 9.548853816214998e-05
+Epoch: 2 ---> Train , Loss = 1.5163, Accuracy = 70.23 , lr = 9.095325760829628e-05
+Epoch: 3 ---> Train , Loss = 0.9728, Accuracy = 77.56 , lr = 8.639269723028193e-05
+Epoch: 4 ---> Train , Loss = 0.7599, Accuracy = 81.11 , lr = 8.180521460508592e-05
+Epoch: 5 ---> Train , Loss = 0.6450, Accuracy = 83.53 , lr = 7.718895067235715e-05
+Epoch: 5 ---> Train , Loss = 0.3646, Accuracy = 91.32
+Epoch: 6 ---> Train , Loss = 0.5621, Accuracy = 85.96 , lr = 7.254178469372209e-05
+Epoch: 7 ---> Train , Loss = 0.5170, Accuracy = 86.68 , lr = 6.78612759258125e-05
+Epoch: 8 ---> Train , Loss = 0.4525, Accuracy = 87.83 , lr = 6.314458674893548e-05
+Epoch: 9 ---> Train , Loss = 0.4119, Accuracy = 89.57 , lr = 5.8388379291997974e-05
+Epoch: 10 ---> Train , Loss = 0.3761, Accuracy = 90.49 , lr = 5.358867312681461e-05
+Epoch: 10 ---> Train , Loss = 0.1757, Accuracy = 95.89
+Epoch: 11 ---> Train , Loss = 0.3578, Accuracy = 90.65 , lr = 4.8740643917899494e-05
+Epoch: 12 ---> Train , Loss = 0.3340, Accuracy = 91.29 , lr = 4.383832905540864e-05
+Epoch: 13 ---> Train , Loss = 0.3109, Accuracy = 92.23 , lr = 3.8874179879876254e-05
+Epoch: 14 ---> Train , Loss = 0.3145, Accuracy = 92.11 , lr = 3.3838346190164965e-05
+Epoch: 15 ---> Train , Loss = 0.2742, Accuracy = 93.12 , lr = 2.8717458874925867e-05
+Epoch: 15 ---> Train , Loss = 0.1085, Accuracy = 97.66
+Epoch: 16 ---> Train , Loss = 0.2779, Accuracy = 92.64 , lr = 2.3492378861760372e-05
+Epoch: 17 ---> Train , Loss = 0.2668, Accuracy = 93.27 , lr = 1.8133520731367437e-05

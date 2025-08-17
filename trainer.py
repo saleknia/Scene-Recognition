@@ -170,7 +170,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
     Acc = 100 * metric.compute()
         
     logger.info(f'Epoch: {epoch_num} ---> Train , Loss = {loss_ce_total.avg:.4f}, Accuracy = {Acc:.2f} , lr = {optimizer.param_groups[0]["lr"]}')
-    if epoch_num % 5 ==0:
+    if epoch_num % 50 ==0:
         valid_func(epoch_num,copy.deepcopy(model),dataloader,device,ckpt,num_class,logger)
     if ckpt is not None:
        ckpt.save_best(acc=Acc, epoch=epoch_num, net=model)
