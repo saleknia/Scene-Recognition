@@ -65,10 +65,13 @@ class Mobile_netV2(nn.Module):
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
 
+        self.scene = ResNet()
+        self.obj   = ConvNext()
+
     def forward(self, x_in):
 
-        o = obj(x_in)
-        s = scene(x_in)
+        o = self.obj(x_in).softmax(dim=1)
+        s = self.scene(x_in).softmax(dim=1)
 
         # x = self.model(x_in)
 
@@ -86,7 +89,7 @@ class Mobile_netV2(nn.Module):
         # else:
         #     return x
 
-        return s
+        return s + o
 
         # x_t = scene(x_in)
 

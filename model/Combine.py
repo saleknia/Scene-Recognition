@@ -30,13 +30,13 @@ from .Mobile_netV2 import Mobile_netV2
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_base.pth', map_location='cuda')
 # base.load_state_dict(checkpoint['net'])
 
-scene      = Mobile_netV2().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_scene.pth', map_location='cuda')
-scene.load_state_dict(checkpoint['net'])
+# scene      = Mobile_netV2().cuda()
+# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_scene.pth', map_location='cuda')
+# scene.load_state_dict(checkpoint['net'])
 
-obj        = Mobile_netV2().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_obj.pth', map_location='cuda')
-obj.load_state_dict(checkpoint['net'])
+# obj        = Mobile_netV2().cuda()
+# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_obj.pth', map_location='cuda')
+# obj.load_state_dict(checkpoint['net'])
 
 from .ConvNext import ConvNext
 from .ResNet import ResNet
