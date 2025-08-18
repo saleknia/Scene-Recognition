@@ -43,6 +43,7 @@ scene = scene.eval()
 
 obj = ConvNext().cuda()
 obj = obj.eval()
+
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
 # obj.load_state_dict(checkpoint['net'])
 # obj.model.head.fc = nn.Identity()
@@ -85,7 +86,7 @@ class Mobile_netV2(nn.Module):
 
         x = self.head(features)
 
-        x_t = obj(x_in)
+        x_t = scene(x_in)
 
         if self.training:
             return x, x_t
