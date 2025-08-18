@@ -34,14 +34,17 @@ from .ConvNext import ConvNext
 from .ResNet import ResNet
 from .Hybrid import Hybrid
 
-scene      = ResNet().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
-scene.load_state_dict(checkpoint['net'])
+scene = ResNet().cuda()
+scene = scene.eval()
+
+# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/scene.pth', map_location='cuda')
+# scene.load_state_dict(checkpoint['net'])
 # scene.model.fc = nn.Identity()
 
-obj        = ConvNext().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
-obj.load_state_dict(checkpoint['net'])
+obj = ConvNext().cuda()
+obj = obj.eval()
+# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
+# obj.load_state_dict(checkpoint['net'])
 # obj.model.head.fc = nn.Identity()
 
 # Hybrid     = Hybrid().cuda()
@@ -65,31 +68,29 @@ class Mobile_netV2(nn.Module):
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
 
-        self.scene = ResNet()
-        self.obj   = ConvNext()
+        # self.scene = ResNet()
+        # self.obj   = ConvNext()
 
     def forward(self, x_in):
 
-        o = self.obj(x_in).softmax(dim=1)
-        s = self.scene(x_in).softmax(dim=1)
+        # o = self.obj(x_in).softmax(dim=1)
+        # s = scene(x_in).softmax(dim=1)
 
         # x = self.model(x_in)
 
         # x = self.head(self.model(x_in))
 
-        # features = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
-        # features = features.mean(dim=1)
+        features = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
+        features = features.mean(dim=1)
 
-        # x = self.head(features)
+        x = self.head(features)
 
-        # features_t = obj(x_in)
+        x_t = obj(x_in)
 
-        # if self.training:
-        #     return x, (features, features_t)
-        # else:
-        #     return x
-
-        return s + o
+        if self.training:
+            return x, x_t
+        else:
+            return x
 
         # x_t = scene(x_in)
 
