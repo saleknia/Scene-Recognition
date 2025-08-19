@@ -86,13 +86,13 @@ class Mobile_netV2(nn.Module):
 
         x = self.head(features)
 
-        x_t = scene(x_in)
+        # x_t = scene(x_in)
 
-        if self.training:
-            return x, x_t
-        else:
-            return x
-
+        # if self.training:
+        #     return x, x_t
+        # else:
+        #     return x
+        return x
         # x_t = scene(x_in)
 
         # x = self.head(self.model(x_in))
