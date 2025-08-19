@@ -97,7 +97,6 @@ mapping = [0, 1, 0, 1, 0, 2, 2, 1, 0, 1, 0, 2, 0, 2, 0, 1, 1, 2, 0, 0, 1, 2,
 warnings.filterwarnings("ignore")
 
 def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_scheduler,logger):
-    # torch.autograd.set_detect_anomaly(True)
     print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
     
     model = model.to('cuda')
@@ -136,17 +135,11 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             total=total_batchs,
             prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
             suffix=f'CE_Loss = {loss_total.avg:.4f}',   
-            # suffix=f'CE_loss = {loss_ce_total.avg:.4f} , distillation_loss = {loss_di_total.avg:.4f} , Accuracy = {100 * metric.compute():.4f}',                 
-            # suffix=f'CE_loss = {loss_ce_total.avg:.4f} , disparity_loss = {loss_disparity_total.avg:.4f} , Accuracy = {100 * accuracy.avg:.4f}',   
             bar_length=45
         )  
-  
-    Acc = 100 * metric.compute()
-        
-    logger.info(f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, Accuracy = {Acc:.2f} , lr = {optimizer.param_groups[0]["lr"]}')
-    
-    # if epoch_num % 50 ==0:
-    #     valid_func(epoch_num,copy.deepcopy(model),dataloader,device,ckpt,num_class,logger)
+          
+    logger.info(f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, lr = {optimizer.param_groups[0]["lr"]}')
+
     if ckpt is not None:
-       ckpt.save_best(acc=Acc, epoch=epoch_num, net=model)
+       ckpt.save_best(loss=loss_total.avg, epoch=epoch_num, net=model)
 
