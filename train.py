@@ -32,7 +32,7 @@ from model.DINOV3 import DINOV3
 
 import utils
 from utils import color
-from utils import Save_Checkpoint
+from utils import Save_Checkpoint_accuracy
 from trainer import trainer_func
 from tester import tester_func
 from dataset import superclasses, Fine_Grained_Dataset, Coarse_Grained_Dataset
