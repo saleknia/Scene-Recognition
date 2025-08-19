@@ -1,6 +1,43 @@
 import numpy as np
 import torch
 
+from torch.utils.data import Dataset
+from PIL import Image
+import os
+
+class SUNAttributeDataset(Dataset):
+    def __init__(self, image_paths, labels, root_dir, transform=None):
+        """
+        Args:
+            image_paths (list): list of relative image paths
+            labels (ndarray): (N, 102) multi-label array
+            root_dir (str): directory where SUN images are stored
+            transform (callable, optional): torchvision transforms
+        """
+        self.image_paths = image_paths
+        self.labels = torch.tensor(labels, dtype=torch.float32)  # (N, 102)
+        self.root_dir = root_dir
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.image_paths)
+
+    def __getitem__(self, idx):
+        # Full path
+        img_path = os.path.join(self.root_dir, self.image_paths[idx])
+
+        # Load image
+        image = Image.open(img_path).convert("RGB")
+
+        # Apply transforms
+        if self.transform:
+            image = self.transform(image)
+
+        # Get label
+        label = self.labels[idx]
+
+        return image, label
+
 # Your superclass arrays
 superclass_1 = np.array(['airport_inside', 'auditorium', 'bar', 'bowling', 'casino',
        'church_inside', 'cloister', 'concert_hall', 'corridor',

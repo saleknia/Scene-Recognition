@@ -110,13 +110,14 @@ if task_id == 3:
 
 os.environ['PYTHONHASHSEED'] = str(SEED)
 
-task_ids = ['1','2','3','4']
+task_ids = ['1','2','3','4','5']
 task_table = tabulate(
                     tabular_data=[
-                        ['Standford40',1],
-                        ['BU101+'     ,2],
-                        ['MIT-67'     ,3],
-                        ['Scene-15'   ,4]],
+                        ['Standford40'  , 1],
+                        ['BU101+'       , 2],
+                        ['MIT-67'       , 3],
+                        ['Scene-15'     , 4],
+                        ['SUNAttribute' , 5]],
                     headers=['Task Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
@@ -141,6 +142,10 @@ elif task_id==3:
 elif task_id==4:
     NUM_CLASS = 15
     TASK_NAME = 'Scene-15'
+
+elif task_id==5:
+    NUM_CLASS = 102
+    TASK_NAME = 'SUNAttribute'
 
 model_ids = ['1','2','3','4','5','6','7','8']
 model_table = tabulate(
