@@ -162,7 +162,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     all_probs = []
     all_targets = []
 
-    val_loader = dataloader['train'] # Assuming your dataloader dict has a 'val' key
+    val_loader = dataloader['valid'] # Assuming your dataloader dict has a 'val' key
     with torch.no_grad():
         for inputs, targets in val_loader:
             inputs = inputs.to(device)
@@ -201,8 +201,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
     # Save checkpoint based on the validation mAP, not training loss
     if ckpt is not None:
-        # Use negative mAP if your checkpoint saves based on lower-is-better 'loss'
-        ckpt.save_best(loss=-mean_ap, epoch=epoch_num, net=model)
+        ckpt.save_best(acc=100 * mean_ap, epoch=epoch_num, net=model)
 
     # Set model back to training mode for the next epoch
     model.train()

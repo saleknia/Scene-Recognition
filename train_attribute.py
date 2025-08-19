@@ -60,9 +60,14 @@ def main(args):
         image_paths = [str(p) for p in image_paths]
 
         transform_train = transforms.Compose([
-            transforms.Resize((224, 224)),
-            # transforms.RandomResizedCrop(224),
+            transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
+
+        transform_test = transforms.Compose([
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
@@ -71,12 +76,14 @@ def main(args):
         root_dir = "/content/images"
 
         # Create dataset
-        trainset = SUNAttributeDataset(image_paths, labels, root_dir, transform=transform_train)
+        trainset = SUNAttributeDataset(image_paths[0:10000] , labels[0:10000] , root_dir, transform=transform_train)
+        validset = SUNAttributeDataset(image_paths[10000:-1], labels[10000:-1], root_dir, transform=transform_test)
 
         # Create dataloader
-        train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
+        train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
+        valid_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
 
-        data_loader  = {'train':train_loader}
+        data_loader  = {'train':train_loader, 'valid':valid_loader}
 
     # MODEL_INITIALIZE
 
@@ -119,7 +126,7 @@ def main(args):
     logger.info(model_table)
 
     if SAVE_MODEL:
-        checkpoint = Save_Checkpoint_loss(CKPT_NAME)
+        checkpoint = Save_Checkpoint_accuracy(CKPT_NAME)
     else:
         checkpoint = None
 
