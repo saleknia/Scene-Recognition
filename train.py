@@ -234,7 +234,7 @@ def main(args):
     logger.info(model_table)
 
     if SAVE_MODEL:
-        checkpoint = Save_Checkpoint(CKPT_NAME)
+        checkpoint = Save_Checkpoint_accuracy(CKPT_NAME)
     else:
         checkpoint = None
 

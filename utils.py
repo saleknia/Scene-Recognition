@@ -72,13 +72,13 @@ def hd95(masks, preds, num_class):
     result = np.nanmean(metric_list)
     return result
 
-class Save_Checkpoint(object):
+class Save_Checkpoint_accuracy(object):
     def __init__(self,filename):
 
         self.best_acc = 0.0
         self.best_epoch = 0
         self.folder = 'checkpoint'
-        self.filename=filename
+        self.filename = filename
         self.best_path = '/content/drive/MyDrive/checkpoint/' + self.filename + '_best.pth'
         os.makedirs(self.folder, exist_ok=True)
 
@@ -96,7 +96,32 @@ class Save_Checkpoint(object):
         
     def best_accuracy(self):
         return self.best_acc
-               
+
+class Save_Checkpoint_loss(object):
+    def __init__(self,filename):
+
+        self.best_loss  = 1e6
+        self.best_epoch = 0
+        self.folder = 'checkpoint'
+        self.filename = filename
+        self.best_path = '/content/drive/MyDrive/checkpoint/' + self.filename + '_best.pth'
+        os.makedirs(self.folder, exist_ok=True)
+
+    def save_best(self, loss, epoch, net):
+        if loss < self.best_loss:
+            print(color.BOLD+color.RED+'Saving best checkpoint...'+color.END)
+            state = {
+                'net': net.state_dict(),
+                'loss': loss,
+                'best_epoch': epoch
+            }
+            self.best_epoch = epoch
+            self.best_loss  = loss
+            torch.save(state, self.best_path)
+        
+    def best_loss(self):
+        return self.best_loss
+
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):

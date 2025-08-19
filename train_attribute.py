@@ -74,7 +74,7 @@ def main(args):
 
         # Create dataloader
         train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
-        
+
         data_loader  = {'train':train_loader}
 
     # MODEL_INITIALIZE
@@ -118,7 +118,7 @@ def main(args):
     logger.info(model_table)
 
     if SAVE_MODEL:
-        checkpoint = Save_Checkpoint(CKPT_NAME)
+        checkpoint = Save_Checkpoint_loss(CKPT_NAME)
     else:
         checkpoint = None
 
@@ -168,46 +168,46 @@ def main(args):
                 lr_scheduler=lr_scheduler,
                 logger=logger)
 
-    if (args.inference=='True') and (os.path.isfile(checkpoint_path)):
-        loaded_data = torch.load(checkpoint_path, map_location='cuda')
-        pretrained  = loaded_data['net']
-        model2_dict = model.state_dict()
-        state_dict  = {k:v for k,v in pretrained.items() if ((k in model2_dict.keys()) and (v.shape==model2_dict[k].shape))}
+    # if (args.inference=='True') and (os.path.isfile(checkpoint_path)):
+    #     loaded_data = torch.load(checkpoint_path, map_location='cuda')
+    #     pretrained  = loaded_data['net']
+    #     model2_dict = model.state_dict()
+    #     state_dict  = {k:v for k,v in pretrained.items() if ((k in model2_dict.keys()) and (v.shape==model2_dict[k].shape))}
 
-        model2_dict.update(state_dict)
-        model.load_state_dict(model2_dict)
+    #     model2_dict.update(state_dict)
+    #     model.load_state_dict(model2_dict)
 
-        acc=loaded_data['acc']
-        best_epoch=loaded_data['best_epoch']
+    #     acc=loaded_data['acc']
+    #     best_epoch=loaded_data['best_epoch']
 
-        logger.info(50*'*')
-        logger.info(f'Best Acc Over Validation Set: {acc:.2f}')
-        logger.info(f'Best Epoch: {best_epoch}')
+    #     logger.info(50*'*')
+    #     logger.info(f'Best Acc Over Validation Set: {acc:.2f}')
+    #     logger.info(f'Best Epoch: {best_epoch}')
 
-        logger.info(50*'*')
-        logger.info('Inference Phase')
-        logger.info(50*'*')
-        tester_func(
-            model=copy.deepcopy(model),
-            dataloader=data_loader,
-            device=DEVICE,
-            ckpt=None,
-            num_class=NUM_CLASS,
-            logger=logger)
-    else:
-        logger.info(50*'*')
-        logger.info('Inference Phase')
-        logger.info(50*'*')
-        tester_func(
-            model=copy.deepcopy(model),
-            dataloader=data_loader,
-            device=DEVICE,
-            ckpt=None,
-            num_class=NUM_CLASS,
-            logger=logger)
+    #     logger.info(50*'*')
+    #     logger.info('Inference Phase')
+    #     logger.info(50*'*')
+    #     tester_func(
+    #         model=copy.deepcopy(model),
+    #         dataloader=data_loader,
+    #         device=DEVICE,
+    #         ckpt=None,
+    #         num_class=NUM_CLASS,
+    #         logger=logger)
+    # else:
+    #     logger.info(50*'*')
+    #     logger.info('Inference Phase')
+    #     logger.info(50*'*')
+    #     tester_func(
+    #         model=copy.deepcopy(model),
+    #         dataloader=data_loader,
+    #         device=DEVICE,
+    #         ckpt=None,
+    #         num_class=NUM_CLASS,
+    #         logger=logger)
 
-    logger.info(50*'*')
-    logger.info('\n')
+    # logger.info(50*'*')
+    # logger.info('\n')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--inference', type=str, default='True')
