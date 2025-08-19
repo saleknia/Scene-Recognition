@@ -119,12 +119,18 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         inputs, targets = inputs.to(device), targets.to(device)
 
         # ---- Binarize labels ----
-        targets = (targets >= 0.66).float()
-
         outputs = model(inputs)
 
-        # ---- BCE Loss ----
-        loss = loss_bce(outputs, targets)
+        binary_targets = (targets >= 0.6).float()
+
+        mask = ((targets >= 0.6) | (targets <= 0.1)).float()
+        num_valid_labels = mask.sum() # Total number of valid (non-ignored) labels in this batch
+
+        # ---- Calculate Masked BCE Loss ----
+        loss_per_element = loss_bce(outputs, binary_targets)
+        masked_loss = loss_per_element * mask
+        loss = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0) 
+
         loss_total.update(loss.item())
 
         optimizer.zero_grad()
