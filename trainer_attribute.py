@@ -98,6 +98,8 @@ warnings.filterwarnings("ignore")
 
 from sklearn.metrics import average_precision_score
 import torch
+import torch.nn as nn
+import numpy as np
 
 def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
     print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
@@ -107,9 +109,8 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
     loss_total     = utils.AverageMeter() 
     soft_acc_total = utils.AverageMeter()
-    map_total      = utils.AverageMeter()  # running mAP
 
-    loss_bce = nn.BCEWithLogitsLoss()
+    loss_bce = nn.BCEWithLogitsLoss(reduction='none')
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
@@ -117,21 +118,16 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     for batch_idx, (inputs, targets) in enumerate(loader):
 
         inputs, targets = inputs.to(device), targets.to(device)
-
-        # ---- Binarize labels ----
         outputs = model(inputs)
 
         binary_targets = (targets >= 0.6).float()
-
         mask = ((targets >= 0.6) | (targets <= 0.1)).float()
-        num_valid_labels = mask.sum() # Total number of valid (non-ignored) labels in this batch
+        num_valid_labels = mask.sum()
 
-        # ---- Calculate Masked BCE Loss ----
         loss_per_element = loss_bce(outputs, binary_targets)
         masked_loss = loss_per_element * mask
-        loss = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0) 
-
-        loss_total.update(loss.item())
+        loss = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0)
+        loss_total.update(loss.item(), n=num_valid_labels.item())
 
         optimizer.zero_grad()
         loss.backward()
@@ -140,44 +136,76 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         if lr_scheduler is not None:
             lr_scheduler.step() 
 
-        # ---- Soft Accuracy & batch mAP ----
         with torch.no_grad():
             probs = torch.sigmoid(outputs)
             preds = (probs >= 0.5).float()
-
-            # Soft accuracy
-            correct = (preds == targets).float().mean().item()
-            soft_acc_total.update(correct, n=inputs.size(0))
-
-            # Batch-wise mAP
-            probs_np   = probs.cpu().numpy()
-            targets_np = targets.cpu().numpy()
-            ap_per_class = []
-            for i in range(targets_np.shape[1]):
-                if targets_np[:, i].sum() == 0:
-                    continue  # skip class if no positives in this batch
-                ap = average_precision_score(targets_np[:, i], probs_np[:, i])
-                ap_per_class.append(ap)
-            batch_map = sum(ap_per_class) / len(ap_per_class) if ap_per_class else 0
-            map_total.update(batch_map, n=inputs.size(0))
+            correct = ((preds == binary_targets).float() * mask).sum().item()
+            batch_accuracy = correct / num_valid_labels.item() if num_valid_labels > 0 else 0
+            soft_acc_total.update(batch_accuracy, n=num_valid_labels.item())
 
         print_progress(
             iteration=batch_idx+1,
             total=total_batchs,
             prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
-            suffix=f'CE_Loss = {loss_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}, mAP = {100 * map_total.avg:.2f}',   
+            suffix=f'CE_Loss = {loss_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}',   
             bar_length=45
         )  
 
-    # ---- Log at end of epoch ----
     logger.info(
         f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, '
-        f'SoftAcc = {100 * soft_acc_total.avg:.2f}, mAP = {100*map_total.avg:.2f}, '
+        f'SoftAcc = {100 * soft_acc_total.avg:.2f}, '
         f'lr = {optimizer.param_groups[0]["lr"]}'
     )
 
+    # --- START EVALUATION FUNCTION ---
+    model.eval()
+    all_probs = []
+    all_targets = []
+
+    val_loader = dataloader['train'] # Assuming your dataloader dict has a 'val' key
+    with torch.no_grad():
+        for inputs, targets in val_loader:
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            probs = torch.sigmoid(outputs)
+
+            all_probs.append(probs.cpu())
+            all_targets.append(targets.cpu()) # Keep original vote fractions for filtering
+
+    all_probs = torch.cat(all_probs, dim=0).numpy()
+    all_targets = torch.cat(all_targets, dim=0).numpy()
+
+    aps = [] # List to store AP for each attribute
+    for attr_idx in range(all_targets.shape[1]): # Loop over each attribute
+        attr_scores = all_probs[:, attr_idx]
+        attr_votes = all_targets[:, attr_idx]
+
+        # Create mask for valid examples: definitively present or absent
+        valid_mask = (attr_votes >= 0.6) | (attr_votes <= 0.1)
+        valid_scores = attr_scores[valid_mask]
+        valid_labels = (attr_votes[valid_mask] >= 0.6).astype(np.int32)
+
+        # Only calculate AP if there are positive examples in the valid set
+        if np.sum(valid_labels) > 0:
+            ap = average_precision_score(valid_labels, valid_scores)
+            aps.append(ap)
+        else:
+            # If no positives, skip to avoid division by zero
+            print(f"Warning: Attribute {attr_idx} has no positive examples. Skipping.")
+
+    # Calculate the mean Average Precision (mAP)
+    mean_ap = np.mean(aps) if aps else 0
+    # --- END EVALUATION FUNCTION ---
+
+    logger.info(f'** Epoch: {epoch_num} ---> Validation mAP: {100 * mean_ap:.2f} **')
+
+    # Save checkpoint based on the validation mAP, not training loss
     if ckpt is not None:
-        ckpt.save_best(loss=loss_total.avg, epoch=epoch_num, net=model)
+        # Use negative mAP if your checkpoint saves based on lower-is-better 'loss'
+        ckpt.save_best(loss=-mean_ap, epoch=epoch_num, net=model)
+
+    # Set model back to training mode for the next epoch
+    model.train()
 
 
 

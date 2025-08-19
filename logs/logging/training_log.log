@@ -23253,3 +23253,4 @@ Epoch: 1 ---> Train , Loss = 0.1597, SoftAcc = 94.37, mAP = 46.35, lr = 0.000818
 Epoch: 2 ---> Train , Loss = 0.1176, SoftAcc = 95.61, mAP = 61.37, lr = 0.0006314458674893538
 Epoch: 3 ---> Train , Loss = 0.1133, SoftAcc = 95.70, mAP = 63.83, lr = 0.0004383832905540863
 Epoch: 4 ---> Train , Loss = 0.1108, SoftAcc = 95.75, mAP = 64.91, lr = 0.00023492378861760313
+Logging Directory: ./logs/logging
