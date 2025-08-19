@@ -96,6 +96,9 @@ mapping = [0, 1, 0, 1, 0, 2, 2, 1, 0, 1, 0, 2, 0, 2, 0, 1, 1, 2, 0, 0, 1, 2,
 
 warnings.filterwarnings("ignore")
 
+from sklearn.metrics import average_precision_score
+import torch
+
 def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
     print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
     
@@ -104,20 +107,18 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
     loss_total     = utils.AverageMeter() 
     soft_acc_total = utils.AverageMeter()
+    map_total      = utils.AverageMeter()  # running mAP
 
     loss_bce = nn.BCEWithLogitsLoss()
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
 
-    base_iter    = (epoch_num-1) * total_batchs
-    iter_num     = base_iter
-
     for batch_idx, (inputs, targets) in enumerate(loader):
 
         inputs, targets = inputs.to(device), targets.to(device)
 
-        # ---- Binarize labels (0,0.33 -> 0; 0.66,1 -> 1) ----
+        # ---- Binarize labels ----
         targets = (targets >= 0.66).float()
 
         outputs = model(inputs)
@@ -128,34 +129,49 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
         optimizer.zero_grad()
         loss.backward()
-        # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=2.0)
         optimizer.step()
 
         if lr_scheduler is not None:
             lr_scheduler.step() 
 
-        # ---- Binary Soft Accuracy ----
+        # ---- Soft Accuracy & batch mAP ----
         with torch.no_grad():
-            probs = torch.sigmoid(outputs)           # [0,1] probabilities
-            preds = (probs >= 0.5).float()           # convert to binary
+            probs = torch.sigmoid(outputs)
+            preds = (probs >= 0.5).float()
+
+            # Soft accuracy
             correct = (preds == targets).float().mean().item()
             soft_acc_total.update(correct, n=inputs.size(0))
+
+            # Batch-wise mAP
+            probs_np   = probs.cpu().numpy()
+            targets_np = targets.cpu().numpy()
+            ap_per_class = []
+            for i in range(targets_np.shape[1]):
+                if targets_np[:, i].sum() == 0:
+                    continue  # skip class if no positives in this batch
+                ap = average_precision_score(targets_np[:, i], probs_np[:, i])
+                ap_per_class.append(ap)
+            batch_map = sum(ap_per_class) / len(ap_per_class) if ap_per_class else 0
+            map_total.update(batch_map, n=inputs.size(0))
 
         print_progress(
             iteration=batch_idx+1,
             total=total_batchs,
             prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
-            suffix=f'CE_Loss = {loss_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}',   
+            suffix=f'CE_Loss = {loss_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}, mAP = {100 * map_total.avg:.2f}',   
             bar_length=45
         )  
 
     # ---- Log at end of epoch ----
     logger.info(
         f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, '
-        f'SoftAcc = {100 * soft_acc_total.avg:.2f}, lr = {optimizer.param_groups[0]["lr"]}'
+        f'SoftAcc = {100 * soft_acc_total.avg:.2f}, mAP = {100*map_total.avg:.2f}, '
+        f'lr = {optimizer.param_groups[0]["lr"]}'
     )
 
     if ckpt is not None:
         ckpt.save_best(loss=loss_total.avg, epoch=epoch_num, net=model)
+
 
 
