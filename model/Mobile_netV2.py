@@ -61,8 +61,8 @@ class Mobile_netV2(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.blocks[-1].parameters():
-            param.requires_grad = True
+        # for param in self.model.blocks[-1].parameters():
+        #     param.requires_grad = True
 
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
@@ -71,6 +71,13 @@ class Mobile_netV2(nn.Module):
 
         # self.scene = ResNet()
         # self.obj   = ConvNext()
+
+        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINO_att.pth', map_location='cuda')
+        pretrained  = loaded_data['net']
+        model_dict  = self.state_dict()
+        state_dict  = {k:v for k,v in pretrained.items() if ((k in model_dict.keys()) and (v.shape==model_dict[k].shape))}
+        model_dict.update(state_dict)
+        self.load_state_dict(model_dict)
 
     def forward(self, x_in):
 
