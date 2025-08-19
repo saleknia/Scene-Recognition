@@ -72,7 +72,7 @@ class Mobile_netV2(nn.Module):
         # self.scene = ResNet()
         # self.obj   = ConvNext()
 
-        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINO_att.pth', map_location='cuda')
+        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINO_att.pth', map_location='cuda', weights_only=False)
         pretrained  = loaded_data['net']
         model_dict  = self.state_dict()
         state_dict  = {k:v for k,v in pretrained.items() if ((k in model_dict.keys()) and (v.shape==model_dict[k].shape))}
