@@ -142,14 +142,21 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
 
             if total > 0:
                 soft_acc = (correct / total).item()
-            else:
-                soft_acc = 1.0  # or skip this batch if no nonzero labels
+                soft_acc_total.update(soft_acc)
 
-            # ---- Log at end of epoch ----
-            logger.info(
-                f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, '
-                f'SoftAcc = {100 * soft_acc_total.avg:.2f}, lr = {optimizer.param_groups[0]["lr"]}'
-            )
+        print_progress(
+            iteration=batch_idx+1,
+            total=total_batchs,
+            prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
+            suffix=f'CE_Loss = {loss_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}',   
+            bar_length=45
+        )  
+
+    # ---- Log at end of epoch ----
+    logger.info(
+        f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, '
+        f'SoftAcc = {100 * soft_acc_total.avg:.2f}, lr = {optimizer.param_groups[0]["lr"]}'
+    )
 
     if ckpt is not None:
         ckpt.save_best(loss=loss_total.avg, epoch=epoch_num, net=model)
