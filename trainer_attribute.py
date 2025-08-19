@@ -117,11 +117,9 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
 
         inputs, targets = inputs.to(device), targets.to(device)
 
-        targets = targets.float()
         outputs = model(inputs)
 
-
-        loss = loss_bce(outputs, targets.long())
+        loss = loss_bce(outputs, targets)
 
         loss_total.update(loss)
 
