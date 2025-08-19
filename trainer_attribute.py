@@ -96,7 +96,7 @@ mapping = [0, 1, 0, 1, 0, 2, 2, 1, 0, 1, 0, 2, 0, 2, 0, 1, 1, 2, 0, 0, 1, 2,
 
 warnings.filterwarnings("ignore")
 
-def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_scheduler,logger):
+def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
     print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
     
     model = model.to(device)
@@ -117,11 +117,14 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
 
         inputs, targets = inputs.to(device), targets.to(device)
 
+        # ---- Binarize labels (0,0.33 -> 0; 0.66,1 -> 1) ----
+        targets = (targets >= 0.66).float()
+
         outputs = model(inputs)
 
+        # ---- BCE Loss ----
         loss = loss_bce(outputs, targets)
-
-        loss_total.update(loss)
+        loss_total.update(loss.item())
 
         optimizer.zero_grad()
         loss.backward()
@@ -131,18 +134,12 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
         if lr_scheduler is not None:
             lr_scheduler.step() 
 
-        # ---- Soft Accuracy ----
+        # ---- Binary Soft Accuracy ----
         with torch.no_grad():
-            probs = torch.sigmoid(outputs)
-            eps = 0.1
-            
-            mask = targets > 0  # only nonzero labels matter
-            correct = ((torch.abs(probs - targets) < eps) & mask).float().sum()
-            total = mask.float().sum()
-
-            if total > 0:
-                soft_acc = (correct / total).item()
-                soft_acc_total.update(soft_acc)
+            probs = torch.sigmoid(outputs)           # [0,1] probabilities
+            preds = (probs >= 0.5).float()           # convert to binary
+            correct = (preds == targets).float().mean().item()
+            soft_acc_total.update(correct, n=inputs.size(0))
 
         print_progress(
             iteration=batch_idx+1,
@@ -160,4 +157,5 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
 
     if ckpt is not None:
         ckpt.save_best(loss=loss_total.avg, epoch=epoch_num, net=model)
+
 
