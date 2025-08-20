@@ -135,8 +135,9 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             # T       = 1.0
             # ce_loss = loss_ce(outputs[0], targets.long())
             # di_loss = F.kl_div(F.log_softmax(outputs[0]/T, dim=1), F.softmax(outputs[1]/T, dim=1), reduction='batchmean') * T * T
-            targets = outputs[1]
-            ce_loss = loss_ce(outputs[0], targets)
+            targets = outputs[1].argmax(dim=1)
+            # ce_loss = loss_ce(outputs[0], targets)
+            ce_loss = F.kl_div(F.log_softmax(outputs[0], dim=1), outputs[1], reduction='batchmean')
             di_loss = 0.0 #loss_di(*outputs[1])
             loss    = ce_loss + di_loss
         else:

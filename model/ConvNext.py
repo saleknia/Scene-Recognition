@@ -60,9 +60,10 @@ class ConvNext(nn.Module):
         features = self.model(x_in)
         features = self.pooling(features.unsqueeze(1)).squeeze(1).softmax(dim=1) 
 
-        features = features.argmax(dim=1)
-
         # x = self.fc(features)
         
-        return features
+        if self.training:
+            return features
+        else:
+            return features.argmax(dim=1)
 
