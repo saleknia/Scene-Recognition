@@ -36,7 +36,7 @@ scene.load_state_dict(checkpoint['net'])
 scene = scene.eval()
 
 obj        = Mobile_netV2().cuda()
-checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_ATT.pth', map_location='cuda')
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_freeze.pth', map_location='cuda')
 obj.load_state_dict(checkpoint['net'])
 obj = obj.eval()
 
