@@ -33,7 +33,7 @@ def tester_func(model,dataloader,device,ckpt,num_class,logger):
             outputs = model(inputs)
 
             if type(outputs)==tuple:
-                outputs, targets = outputs[0], outputs[1]
+                outputs, targets = outputs[0], outputs[1].argmax(dim=1)
 
             loss        = loss_ce(outputs, targets.long()) 
             loss_ce_total.update(loss)

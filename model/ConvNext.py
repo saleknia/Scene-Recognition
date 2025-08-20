@@ -58,12 +58,10 @@ class ConvNext(nn.Module):
     def forward(self, x_in):
 
         features = self.model(x_in)
-        features = self.pooling(features.unsqueeze(1)).squeeze(1).softmax(dim=1) 
+        features = self.pooling(features.unsqueeze(1)).squeeze(1)
 
         # x = self.fc(features)
-        
-        if self.training:
-            return features
-        else:
-            return features.argmax(dim=1)
+
+        return features
+
 
