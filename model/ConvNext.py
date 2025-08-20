@@ -44,7 +44,7 @@ class ConvNext(nn.Module):
 
         self.fc = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=21850, out_features=num_classes, bias=True),
+                                    nn.Linear(in_features=21841, out_features=num_classes, bias=True),
                                 )
 
         # for param in self.model.head.parameters():
