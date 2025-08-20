@@ -37,20 +37,25 @@ class ConvNext(nn.Module):
         for param in self.model.stages[-1].blocks[-1].parameters():
             param.requires_grad = True
 
-        self.model.head.fc = nn.Sequential(
+        # self.model.head.fc = nn.Sequential(
+        #                             nn.Dropout(p=0.5, inplace=True),
+        #                             nn.Linear(in_features=768, out_features=num_classes, bias=True),
+        #                         )
+
+        self.fc = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                    nn.Linear(in_features=21850, out_features=num_classes, bias=True),
                                 )
 
-        for param in self.model.head.parameters():
-            param.requires_grad = True
+        # for param in self.model.head.parameters():
+        #     param.requires_grad = True
 
-        checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
-        self.load_state_dict(checkpoint['net'])
+        # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
+        # self.load_state_dict(checkpoint['net'])
 
     def forward(self, x_in):
 
-        x = self.model(x_in)
+        x = self.fc(self.model(x_in))
         
         return x
 
