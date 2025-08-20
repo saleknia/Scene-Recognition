@@ -108,7 +108,7 @@ def main(args):
         if TASK_NAME=='MIT-67':
             NUM_CLASS = len(trainset.classes)
         else:
-            NUM_CLASS = 2048
+            NUM_CLASS = 512
 
         data_loader  = {'train':train_loader,'valid':valid_loader, 'test':test_loader}
 

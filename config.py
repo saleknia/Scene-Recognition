@@ -43,7 +43,7 @@ if log:
 
 LEARNING_RATE = 0.001
 DEVICE        = "cuda" if torch.cuda.is_available() else "cpu"
-BATCH_SIZE    = 64
+BATCH_SIZE    = 256
 NUM_EPOCHS    = 20
 NUM_WORKERS   = 4
 IMAGE_HEIGHT  = 224
@@ -149,7 +149,7 @@ elif task_id==5:
     TASK_NAME = 'SUNAttribute'
 
 elif task_id==6:
-    NUM_CLASS = 2048
+    NUM_CLASS = 512
     TASK_NAME = 'ImageNet'
 
 model_ids = ['1','2','3','4','5','6','7','8']

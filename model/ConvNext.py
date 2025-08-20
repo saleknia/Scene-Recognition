@@ -47,7 +47,7 @@ class ConvNext(nn.Module):
         #                             nn.Linear(in_features=2048, out_features=num_classes, bias=True),
         #                         )
 
-        self.pooling = nn.AdaptiveAvgPool1d(2048)
+        self.pooling = nn.AdaptiveAvgPool1d(512)
 
         # for param in self.model.head.parameters():
         #     param.requires_grad = True
