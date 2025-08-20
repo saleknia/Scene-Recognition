@@ -43,7 +43,7 @@ class ConvNext(nn.Module):
         #                         )
 
         self.fc = nn.Sequential(
-                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Dropout(p=0.9, inplace=True),
                                     nn.Linear(in_features=21841, out_features=num_classes, bias=True),
                                 )
 
