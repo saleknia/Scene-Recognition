@@ -30,15 +30,15 @@ from .Mobile_netV2 import Mobile_netV2
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_base.pth', map_location='cuda')
 # base.load_state_dict(checkpoint['net'])
 
-# scene      = Mobile_netV2().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO.pth', map_location='cuda')
-# scene.load_state_dict(checkpoint['net'])
-# scene = scene.eval()
+scene      = Mobile_netV2().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_baseline.pth', map_location='cuda')
+scene.load_state_dict(checkpoint['net'])
+scene = scene.eval()
 
-# obj        = Mobile_netV2().cuda()
-# checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_ATT.pth', map_location='cuda')
-# obj.load_state_dict(checkpoint['net'])
-# obj = obj.eval()
+obj        = Mobile_netV2().cuda()
+checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINO_ATT.pth', map_location='cuda')
+obj.load_state_dict(checkpoint['net'])
+obj = obj.eval()
 
 from .ConvNext import ConvNext
 from .ResNet import ResNet
@@ -75,11 +75,11 @@ class Combine(nn.Module):
                                 
     def forward(self, x_in):
 
-        obj_features   = self.obj_branch.model.forward_features(x_in)
-        scene_features = self.scene_branch.model.forward_features(x_in)
+        # obj_features   = self.obj_branch.model.forward_features(x_in)
+        # scene_features = self.scene_branch.model.forward_features(x_in)
 
-        obj_tokens   = obj_features['x_norm_patchtokens']    # [B, No, D]
-        scene_tokens = scene_features['x_norm_patchtokens']  # [B, Ns, D]
+        # obj_tokens   = obj_features['x_norm_patchtokens']    # [B, No, D]
+        # scene_tokens = scene_features['x_norm_patchtokens']  # [B, Ns, D]
 
         # # Cross attention: objects attend to scene
         # obj_with_scene, _ = self.cross_attn_scene_to_obj(obj_tokens, scene_tokens, scene_tokens)
@@ -94,15 +94,15 @@ class Combine(nn.Module):
         # obj_feat   = obj_with_scene.mean(dim=1)
         # scene_feat = scene_with_obj.mean(dim=1)
 
-        obj_feat   = obj_tokens.mean(dim=1)
-        scene_feat = scene_tokens.mean(dim=1)
+        # obj_feat   = obj_tokens.mean(dim=1)
+        # scene_feat = scene_tokens.mean(dim=1)
 
-        fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
-        x          = self.head(fused_feat)
+        # fused_feat = torch.cat([obj_feat, scene_feat], dim=-1)
+        # x          = self.head(fused_feat)
         
-        # o = self.obj_branch(x_in).softmax(dim=1)
-        # s = self.scene_branch(x_in).softmax(dim=1)
-        # x = (s + o)
+        o = self.obj_branch(x_in).softmax(dim=1)
+        s = self.scene_branch(x_in).softmax(dim=1)
+        x = (s + o)
         
         return x
 
