@@ -105,7 +105,10 @@ def main(args):
         valid_loader = torch.utils.data.DataLoader(validset, batch_size = BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
         test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
 
-        NUM_CLASS    = len(trainset.classes)
+        if TASK_NAME=='MIT-67':
+            NUM_CLASS = len(trainset.classes)
+        else:
+            NUM_CLASS = 2048
 
         data_loader  = {'train':train_loader,'valid':valid_loader, 'test':test_loader}
 
