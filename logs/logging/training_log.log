@@ -25090,3 +25090,91 @@ Final Test ---> Loss = 0.4163 , Accuracy = 87.78
 **************************************************
 
 
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════╕
+│ Hyperparameter   │ Value           │
+╞══════════════════╪═════════════════╡
+│ Learning Rate    │ 0.001           │
+├──────────────────┼─────────────────┤
+│ Num Classes      │ 67              │
+├──────────────────┼─────────────────┤
+│ Device           │ cuda            │
+├──────────────────┼─────────────────┤
+│ Batch Size       │ 64              │
+├──────────────────┼─────────────────┤
+│ POLY_LR          │ True            │
+├──────────────────┼─────────────────┤
+│ Num Epochs       │ 20              │
+├──────────────────┼─────────────────┤
+│ Num Workers      │ 4               │
+├──────────────────┼─────────────────┤
+│ Image Height     │ 224             │
+├──────────────────┼─────────────────┤
+│ Image Width      │ 224             │
+├──────────────────┼─────────────────┤
+│ Pin Memory       │ True            │
+├──────────────────┼─────────────────┤
+│ Load Model       │ True            │
+├──────────────────┼─────────────────┤
+│ Save Model       │ True            │
+├──────────────────┼─────────────────┤
+│ Download Dataset │ False           │
+├──────────────────┼─────────────────┤
+│ Model Name       │ ConvNext        │
+├──────────────────┼─────────────────┤
+│ Seed             │ 42              │
+├──────────────────┼─────────────────┤
+│ Task Name        │ MIT-67          │
+├──────────────────┼─────────────────┤
+│ GPU              │ Tesla T4        │
+├──────────────────┼─────────────────┤
+│ Torch            │ 2.6.0+cu124     │
+├──────────────────┼─────────────────┤
+│ Torchvision      │ 0.21.0+cu124    │
+├──────────────────┼─────────────────┤
+│ Checkpoint Name  │ ConvNext_MIT-67 │
+╘══════════════════╧═════════════════╛
+Loading pretrained weights from Hugging Face hub (timm/convnext_tiny.fb_in22k)
+[timm/convnext_tiny.fb_in22k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ ConvNext        │ 0.07 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/ConvNext_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 3.1232, Accuracy = 38.29 , lr = 0.0009548853816214995
+Epoch: 2 ---> Train , Loss = 1.7324, Accuracy = 70.03 , lr = 0.000909532576082962
+Epoch: 3 ---> Train , Loss = 1.2536, Accuracy = 74.29 , lr = 0.0008639269723028183
+Epoch: 4 ---> Train , Loss = 1.0376, Accuracy = 77.08 , lr = 0.0008180521460508577
+Epoch: 5 ---> Train , Loss = 0.9300, Accuracy = 78.14 , lr = 0.0007718895067235696
+Epoch: 6 ---> Train , Loss = 0.8539, Accuracy = 79.67 , lr = 0.0007254178469372188
+Epoch: 7 ---> Train , Loss = 0.8064, Accuracy = 80.32 , lr = 0.0006786127592581239
+Epoch: 8 ---> Train , Loss = 0.7686, Accuracy = 80.72 , lr = 0.0006314458674893534
+Epoch: 9 ---> Train , Loss = 0.7439, Accuracy = 80.79 , lr = 0.0005838837929199784
+Epoch: 10 ---> Train , Loss = 0.7380, Accuracy = 80.75 , lr = 0.000535886731268145
+Epoch: 11 ---> Train , Loss = 0.7054, Accuracy = 81.41 , lr = 0.0004874064391789941
+Epoch: 12 ---> Train , Loss = 0.6739, Accuracy = 82.43 , lr = 0.0004383832905540856
+Epoch: 13 ---> Train , Loss = 0.6735, Accuracy = 81.97 , lr = 0.00038874179879876244
+Epoch: 14 ---> Train , Loss = 0.6628, Accuracy = 82.39 , lr = 0.00033838346190164924
+Epoch: 15 ---> Train , Loss = 0.6531, Accuracy = 82.46 , lr = 0.00028717458874925834
+Epoch: 16 ---> Train , Loss = 0.6400, Accuracy = 82.88 , lr = 0.00023492378861760354
+Epoch: 17 ---> Train , Loss = 0.6304, Accuracy = 83.18 , lr = 0.00018133520731367425
+Epoch: 18 ---> Train , Loss = 0.6251, Accuracy = 83.21 , lr = 0.00012589254117941636
+Epoch: 19 ---> Train , Loss = 0.6390, Accuracy = 83.23 , lr = 6.746414238367808e-05
+Epoch: 20 ---> Train , Loss = 0.6438, Accuracy = 82.73 , lr = 0.0
+**************************************************
+Best Acc Over Validation Set: 83.23
+Best Epoch: 19
+**************************************************
+Inference Phase
+**************************************************
+Final Test ---> Loss = 0.4844 , Accuracy = 87.05
+**************************************************
+
+

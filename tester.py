@@ -30,7 +30,11 @@ def tester_func(model,dataloader,device,ckpt,num_class,logger):
             inputs  = inputs.float()
             targets = targets.float()
 
-            outputs     = model(inputs)
+            outputs = model(inputs)
+
+            if type(outputs)==tuple:
+                outputs, targets = outputs[0], outputs[1]
+
             loss        = loss_ce(outputs, targets.long()) 
             loss_ce_total.update(loss)
    

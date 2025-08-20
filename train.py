@@ -45,7 +45,7 @@ def main(args):
 
     # LOAD_DATA
 
-    if TASK_NAME=='MIT-67':
+    if TASK_NAME=='MIT-67' or TASK_NAME=='ImageNet':
 
         # Create a mapping: {original_class -> superclass_index}
         class_to_super = {}

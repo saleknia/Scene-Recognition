@@ -41,7 +41,7 @@ if log:
     logger.info(f'Logging Directory: {logging_log}')   
 ##########################################################################
 
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.0001
 DEVICE        = "cuda" if torch.cuda.is_available() else "cpu"
 BATCH_SIZE    = 64
 NUM_EPOCHS    = 20
@@ -110,14 +110,15 @@ if task_id == 3:
 
 os.environ['PYTHONHASHSEED'] = str(SEED)
 
-task_ids = ['1','2','3','4','5']
+task_ids = ['1','2','3','4','5','6']
 task_table = tabulate(
                     tabular_data=[
                         ['Standford40'  , 1],
                         ['BU101+'       , 2],
                         ['MIT-67'       , 3],
                         ['Scene-15'     , 4],
-                        ['SUNAttribute' , 5]],
+                        ['SUNAttribute' , 5],
+                        ['ImageNet'     , 6]],
                     headers=['Task Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
@@ -146,6 +147,10 @@ elif task_id==4:
 elif task_id==5:
     NUM_CLASS = 102
     TASK_NAME = 'SUNAttribute'
+
+elif task_id==6:
+    NUM_CLASS = 2048
+    TASK_NAME = 'ImageNet'
 
 model_ids = ['1','2','3','4','5','6','7','8']
 model_table = tabulate(
