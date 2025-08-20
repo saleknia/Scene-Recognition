@@ -19,6 +19,14 @@ class SUNAttributeDataset(Dataset):
         self.root_dir = root_dir
         self.transform = transform
 
+        self.categories = {}
+        index           = 0
+        for image in self.image_paths:
+            category   = image.split('/')[1]
+            if not (category in self.categories):
+                self.categories[category] = index
+                index = index + 1
+
     def __len__(self):
         return len(self.image_paths)
 
@@ -33,10 +41,12 @@ class SUNAttributeDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        # Get label
-        label = self.labels[idx]
+        # Get label & category
+        label    = self.labels[idx]
+        category = self.categories[self.image_paths[idx].split('/')[1]]
+        category = torch.tensor(category, dtype=torch.float32)
 
-        return image, label
+        return image, (label, category)
 
 # Your superclass arrays
 superclass_1 = np.array(['airport_inside', 'auditorium', 'bar', 'bowling', 'casino',
