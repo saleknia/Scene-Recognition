@@ -44,10 +44,10 @@ class ConvNext(nn.Module):
 
         self.fc = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
-                                    nn.Linear(in_features=2048, out_features=num_classes, bias=True),
+                                    nn.Linear(in_features=1024, out_features=num_classes, bias=True),
                                 )
 
-        self.pooling = nn.AdaptiveAvgPool1d(2048)
+        self.pooling = nn.AdaptiveAvgPool1d(1024)
 
         # for param in self.model.head.parameters():
         #     param.requires_grad = True
