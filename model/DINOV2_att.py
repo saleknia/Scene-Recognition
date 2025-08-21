@@ -15,15 +15,15 @@ class DINOV2_att(nn.Module):
         for param in self.model.blocks[-1].parameters():
             param.requires_grad = True
 
-        # self.head_att = nn.Sequential(
-        #                             nn.Dropout(p=0.5, inplace=False),
-        #                             nn.Linear(in_features=768, out_features=num_classes[0], bias=True),
-        #                         )
+        self.head_att = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=False),
+                                    nn.Linear(in_features=768, out_features=num_classes[0], bias=True),
+                                )
 
-        # self.head_cat = nn.Sequential(
-        #                             nn.Dropout(p=0.5, inplace=False),
-        #                             nn.Linear(in_features=768, out_features=num_classes[1], bias=True),
-        #                         )
+        self.head_cat = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=False),
+                                    nn.Linear(in_features=768, out_features=num_classes[1], bias=True),
+                                )
 
         checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth', map_location='cuda', weights_only=False)
         self.load_state_dict(checkpoint['net'])
