@@ -15,23 +15,36 @@ class DINOV2_att(nn.Module):
         for param in self.model.blocks[-1].parameters():
             param.requires_grad = True
 
-        self.head_att = nn.Sequential(
-                                    nn.Dropout(p=0.5, inplace=False),
-                                    nn.Linear(in_features=768, out_features=num_classes[0], bias=True),
-                                )
+        # self.head_att = nn.Sequential(
+        #                             nn.Dropout(p=0.5, inplace=False),
+        #                             nn.Linear(in_features=768, out_features=num_classes[0], bias=True),
+        #                         )
 
-        self.head_cat = nn.Sequential(
-                                    nn.Dropout(p=0.5, inplace=False),
-                                    nn.Linear(in_features=768, out_features=num_classes[1], bias=True),
-                                )
+        # self.head_cat = nn.Sequential(
+        #                             nn.Dropout(p=0.5, inplace=False),
+        #                             nn.Linear(in_features=768, out_features=num_classes[1], bias=True),
+        #                         )
 
+        checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth', map_location='cuda')
+        self.load_state_dict(checkpoint['net'])
+
+        for param in self.model.parameters():
+            param.requires_grad = False
+        
+        self.head = nn.Sequential(
+                                     nn.Dropout(p=0.5, inplace=True),
+                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                )
     def forward(self, x_in):
 
         features = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
         features = features.mean(dim=1)
 
-        x_att = self.head_att(features)
-        x_cat = self.head_cat(features)
+        # x_att = self.head_att(features)
+        # x_cat = self.head_cat(features)
 
-        return x_att, x_cat
+        # return x_att, x_cat
+        
+        x = self.head(features)
 
+        return x
