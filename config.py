@@ -41,9 +41,9 @@ if log:
     logger.info(f'Logging Directory: {logging_log}')   
 ##########################################################################
 
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.0001
 DEVICE        = "cuda" if torch.cuda.is_available() else "cpu"
-BATCH_SIZE    = 256
+BATCH_SIZE    = 64
 NUM_EPOCHS    = 20
 NUM_WORKERS   = 4
 IMAGE_HEIGHT  = 224
@@ -145,14 +145,14 @@ elif task_id==4:
     TASK_NAME = 'Scene-15'
 
 elif task_id==5:
-    NUM_CLASS = 102
+    NUM_CLASS = (102, 611)
     TASK_NAME = 'SUNAttribute'
 
 elif task_id==6:
     NUM_CLASS = 512
     TASK_NAME = 'ImageNet'
 
-model_ids = ['1','2','3','4','5','6','7','8']
+model_ids = ['1','2','3','4','5','6','7','8', '9']
 model_table = tabulate(
                     tabular_data=[
                         ['Mobile_netV2'     , 1],
@@ -162,7 +162,8 @@ model_table = tabulate(
                         ['Combine'          , 5],
                         ['Hybrid'           , 6],
                         ['seg'              , 7],
-                        ['DINOV3'           , 8]],
+                        ['DINOV3'           , 8],
+                        ['DINOV2_att'       , 9]],
                     headers=['Model Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
@@ -195,6 +196,9 @@ elif model_id==7:
 
 elif model_id==8:
     MODEL_NAME = 'DINOV3'
+
+elif model_id==9:
+    MODEL_NAME = 'DINOV2_att'
 
 if NORMAL_TRAINING:
     CKPT_NAME = MODEL_NAME + '_' + TASK_NAME

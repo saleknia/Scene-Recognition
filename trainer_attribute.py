@@ -13,87 +13,6 @@ from torcheval.metrics import MulticlassAccuracy
 from torch.nn.modules.loss import CrossEntropyLoss
 # labels = torch.load('/content/Scene-Recognition/labels.pt').cuda()
 
-class SP(nn.Module):
-	'''
-	Similarity-Preserving Knowledge Distillation
-	https://arxiv.org/pdf/1907.09682.pdf
-	'''
-	def __init__(self):
-		super(SP, self).__init__()
-
-	def forward(self, fm_s, fm_t):
-		fm_s = fm_s.view(fm_s.size(0), -1)
-		G_s  = torch.mm(fm_s, fm_s.t())
-		norm_G_s = F.normalize(G_s, p=2, dim=1)
-
-		fm_t = fm_t.view(fm_t.size(0), -1)
-		G_t  = torch.mm(fm_t, fm_t.t())
-		norm_G_t = F.normalize(G_t, p=2, dim=1)
-
-		loss = F.mse_loss(norm_G_s, norm_G_t)
-
-		return loss * 1000.0
-
-class RKD(nn.Module):
-	'''
-	Relational Knowledge Distillation
-	https://arxiv.org/pdf/1904.05068.pdf
-	'''
-	def __init__(self, w_dist=50, w_angle=100):
-		super(RKD, self).__init__()
-
-		self.w_dist  = 50
-		self.w_angle = 100
-
-	def forward(self, feat_s, feat_t):
-		loss = (self.w_dist * self.rkd_dist(feat_s, feat_t) + self.w_angle * self.rkd_angle(feat_s, feat_t)) / 2.0
-		return loss
-
-	def rkd_dist(self, feat_s, feat_t):
-		feat_t_dist = self.pdist(feat_t, squared=False)
-		mean_feat_t_dist = feat_t_dist[feat_t_dist>0].mean()
-		feat_t_dist = feat_t_dist / mean_feat_t_dist
-
-		feat_s_dist = self.pdist(feat_s, squared=False)
-		mean_feat_s_dist = feat_s_dist[feat_s_dist>0].mean()
-		feat_s_dist = feat_s_dist / mean_feat_s_dist
-
-		loss = F.smooth_l1_loss(feat_s_dist, feat_t_dist)
-
-		return loss
-
-	def rkd_angle(self, feat_s, feat_t):
-		# N x C --> N x N x C
-		feat_t_vd = (feat_t.unsqueeze(0) - feat_t.unsqueeze(1))
-		norm_feat_t_vd = F.normalize(feat_t_vd, p=2, dim=2)
-		feat_t_angle = torch.bmm(norm_feat_t_vd, norm_feat_t_vd.transpose(1, 2)).view(-1)
-
-		feat_s_vd = (feat_s.unsqueeze(0) - feat_s.unsqueeze(1))
-		norm_feat_s_vd = F.normalize(feat_s_vd, p=2, dim=2)
-		feat_s_angle = torch.bmm(norm_feat_s_vd, norm_feat_s_vd.transpose(1, 2)).view(-1)
-
-		loss = F.smooth_l1_loss(feat_s_angle, feat_t_angle)
-
-		return loss
-
-	def pdist(self, feat, squared=False, eps=1e-12):
-		feat_square = feat.pow(2).sum(dim=1)
-		feat_prod   = torch.mm(feat, feat.t())
-		feat_dist   = (feat_square.unsqueeze(0) + feat_square.unsqueeze(1) - 2 * feat_prod).clamp(min=eps)
-
-		if not squared:
-			feat_dist = feat_dist.sqrt()
-
-		feat_dist = feat_dist.clone()
-		feat_dist[range(len(feat)), range(len(feat))] = 0
-
-		return feat_dist
-
-mapping = [0, 1, 0, 1, 0, 2, 2, 1, 0, 1, 0, 2, 0, 2, 0, 1, 1, 2, 0, 0, 1, 2,
-       1, 0, 0, 1, 2, 1, 1, 1, 2, 2, 2, 0, 0, 1, 2, 2, 2, 0, 1, 1, 0, 2,
-       0, 2, 0, 1, 2, 2, 2, 1, 0, 2, 0, 0, 1, 0, 2, 0, 1, 0, 2, 1, 2, 1,
-       1]
-
 warnings.filterwarnings("ignore")
 
 from sklearn.metrics import average_precision_score
@@ -107,27 +26,47 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     model = model.to(device)
     model.train()
 
+    num_att, num_cat = num_class
+
     loss_total     = utils.AverageMeter() 
+    loss_cat_total = utils.AverageMeter()
+    loss_att_total = utils.AverageMeter() 
     soft_acc_total = utils.AverageMeter()
 
-    loss_bce = nn.BCEWithLogitsLoss(reduction='none')
+    metric = MulticlassAccuracy(average="macro", num_classes=num_cat).to(device)
+    
+    loss_cat_func = CrossEntropyLoss(label_smoothing=0.0)
+    loss_att_func = nn.BCEWithLogitsLoss(reduction='none')
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
 
     for batch_idx, (inputs, targets) in enumerate(loader):
 
-        inputs, targets = inputs.to(device), targets.to(device)
-        outputs = model(inputs)
+        inputs, (labels, categories) = inputs.to(device), targets.to(device)
+        
+        outputs_att, outputs_cat = model(inputs)
 
-        binary_targets = (targets >= 0.6).float()
-        mask = ((targets >= 0.6) | (targets <= 0.1)).float()
+        ###################################################################
+        binary_labels = (labels >= 0.6).float()
+        mask = ((labels >= 0.6) | (labels <= 0.1)).float()
         num_valid_labels = mask.sum()
 
-        loss_per_element = loss_bce(outputs, binary_targets)
-        masked_loss = loss_per_element * mask
-        loss = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0)
-        loss_total.update(loss.item(), n=num_valid_labels.item())
+        loss_per_element = loss_att_func(outputs_att, binary_labels)
+        masked_loss      = loss_per_element * mask
+        loss_att         = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0)
+
+        loss_att_total.update(loss_att.item(), n=num_valid_labels.item())
+        ###################################################################
+        predictions = torch.argmax(input=torch.softmax(outputs_cat, dim=1),dim=1).long()
+        loss_cat    = loss_cat_func(outputs, targets.long())      
+        loss_cat_total.update(loss_cat.item())
+        ###################################################################
+        loss = loss_cat + loss_att
+        loss_total.update(loss.item())
+        ###################################################################
+        metric.update(predictions, categories.long())        
+        ###################################################################
 
         optimizer.zero_grad()
         loss.backward()
@@ -139,7 +78,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         with torch.no_grad():
             probs = torch.sigmoid(outputs)
             preds = (probs >= 0.5).float()
-            correct = ((preds == binary_targets).float() * mask).sum().item()
+            correct = ((preds == binary_labels).float() * mask).sum().item()
             batch_accuracy = correct / num_valid_labels.item() if num_valid_labels > 0 else 0
             soft_acc_total.update(batch_accuracy, n=num_valid_labels.item())
 
@@ -147,38 +86,40 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
             iteration=batch_idx+1,
             total=total_batchs,
             prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
-            suffix=f'CE_Loss = {loss_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}',   
+            suffix=f'Loss = {loss_total.avg:.4f}, cat_Loss = {loss_cat_total.avg:.4f}, att_Loss = {loss_att_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}, CatAcc = {100 * metric.compute():.2f}',   
             bar_length=45
         )  
 
     logger.info(
         f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, '
         f'SoftAcc = {100 * soft_acc_total.avg:.2f}, '
+        f'CatAcc  = {100 * metric.compute():.2f}, '
         f'lr = {optimizer.param_groups[0]["lr"]}'
     )
 
     # --- START EVALUATION FUNCTION ---
     model.eval()
     all_probs = []
-    all_targets = []
+    all_labels = []
 
     val_loader = dataloader['valid'] # Assuming your dataloader dict has a 'val' key
+
     with torch.no_grad():
-        for inputs, targets in val_loader:
+        for inputs, (labels, _) in val_loader:
             inputs = inputs.to(device)
             outputs = model(inputs)
             probs = torch.sigmoid(outputs)
 
             all_probs.append(probs.cpu())
-            all_targets.append(targets.cpu()) # Keep original vote fractions for filtering
+            all_labels.append(labels.cpu()) # Keep original vote fractions for filtering
 
     all_probs = torch.cat(all_probs, dim=0).numpy()
-    all_targets = torch.cat(all_targets, dim=0).numpy()
+    all_labels = torch.cat(all_labels, dim=0).numpy()
 
     aps = [] # List to store AP for each attribute
-    for attr_idx in range(all_targets.shape[1]): # Loop over each attribute
+    for attr_idx in range(all_labels.shape[1]): # Loop over each attribute
         attr_scores = all_probs[:, attr_idx]
-        attr_votes = all_targets[:, attr_idx]
+        attr_votes = all_labels[:, attr_idx]
 
         # Create mask for valid examples: definitively present or absent
         valid_mask = (attr_votes >= 0.6) | (attr_votes <= 0.1)
