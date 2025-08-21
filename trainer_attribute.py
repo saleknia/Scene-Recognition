@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import warnings
 from torch.autograd import Variable
 from valid import valid_func
-from torcheval.metric_trains import MulticlassAccuracy
+from torcheval.metrics import MulticlassAccuracy
 from torch.nn.modules.loss import CrossEntropyLoss
 # labels = torch.load('/content/Scene-Recognition/labels.pt').cuda()
 
