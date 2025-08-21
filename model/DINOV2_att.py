@@ -15,18 +15,23 @@ class DINOV2_att(nn.Module):
         for param in self.model.blocks[-1].parameters():
             param.requires_grad = True
 
-        self.head_att = nn.Sequential(
-                                    nn.Dropout(p=0.5, inplace=False),
-                                    nn.Linear(in_features=768, out_features=num_classes[0], bias=True),
-                                )
+        # self.head_att = nn.Sequential(
+        #                             nn.Dropout(p=0.5, inplace=False),
+        #                             nn.Linear(in_features=768, out_features=num_classes[0], bias=True),
+        #                         )
 
-        self.head_cat = nn.Sequential(
-                                    nn.Dropout(p=0.5, inplace=False),
-                                    nn.Linear(in_features=768, out_features=num_classes[1], bias=True),
-                                )
+        # self.head_cat = nn.Sequential(
+        #                             nn.Dropout(p=0.5, inplace=False),
+        #                             nn.Linear(in_features=768, out_features=num_classes[1], bias=True),
+        #                         )
 
-        checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth', map_location='cuda', weights_only=False)
-        self.load_state_dict(checkpoint['net'])
+        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth', map_location='cuda', weights_only=False)
+        pretrained  = loaded_data['net']
+        model2_dict = self.state_dict()
+        state_dict  = {k:v for k,v in pretrained.items() if ((k in model2_dict.keys()) and (v.shape==model2_dict[k].shape))}
+
+        model2_dict.update(state_dict)
+        self.load_state_dict(model2_dict)
 
         for param in self.model.parameters():
             param.requires_grad = False
