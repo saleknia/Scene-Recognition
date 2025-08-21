@@ -83,8 +83,8 @@ def main(args):
         root_dir = "/content/images"
 
         # Create dataset
-        trainset = SUNAttributeDataset(image_paths[0:10000] , labels[0:10000] , root_dir, transform=transform_train)
-        validset = SUNAttributeDataset(image_paths[10000:-1], labels[10000:-1], root_dir, transform=transform_test)
+        trainset = SUNAttributeDataset(image_paths[0:10000], labels[0:10000], root_dir, transform=transform_train)
+        validset = SUNAttributeDataset(image_paths[10000:] , labels[10000:] , root_dir, transform=transform_test)
 
         # Create dataloader
         train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)

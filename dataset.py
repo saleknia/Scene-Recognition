@@ -20,9 +20,12 @@ class SUNAttributeDataset(Dataset):
         self.transform = transform
 
         self.categories = {}
-        index           = 0
-        for image in self.image_paths:
-            category   = image.split('/')[1]
+        index      = 0
+        for image in image_paths:
+            if len(image.split('/'))==3:
+                category = image.split('/')[1]
+            if len(image.split('/'))==4:
+                category = image.split('/')[1] + '/' + image.split('/')[2]
             if not (category in self.categories):
                 self.categories[category] = index
                 index = index + 1
@@ -43,7 +46,13 @@ class SUNAttributeDataset(Dataset):
 
         # Get label & category
         label    = self.labels[idx]
-        category = self.categories[self.image_paths[idx].split('/')[1]]
+        
+        if len(self.image_paths[idx].split('/'))==3:
+            c = self.image_paths[idx].split('/')[1]
+        if len(self.image_paths[idx].split('/'))==4:
+            c = self.image_paths[idx].split('/')[1] + '/' + self.image_paths[idx].split('/')[2]
+
+        category = self.categories[c]
         category = torch.tensor(category, dtype=torch.float32)
 
         return image, (label, category)
