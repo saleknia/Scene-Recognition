@@ -25,7 +25,7 @@ class DINOV2_att(nn.Module):
         #                             nn.Linear(in_features=768, out_features=num_classes[1], bias=True),
         #                         )
 
-        checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth', map_location='cuda', weights_only=True)
+        checkpoint = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth', map_location='cuda', weights_only=False)
         self.load_state_dict(checkpoint['net'])
 
         for param in self.model.parameters():
