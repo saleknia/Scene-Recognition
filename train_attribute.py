@@ -58,7 +58,13 @@ def main(args):
 
         # Convert image_paths to a simple list of strings
         image_paths = [p[0][0] for p in image_paths]  # flatten
-        image_paths = [str(p) for p in image_paths]
+        image_paths = np.array([str(p) for p in image_paths])
+
+        perm = np.random.permutation(len(image_paths))
+
+        # apply the same shuffle to both arrays
+        image_paths = image_paths[perm]
+        labels      = labels[perm]
 
         transform_train = transforms.Compose([
             transforms.RandomResizedCrop(224),
