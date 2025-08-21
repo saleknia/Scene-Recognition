@@ -63,7 +63,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         loss_att_total.update(loss_att.item(), n=num_valid_labels.item())
         ###################################################################
         predictions = torch.argmax(input=torch.softmax(outputs_cat, dim=1),dim=1).long()
-        loss_cat    = loss_cat_func(outputs_cat, targets.long())      
+        loss_cat    = loss_cat_func(outputs_cat, categories.long())      
         loss_cat_total.update(loss_cat.item())
         metric_train.update(predictions, categories.long())     
         ###################################################################
@@ -115,7 +115,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
             inputs = inputs.to(device)
             labels = labels.to(device)
             categories = categories.to(device)
-            
+
             outputs_att, outputs_cat = model(inputs)
             ############################################################################
             probs = torch.sigmoid(outputs_att)
