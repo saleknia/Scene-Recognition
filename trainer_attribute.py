@@ -15,7 +15,7 @@ from torch.nn.modules.loss import CrossEntropyLoss
 
 warnings.filterwarnings("ignore")
 
-from sklearn.metric_trains import average_precision_score
+from sklearn.metrics import average_precision_score
 import torch
 import torch.nn as nn
 import numpy as np
