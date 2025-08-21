@@ -43,7 +43,11 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
     for batch_idx, (inputs, targets) in enumerate(loader):
 
-        inputs, (labels, categories) = inputs.to(device), targets.to(device)
+        inputs, (labels, categories) = inputs, targets
+
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+        categories = categories.to(device)
         
         outputs_att, outputs_cat = model(inputs)
 
@@ -107,7 +111,11 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
     with torch.no_grad():
         for inputs, (labels, categories) in val_loader:
-            inputs     = inputs.to(device)
+
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+            categories = categories.to(device)
+            
             outputs_att, outputs_cat = model(inputs)
             ############################################################################
             probs = torch.sigmoid(outputs_att)
