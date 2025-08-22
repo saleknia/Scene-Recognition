@@ -40,6 +40,15 @@ class DINOV2_att(nn.Module):
                                      nn.Dropout(p=0.5, inplace=True),
                                      nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
+
+        loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_MIT-67_best.pth', map_location='cuda', weights_only=False)
+        pretrained  = loaded_data['net']
+        model2_dict = self.state_dict()
+        state_dict  = {k:v for k,v in pretrained.items() if ((k in model2_dict.keys()) and (v.shape==model2_dict[k].shape))}
+
+        model2_dict.update(state_dict)
+        self.load_state_dict(model2_dict)
+
     def forward(self, x_in):
 
         features = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
