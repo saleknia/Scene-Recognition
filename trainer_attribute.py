@@ -39,7 +39,7 @@ def masked_bce_loss(logits, labels, mask=None):
 # ----------------------------
 # Trainer Function
 # ----------------------------
-def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, lr_scheduler, logger):
+def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
     print(f"Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]['lr']}")
     model = model.to(device)
     model.train()
