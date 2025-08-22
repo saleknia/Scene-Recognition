@@ -26,16 +26,10 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     model = model.to(device)
     model.train()
 
-    num_att, num_cat = num_class
-
     loss_total     = utils.AverageMeter() 
-    loss_cat_total = utils.AverageMeter()
     loss_att_total = utils.AverageMeter() 
     soft_acc_total = utils.AverageMeter()
 
-    metric_train = MulticlassAccuracy(average="macro", num_classes=num_cat).to(device)
-    
-    loss_cat_func = CrossEntropyLoss(label_smoothing=0.0)
     loss_att_func = nn.BCEWithLogitsLoss(reduction='none')
 
     total_batchs = len(dataloader['train'])
@@ -43,13 +37,12 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
     for batch_idx, (inputs, targets) in enumerate(loader):
 
-        inputs, (labels, categories) = inputs, targets
+        inputs, labels = inputs, targets
 
         inputs = inputs.to(device)
         labels = labels.to(device)
-        categories = categories.to(device)
         
-        outputs_att, outputs_cat = model(inputs)
+        outputs = model(inputs)
 
         ###################################################################
         binary_labels = (labels >= 0.6).float()
@@ -60,14 +53,9 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         masked_loss      = loss_per_element * mask
         loss_att         = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0)
 
-        loss_att_total.update(loss_att.item(), n=num_valid_labels.item())
+        loss_att_total.update(loss_att.item(), n=num_valid_labels.item())   
         ###################################################################
-        predictions = torch.argmax(input=torch.softmax(outputs_cat, dim=1),dim=1).long()
-        loss_cat    = 0.00 * loss_cat_func(outputs_cat, categories.long())      
-        loss_cat_total.update(loss_cat.item())
-        metric_train.update(predictions, categories.long())     
-        ###################################################################
-        loss = loss_cat + loss_att
+        loss = loss_att
         loss_total.update(loss.item())
         ###################################################################   
 
@@ -89,14 +77,13 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
             iteration=batch_idx+1,
             total=total_batchs,
             prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
-            suffix=f'Loss = {loss_total.avg:.4f}, cat_Loss = {loss_cat_total.avg:.4f}, att_Loss = {loss_att_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}, CatAcc = {100 * metric_train.compute():.2f}',   
+            suffix=f'Loss = {loss_total.avg:.4f}, att_Loss = {loss_att_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}',   
             bar_length=45
         )  
 
     logger.info(
         f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, '
         f'SoftAcc = {100 * soft_acc_total.avg:.2f}, '
-        f'CatAcc  = {100 * metric_train.compute():.2f}, '
         f'lr = {optimizer.param_groups[0]["lr"]}'
     )
     if epoch_num % 1 == 0:
@@ -106,21 +93,16 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         all_labels = []
 
         val_loader = dataloader['valid']
-        metric_val = MulticlassAccuracy(average="macro", num_classes=num_cat).to(device)
 
         with torch.no_grad():
-            for inputs, (labels, categories) in val_loader:
+            for inputs, labels in val_loader:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                categories = categories.to(device)
 
                 outputs_att, outputs_cat = model(inputs)
                 probs = torch.sigmoid(outputs_att)
                 all_probs.append(probs.cpu())
                 all_labels.append(labels.cpu())
-
-                predictions = torch.argmax(input=torch.softmax(outputs_cat, dim=1), dim=1).long()
-                metric_val.update(predictions, categories.long())
 
         # Convert to PyTorch tensors first for faster GPU-enabled operations if available, then to numpy.
         all_probs = torch.cat(all_probs, dim=0)  # Keep as tensor for a moment
@@ -169,7 +151,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
         # --- END OPTIMIZED EVALUATION FUNCTION ---
 
-        logger.info(f'** Epoch: {epoch_num} ---> Validation mAP: {100 * mean_ap:.2f}, Validation Category Accuracy: {100 * metric_val.compute():.2f} **')
+        logger.info(f'** Epoch: {epoch_num} ---> Validation mAP: {100 * mean_ap:.2f} **')
 
         # Save checkpoint based on the validation mAP, not training loss
         if ckpt is not None:
