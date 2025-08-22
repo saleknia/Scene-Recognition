@@ -27036,3 +27036,96 @@ Training Phase
 **************************************************
 Epoch: 1 ---> Train , Loss = 0.4685, SoftAcc = 94.58, CatAcc  = 5.35, lr = 9.548853816215001e-05
 ** Epoch: 1 ---> Validation mAP: 59.77, Validation Category Accuracy: 33.83 **
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════════════╕
+│ Hyperparameter   │ Value                   │
+╞══════════════════╪═════════════════════════╡
+│ Learning Rate    │ 0.0001                  │
+├──────────────────┼─────────────────────────┤
+│ Num Classes      │ (102, 717)              │
+├──────────────────┼─────────────────────────┤
+│ Device           │ cuda                    │
+├──────────────────┼─────────────────────────┤
+│ Batch Size       │ 64                      │
+├──────────────────┼─────────────────────────┤
+│ POLY_LR          │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Num Epochs       │ 30                      │
+├──────────────────┼─────────────────────────┤
+│ Num Workers      │ 4                       │
+├──────────────────┼─────────────────────────┤
+│ Image Height     │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Image Width      │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Pin Memory       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Load Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Save Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Download Dataset │ False                   │
+├──────────────────┼─────────────────────────┤
+│ Model Name       │ DINOV2_att              │
+├──────────────────┼─────────────────────────┤
+│ Seed             │ 42                      │
+├──────────────────┼─────────────────────────┤
+│ Task Name        │ SUNAttribute            │
+├──────────────────┼─────────────────────────┤
+│ GPU              │ Tesla T4                │
+├──────────────────┼─────────────────────────┤
+│ Torch            │ 2.6.0+cu124             │
+├──────────────────┼─────────────────────────┤
+│ Torchvision      │ 0.21.0+cu124            │
+├──────────────────┼─────────────────────────┤
+│ Checkpoint Name  │ DINOV2_att_SUNAttribute │
+╘══════════════════╧═════════════════════════╛
+using MLP layer as FFN
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ DINOV2_att      │ 7.72 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 0.4681, SoftAcc = 94.58, CatAcc  = 5.36, lr = 9.699493779682659e-05
+Epoch: 2 ---> Train , Loss = 0.2779, SoftAcc = 96.17, CatAcc  = 31.83, lr = 9.397949325887216e-05
+Epoch: 3 ---> Train , Loss = 0.2125, SoftAcc = 96.42, CatAcc  = 49.38, lr = 9.095325760829613e-05
+Epoch: 4 ---> Train , Loss = 0.1823, SoftAcc = 96.59, CatAcc  = 58.00, lr = 8.791579019368001e-05
+Epoch: 5 ---> Train , Loss = 0.1639, SoftAcc = 96.71, CatAcc  = 64.30, lr = 8.486661467891874e-05
+** Epoch: 5 ---> Validation mAP: 74.57, Validation Category Accuracy: 78.96 **
+Epoch: 6 ---> Train , Loss = 0.1489, SoftAcc = 96.82, CatAcc  = 69.33, lr = 8.180521460508593e-05
+Epoch: 7 ---> Train , Loss = 0.1378, SoftAcc = 96.92, CatAcc  = 73.36, lr = 7.873102819154201e-05
+Epoch: 8 ---> Train , Loss = 0.1293, SoftAcc = 97.01, CatAcc  = 76.39, lr = 7.564344220695318e-05
+Epoch: 9 ---> Train , Loss = 0.1227, SoftAcc = 97.05, CatAcc  = 79.45, lr = 7.2541784693722e-05
+Epoch: 10 ---> Train , Loss = 0.1168, SoftAcc = 97.11, CatAcc  = 81.99, lr = 6.942531626616081e-05
+** Epoch: 10 ---> Validation mAP: 80.09, Validation Category Accuracy: 90.44 **
+Epoch: 11 ---> Train , Loss = 0.1102, SoftAcc = 97.17, CatAcc  = 83.86, lr = 6.629321961700635e-05
+Epoch: 12 ---> Train , Loss = 0.1064, SoftAcc = 97.23, CatAcc  = 85.26, lr = 6.314458674893575e-05
+Epoch: 13 ---> Train , Loss = 0.1032, SoftAcc = 97.28, CatAcc  = 86.59, lr = 5.9978403282990025e-05
+Epoch: 14 ---> Train , Loss = 0.0991, SoftAcc = 97.33, CatAcc  = 87.84, lr = 5.679352896179248e-05
+Epoch: 15 ---> Train , Loss = 0.0950, SoftAcc = 97.37, CatAcc  = 88.73, lr = 5.358867312681484e-05
+** Epoch: 15 ---> Validation mAP: 83.97, Validation Category Accuracy: 94.19 **
+Epoch: 16 ---> Train , Loss = 0.0923, SoftAcc = 97.42, CatAcc  = 89.99, lr = 5.036236344873399e-05
+Epoch: 17 ---> Train , Loss = 0.0894, SoftAcc = 97.47, CatAcc  = 90.44, lr = 4.71129054337474e-05
+Epoch: 18 ---> Train , Loss = 0.0876, SoftAcc = 97.49, CatAcc  = 91.38, lr = 4.38383290554088e-05
+Epoch: 19 ---> Train , Loss = 0.0853, SoftAcc = 97.54, CatAcc  = 92.09, lr = 4.05363169861552e-05
+Epoch: 20 ---> Train , Loss = 0.0829, SoftAcc = 97.58, CatAcc  = 92.44, lr = 3.720410580113019e-05
+** Epoch: 20 ---> Validation mAP: 86.39, Validation Category Accuracy: 95.43 **
+Epoch: 21 ---> Train , Loss = 0.0815, SoftAcc = 97.63, CatAcc  = 92.88, lr = 3.383834619016496e-05
+Epoch: 22 ---> Train , Loss = 0.0797, SoftAcc = 97.67, CatAcc  = 93.31, lr = 3.0434898592517704e-05
+Epoch: 23 ---> Train , Loss = 0.0774, SoftAcc = 97.70, CatAcc  = 93.66, lr = 2.6988522327480394e-05
+Epoch: 24 ---> Train , Loss = 0.0767, SoftAcc = 97.72, CatAcc  = 93.60, lr = 2.3492378861760403e-05
+Epoch: 25 ---> Train , Loss = 0.0768, SoftAcc = 97.76, CatAcc  = 93.80, lr = 1.993718664752194e-05
+** Epoch: 25 ---> Validation mAP: 87.94, Validation Category Accuracy: 96.58 **
+Epoch: 26 ---> Train , Loss = 0.0741, SoftAcc = 97.77, CatAcc  = 94.55, lr = 1.6309658323221843e-05
+Epoch: 27 ---> Train , Loss = 0.0737, SoftAcc = 97.79, CatAcc  = 94.59, lr = 1.2589254117941692e-05
+Epoch: 28 ---> Train , Loss = 0.0722, SoftAcc = 97.82, CatAcc  = 94.54, lr = 8.740129486931691e-06
+Epoch: 29 ---> Train , Loss = 0.0711, SoftAcc = 97.86, CatAcc  = 94.82, lr = 4.683719421612163e-06
+Epoch: 30 ---> Train , Loss = 0.0707, SoftAcc = 97.85, CatAcc  = 95.07, lr = 0.0
+** Epoch: 30 ---> Validation mAP: 88.62, Validation Category Accuracy: 96.74 **
