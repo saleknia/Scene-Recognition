@@ -20,6 +20,30 @@ import torch
 import torch.nn as nn
 import numpy as np
 
+def average_precision_torch(scores, labels):
+    """
+    Calculate Average Precision (AP) using PyTorch.
+    Much faster than sklearn for GPU tensors.
+    """
+    if len(scores) == 0:
+        return 0.0
+        
+    # Sort scores and labels in descending order of scores
+    descending_indices = torch.argsort(scores, descending=True)
+    scores_sorted = scores[descending_indices]
+    labels_sorted = labels[descending_indices]
+
+    # Calculate cumulative sums of true positives
+    tp_cumsum = torch.cumsum(labels_sorted, dim=0)
+    
+    # Calculate precision at each threshold
+    precision_at_k = tp_cumsum / (torch.arange(1, len(labels_sorted) + 1, device=scores.device, dtype=torch.float32))
+    
+    # Precision@k needs to be weighted by the increase in recall from the previous threshold
+    ap = torch.sum(precision_at_k * labels_sorted) / torch.clamp(torch.sum(labels_sorted), min=1e-6)
+    
+    return ap.item()
+    
 def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
     print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
     
@@ -116,57 +140,44 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
             outputs_att, outputs_cat = model(inputs)
             probs = torch.sigmoid(outputs_att)
-            all_probs.append(probs.cpu())
-            all_labels.append(labels.cpu())
+            all_probs.append(probs)
+            all_labels.append(labels)
 
             predictions = torch.argmax(input=torch.softmax(outputs_cat, dim=1), dim=1).long()
             metric_val.update(predictions, categories.long())
 
-    # Convert to PyTorch tensors first for faster GPU-enabled operations if available, then to numpy.
-    all_probs = torch.cat(all_probs, dim=0)  # Keep as tensor for a moment
-    all_labels = torch.cat(all_labels, dim=0)
+    # Keep everything on GPU for maximum speed
+    all_probs = torch.cat(all_probs, dim=0)  # Shape: [num_samples, num_attributes]
+    all_labels = torch.cat(all_labels, dim=0)  # Shape: [num_samples, num_attributes]
 
     # --- VECTORIZED MASK CREATION ---
-    # Create the valid mask for ALL attributes simultaneously
-    # Shape: [num_samples, num_attributes]
     valid_mask = (all_labels >= 0.6) | (all_labels <= 0.1)
-
-    # Create binary labels for ALL attributes
     binary_labels_all = (all_labels >= 0.6).float()
 
-    # Initialize a tensor to hold APs for all attributes
-    aps = torch.zeros(all_labels.shape[1])  # [num_attributes]
+    # Initialize tensor for APs on GPU
+    aps = torch.zeros(all_labels.shape[1], device=device)  # [num_attributes]
 
     # --- VECTORIZED AP CALCULATION ---
-    # We still need a loop, but we can precompute everything for each attribute very efficiently.
     for attr_idx in range(all_labels.shape[1]):
-        # Use the precomputed mask for this attribute
         mask_i = valid_mask[:, attr_idx]
-        # If there are no valid examples, skip and AP remains 0.
+        
         if not mask_i.any():
-            # print(f"Warning: Attribute {attr_idx} has no valid examples. Skipping.")
-            continue
+            continue  # Skip if no valid examples
 
-        # Apply the mask using boolean indexing
         scores_i = all_probs[mask_i, attr_idx]
         labels_i = binary_labels_all[mask_i, attr_idx]
 
-        # Check if there are positive examples to avoid sklearn error
         if labels_i.sum() == 0:
-            # print(f"Warning: Attribute {attr_idx} has no positive examples. Skipping.")
-            continue
+            continue  # Skip if no positive examples
 
-        # Move to CPU numpy for sklearn (this is the unavoidable step, but it's now on a pre-filtered subset)
-        scores_i_np = scores_i.numpy()
-        labels_i_np = labels_i.numpy().astype(np.int32)
-
-        # Calculate AP for this attribute
-        ap = average_precision_score(labels_i_np, scores_i_np)
+        # Calculate AP using PyTorch (stays on GPU)
+        ap = average_precision_torch(scores_i, labels_i)
         aps[attr_idx] = ap
 
-    # Calculate the mean Average Precision (mAP), ignoring attributes that were skipped (with 0 AP)
+    # Calculate mean AP, ignoring skipped attributes
     valid_aps = aps[aps > 0]
     mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
+    val_acc = metric_val.compute().item()
     # --- END OPTIMIZED EVALUATION FUNCTION ---
 
     logger.info(f'** Epoch: {epoch_num} ---> Validation mAP: {100 * mean_ap:.2f}, Validation Category Accuracy: {100 * metric_val.compute():.2f} **')
@@ -178,6 +189,75 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     # Set model back to training mode for the next epoch
     model.train()
 
+    # # --- START OPTIMIZED EVALUATION FUNCTION ---
+    # model.eval()
+    # all_probs = []
+    # all_labels = []
+
+    # val_loader = dataloader['valid']
+    # metric_val = MulticlassAccuracy(average="macro", num_classes=num_cat).to(device)
+
+    # with torch.no_grad():
+    #     for inputs, (labels, categories) in val_loader:
+    #         inputs = inputs.to(device)
+    #         labels = labels.to(device)
+    #         categories = categories.to(device)
+
+    #         outputs_att, outputs_cat = model(inputs)
+    #         probs = torch.sigmoid(outputs_att)
+    #         all_probs.append(probs.cpu())
+    #         all_labels.append(labels.cpu())
+
+    #         predictions = torch.argmax(input=torch.softmax(outputs_cat, dim=1), dim=1).long()
+    #         metric_val.update(predictions, categories.long())
+
+    # # Convert to PyTorch tensors first for faster GPU-enabled operations if available, then to numpy.
+    # all_probs = torch.cat(all_probs, dim=0)  # Keep as tensor for a moment
+    # all_labels = torch.cat(all_labels, dim=0)
+
+    # # --- VECTORIZED MASK CREATION ---
+    # # Create the valid mask for ALL attributes simultaneously
+    # # Shape: [num_samples, num_attributes]
+    # valid_mask = (all_labels >= 0.6) | (all_labels <= 0.1)
+
+    # # Create binary labels for ALL attributes
+    # binary_labels_all = (all_labels >= 0.6).float()
+
+    # # Initialize a tensor to hold APs for all attributes
+    # aps = torch.zeros(all_labels.shape[1])  # [num_attributes]
+
+    # # --- VECTORIZED AP CALCULATION ---
+    # # We still need a loop, but we can precompute everything for each attribute very efficiently.
+    # for attr_idx in range(all_labels.shape[1]):
+    #     # Use the precomputed mask for this attribute
+    #     mask_i = valid_mask[:, attr_idx]
+    #     # If there are no valid examples, skip and AP remains 0.
+    #     if not mask_i.any():
+    #         # print(f"Warning: Attribute {attr_idx} has no valid examples. Skipping.")
+    #         continue
+
+    #     # Apply the mask using boolean indexing
+    #     scores_i = all_probs[mask_i, attr_idx]
+    #     labels_i = binary_labels_all[mask_i, attr_idx]
+
+    #     # Check if there are positive examples to avoid sklearn error
+    #     if labels_i.sum() == 0:
+    #         # print(f"Warning: Attribute {attr_idx} has no positive examples. Skipping.")
+    #         continue
+
+    #     # Move to CPU numpy for sklearn (this is the unavoidable step, but it's now on a pre-filtered subset)
+    #     scores_i_np = scores_i.numpy()
+    #     labels_i_np = labels_i.numpy().astype(np.int32)
+
+    #     # Calculate AP for this attribute
+    #     ap = average_precision_score(labels_i_np, scores_i_np)
+    #     aps[attr_idx] = ap
+
+    # # Calculate the mean Average Precision (mAP), ignoring attributes that were skipped (with 0 AP)
+    # valid_aps = aps[aps > 0]
+    # mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
+    # # --- END OPTIMIZED EVALUATION FUNCTION ---
+    
     # # --- START EVALUATION FUNCTION ---
     # model.eval()
     # all_probs = []
