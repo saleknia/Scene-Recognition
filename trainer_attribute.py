@@ -22,127 +22,136 @@ import torch.nn as nn
 import torch.nn.functional as F
 from sklearn.metrics import average_precision_score
 
-# ----------------------------
-# Masked BCE Loss
-# ----------------------------
-def masked_bce_loss(logits, labels, mask=None):
-    """
-    logits: [B, 1] raw outputs for a single attribute
-    labels: [B, 1] binary 0/1
-    mask: [B, 1] optional mask to ignore uncertain labels
-    """
-    bce = F.binary_cross_entropy_with_logits(logits, labels.float(), reduction='none')
-    if mask is not None:
-        bce = bce * mask
-    return bce.mean()
+freq = np.array([ 672.,  747.,  607.,  699.,  241.,  925.,  750.,  638.,  871.,
+        596.,  238.,  294.,  207.,  435.,  588.,  169.,  491.,   82.,
+        711.,  752.,  314.,  630.,  555.,  451.,  555.,  108.,  441.,
+        331.,   85.,  448.,  118., 1032.,  388.,  186.,  263.,  277.,
+        394.,  567.,  342.,  109., 1771., 1700., 1888.,  908., 1835.,
+       1586.,  214.,  635.,  632.,  464.,  324.,  425.,  185.,  393.,
+       1253.,  338., 1712.,  297.,  558., 1361.,  351.,  594.,  861.,
+        135., 1145.,  171.,  413.,  277.,  519.,  158.,  285., 1566.,
+         81.,   50., 6709., 2466., 2109.,  631., 1056.,  602.,  154.,
+        679., 1239.,  417.,  280.,  876.,  388., 1579., 8412., 5541.,
+        504., 4947., 1536., 7609.,  823., 1198.,  822.,  366.,  510.,
+        144.,  853.,  370.])
+
+total = 14340  
+neg_counts = total - freq
+pos_weight = torch.tensor(neg_counts / (freq + 1e-6), dtype=torch.float32).cuda()
 
 # ----------------------------
 # Trainer Function
 # ----------------------------
-def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
-    print(f"Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]['lr']}")
+def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger, pos_weight):
+    print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
+    
     model = model.to(device)
     model.train()
 
-    loss_total = utils.AverageMeter()
+    loss_total     = utils.AverageMeter() 
+    loss_att_total = utils.AverageMeter() 
     soft_acc_total = utils.AverageMeter()
 
-    loader = dataloader["train"]
-    total_batches = len(loader)
+    # BCE loss with per-attribute pos_weight
+    loss_att_func = nn.BCEWithLogitsLoss(reduction='none', pos_weight=pos_weight)
+
+    total_batchs = len(dataloader['train'])
+    loader       = dataloader['train'] 
 
     for batch_idx, (inputs, targets) in enumerate(loader):
-        inputs, labels = inputs.to(device), targets.to(device)
 
-        # SUN masking: ignore single-vote attributes
+        inputs, labels = inputs.to(device), targets.to(device)
+        
+        outputs = model(inputs)
+
+        ###################################################################
+        # SUN mask: ignore attributes with single votes
         binary_labels = (labels >= 0.6).float()
         mask = ((labels >= 0.6) | (labels <= 0.1)).float()
+        num_valid_labels = mask.sum()
 
-        outputs = model(inputs)  # [B,102]
+        # Element-wise BCE with pos_weight
+        loss_per_element = loss_att_func(outputs, binary_labels)
+        masked_loss      = loss_per_element * mask
+        loss_att         = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0)
 
-        # Compute per-attribute loss
-        total_loss_batch = 0
-        for i in range(model.num_attrs):
-            logit_i = outputs[:, i].unsqueeze(1)
-            label_i = binary_labels[:, i].unsqueeze(1)
-            mask_i  = mask[:, i].unsqueeze(1)
-            loss_i  = masked_bce_loss(logit_i, label_i, mask_i)
-            total_loss_batch += loss_i
-        loss = total_loss_batch / model.num_attrs
+        loss_att_total.update(loss_att.item(), n=num_valid_labels.item())   
+        loss_total.update(loss_att.item())
+        ###################################################################   
 
         optimizer.zero_grad()
-        loss.backward()
+        loss_att.backward()
         optimizer.step()
+
         if lr_scheduler is not None:
-            lr_scheduler.step()
+            lr_scheduler.step() 
 
-        loss_total.update(loss.item())
-
-        # Soft accuracy
         with torch.no_grad():
             probs = torch.sigmoid(outputs)
-            preds = (probs >= 0.5).float()  # fixed threshold
+            preds = (probs >= 0.5).float()
             correct = ((preds == binary_labels).float() * mask).sum().item()
-            total_valid = mask.sum().item()
-            soft_acc_total.update(correct / total_valid if total_valid > 0 else 0, n=total_valid)
+            batch_accuracy = correct / num_valid_labels.item() if num_valid_labels > 0 else 0
+            soft_acc_total.update(batch_accuracy, n=num_valid_labels.item())
 
         print_progress(
-            iteration=batch_idx + 1,
-            total=total_batches,
-            prefix=f"Train {epoch_num} Batch {batch_idx+1}/{total_batches} ",
-            suffix=f"Loss = {loss_total.avg:.4f}, SoftAcc = {100*soft_acc_total.avg:.2f}",
-            bar_length=45,
-        )
+            iteration=batch_idx+1,
+            total=total_batchs,
+            prefix=f'Train {epoch_num} Batch {batch_idx+1}/{total_batchs} ',
+            suffix=f'Loss = {loss_total.avg:.4f}, att_Loss = {loss_att_total.avg:.4f}, SoftAcc = {100 * soft_acc_total.avg:.2f}',   
+            bar_length=45
+        )  
 
-    logger.info(f"Epoch: {epoch_num} ---> Train Loss = {loss_total.avg:.4f}, SoftAcc = {100*soft_acc_total.avg:.2f}")
+    logger.info(
+        f'Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, '
+        f'SoftAcc = {100 * soft_acc_total.avg:.2f}, '
+        f'lr = {optimizer.param_groups[0]["lr"]}'
+    )
 
-    # ----------------------------
-    # Validation
-    # ----------------------------
-    model.eval()
-    all_probs = []
-    all_labels = []
+    # ----------------- Validation -----------------
+    if epoch_num % 1 == 0:
+        model.eval()
+        all_probs = []
+        all_labels = []
 
-    val_loader = dataloader["valid"]
-    with torch.no_grad():
-        for inputs, labels in val_loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
-            probs = torch.sigmoid(outputs)
-            all_probs.append(probs.cpu())
-            all_labels.append(labels.cpu())
+        val_loader = dataloader['valid']
 
-    all_probs = torch.cat(all_probs, dim=0)
-    all_labels = torch.cat(all_labels, dim=0)
+        with torch.no_grad():
+            for inputs, labels in val_loader:
+                inputs, labels = inputs.to(device), labels.to(device)
+                outputs = model(inputs)
+                probs = torch.sigmoid(outputs)
+                all_probs.append(probs.cpu())
+                all_labels.append(labels.cpu())
 
-    valid_mask = (all_labels >= 0.6) | (all_labels <= 0.1)
-    binary_labels_all = (all_labels >= 0.6).float()
+        all_probs = torch.cat(all_probs, dim=0)
+        all_labels = torch.cat(all_labels, dim=0)
 
-    # Compute mAP per attribute
-    aps = torch.zeros(model.num_attrs)
-    for i in range(model.num_attrs):
-        mask_i = valid_mask[:, i]
-        if not mask_i.any(): continue
-        scores_i = all_probs[mask_i, i]
-        labels_i = binary_labels_all[mask_i, i]
-        if labels_i.sum() == 0: continue
-        ap = average_precision_score(labels_i.numpy().astype(int), scores_i.numpy())
-        aps[i] = ap
+        # SUN mask for validation
+        valid_mask = (all_labels >= 0.6) | (all_labels <= 0.1)
+        binary_labels_all = (all_labels >= 0.6).float()
 
-    valid_aps = aps[aps > 0]
-    mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
+        aps = torch.zeros(all_labels.shape[1])
+        for attr_idx in range(all_labels.shape[1]):
+            mask_i = valid_mask[:, attr_idx]
+            if not mask_i.any():
+                continue
+            scores_i = all_probs[mask_i, attr_idx]
+            labels_i = binary_labels_all[mask_i, attr_idx]
+            if labels_i.sum() == 0:
+                continue
+            ap = average_precision_score(labels_i.numpy().astype(np.int32),
+                                         scores_i.numpy())
+            aps[attr_idx] = ap
 
-    # Accuracy at fixed 0.5 threshold
-    preds = (all_probs >= 0.5).float()
-    correct = ((preds == binary_labels_all).float() * valid_mask).sum().item()
-    total_valid = valid_mask.sum().item()
-    acc = correct / total_valid if total_valid > 0 else 0
+        valid_aps = aps[aps > 0]
+        mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
+        logger.info(f'** Epoch: {epoch_num} ---> Validation mAP (thr=0.5): {100 * mean_ap:.2f} **')
 
-    logger.info(f"** Epoch {epoch_num} ---> Validation mAP: {100*mean_ap:.2f}, Accuracy: {100*acc:.2f} **")
+        # Save checkpoint based on validation mAP
+        if ckpt is not None:
+            ckpt.save_best(acc=100 * mean_ap, epoch=epoch_num, net=model)
 
-    if ckpt is not None:
-        ckpt.save_best(acc=100*mean_ap, epoch=epoch_num, net=model)
-
-    model.train()
+        model.train()
 
     # # --- START EVALUATION FUNCTION ---
     # model.eval()
