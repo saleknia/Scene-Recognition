@@ -23,121 +23,42 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
-from sklearn.metrics import average_precision_score, f1_score
+from sklearn.metrics import average_precision_score
 
 # ----------------------------
-# Loss functions
+# Pos/Neg Split BCE Loss
 # ----------------------------
-
-class FocalLoss(nn.Module):
-    def __init__(self, alpha=0.25, gamma=2.0, reduction="mean"):
-        super(FocalLoss, self).__init__()
-        self.alpha = alpha
-        self.gamma = gamma
-        self.reduction = reduction
-
-    def forward(self, logits, targets, mask=None):
-        bce_loss = F.binary_cross_entropy_with_logits(
-            logits, targets, reduction="none"
-        )
-        probs = torch.sigmoid(logits)
-        pt = probs * targets + (1 - probs) * (1 - targets)
-        focal = self.alpha * (1 - pt) ** self.gamma * bce_loss
-
-        if mask is not None:
-            focal = focal * mask
-
-        if self.reduction == "mean":
-            denom = mask.sum() if mask is not None else torch.numel(focal)
-            return focal.sum() / denom.clamp(min=1.0)
-        elif self.reduction == "sum":
-            return focal.sum()
-        else:
-            return focal
-
-
-class AsymmetricLoss(nn.Module):
-    """ Ridnik et al. 'Asymmetric Loss For Multi-Label Classification' """
-    def __init__(self, gamma_pos=0, gamma_neg=4, clip=0.05, eps=1e-8):
-        super(AsymmetricLoss, self).__init__()
-        self.gamma_pos = gamma_pos
-        self.gamma_neg = gamma_neg
-        self.clip = clip
-        self.eps = eps
-
-    def forward(self, logits, targets, mask=None):
-        probs = torch.sigmoid(logits)
-        targets = targets.float()
-
-        xs_pos = probs
-        xs_neg = 1 - probs
-
-        # Clip easy negatives
-        if self.clip is not None and self.clip > 0:
-            xs_neg = (xs_neg + self.clip).clamp(max=1)
-
-        # Basic loss
-        loss = targets * torch.log(xs_pos.clamp(min=self.eps)) + \
-               (1 - targets) * torch.log(xs_neg.clamp(min=self.eps))
-
-        # Focusing
-        if self.gamma_pos > 0 or self.gamma_neg > 0:
-            pt = xs_pos * targets + xs_neg * (1 - targets)
-            one_sided_gamma = self.gamma_pos * targets + self.gamma_neg * (1 - targets)
-            loss *= (1 - pt) ** one_sided_gamma
-
-        loss = -loss
-
-        if mask is not None:
-            loss = loss * mask
-
-        return loss.sum() / mask.sum().clamp(min=1.0) if mask is not None else loss.mean()
-
-
-# ----------------------------
-# Threshold finder
-# ----------------------------
-
-def find_optimal_thresholds(probs, labels, valid_mask, step=0.05):
+def bce_pos_neg_separate(logits, labels, mask=None):
     """
-    Compute per-attribute thresholds maximizing F1.
+    logits: [B, C] raw outputs
+    labels: [B, C] binary 0/1
+    mask: [B, C] optional mask to ignore uncertain labels
     """
-    num_attrs = labels.shape[1]
-    thresholds = torch.full((num_attrs,), 0.5)  # default
+    bce = F.binary_cross_entropy_with_logits(logits, labels.float(), reduction='none')
 
-    for attr_idx in range(num_attrs):
-        mask_i = valid_mask[:, attr_idx]
-        if not mask_i.any():
-            continue
+    if mask is not None:
+        bce = bce * mask
 
-        scores_i = probs[mask_i, attr_idx].numpy()
-        labels_i = labels[mask_i, attr_idx].numpy().astype(int)
+    # Separate positives and negatives
+    pos_mask = labels == 1
+    neg_mask = labels == 0
 
-        if labels_i.sum() == 0 or labels_i.sum() == len(labels_i):
-            continue
+    if mask is not None:
+        pos_mask = pos_mask * (mask.bool())
+        neg_mask = neg_mask * (mask.bool())
 
-        best_thr, best_f1 = 0.5, 0.0
-        for thr in np.arange(0.0, 1.01, step):
-            preds = (scores_i >= thr).astype(int)
-            f1 = f1_score(labels_i, preds, zero_division=0)
-            if f1 > best_f1:
-                best_f1, best_thr = f1, thr
-        thresholds[attr_idx] = best_thr
+    # Per-sample normalization
+    loss_pos = (bce * pos_mask).sum(dim=1) / pos_mask.sum(dim=1).clamp(min=1.0)
+    loss_neg = (bce * neg_mask).sum(dim=1) / neg_mask.sum(dim=1).clamp(min=1.0)
 
-    return thresholds
+    loss = loss_pos + loss_neg
+    return loss.mean()
 
 
 # ----------------------------
-# Trainer Function
+# Trainer Function (fixed threshold 0.5)
 # ----------------------------
-
-def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger,
-                 loss_type="asl"):
-    """
-    loss_type: "bce", "focal", or "asl"
-    """
-
+def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
     print(f"Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]['lr']}")
 
     model = model.to(device)
@@ -147,21 +68,10 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     loss_att_total = utils.AverageMeter()
     soft_acc_total = utils.AverageMeter()
 
-    # Pick loss
-    if loss_type == "bce":
-        loss_func = nn.BCEWithLogitsLoss(reduction="none")
-    elif loss_type == "focal":
-        loss_func = FocalLoss(alpha=0.25, gamma=2.0, reduction="mean")
-    elif loss_type == "asl":
-        loss_func = AsymmetricLoss(gamma_pos=0, gamma_neg=4, clip=0.05)
-    else:
-        raise ValueError(f"Unknown loss_type: {loss_type}")
-
     total_batchs = len(dataloader["train"])
     loader = dataloader["train"]
 
     for batch_idx, (inputs, targets) in enumerate(loader):
-
         inputs, labels = inputs.to(device), targets.to(device)
         outputs = model(inputs)
 
@@ -169,12 +79,8 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         binary_labels = (labels >= 0.6).float()
         mask = ((labels >= 0.6) | (labels <= 0.1)).float()
 
-        if loss_type == "bce":
-            loss_per_element = loss_func(outputs, binary_labels)
-            masked_loss = loss_per_element * mask
-            loss_att = masked_loss.sum() / torch.clamp(mask.sum(), min=1.0)
-        else:
-            loss_att = loss_func(outputs, binary_labels, mask)
+        # Pos/Neg split BCE
+        loss_att = bce_pos_neg_separate(outputs, binary_labels, mask)
 
         loss_total.update(loss_att.item())
         loss_att_total.update(loss_att.item())
@@ -189,7 +95,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         # Soft accuracy for logging
         with torch.no_grad():
             probs = torch.sigmoid(outputs)
-            preds = (probs >= 0.5).float()
+            preds = (probs >= 0.5).float()  # fixed threshold
             correct = ((preds == binary_labels).float() * mask).sum().item()
             num_valid_labels = mask.sum().item()
             batch_accuracy = correct / num_valid_labels if num_valid_labels > 0 else 0
@@ -204,7 +110,6 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
             bar_length=45,
         )
 
-    # Epoch summary
     logger.info(
         f"Epoch: {epoch_num} ---> Train , Loss = {loss_total.avg:.4f}, "
         f"SoftAcc = {100 * soft_acc_total.avg:.2f}, "
@@ -214,74 +119,55 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     # ----------------------------
     # Validation
     # ----------------------------
-    if epoch_num % 1 == 0:
-        model.eval()
-        all_probs = []
-        all_labels = []
+    model.eval()
+    all_probs = []
+    all_labels = []
 
-        val_loader = dataloader["valid"]
-        with torch.no_grad():
-            for inputs, labels in val_loader:
-                inputs, labels = inputs.to(device), labels.to(device)
-                outputs = model(inputs)
-                probs = torch.sigmoid(outputs)
-                all_probs.append(probs.cpu())
-                all_labels.append(labels.cpu())
+    val_loader = dataloader["valid"]
+    with torch.no_grad():
+        for inputs, labels in val_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            probs = torch.sigmoid(outputs)
+            all_probs.append(probs.cpu())
+            all_labels.append(labels.cpu())
 
-        all_probs = torch.cat(all_probs, dim=0)
-        all_labels = torch.cat(all_labels, dim=0)
+    all_probs = torch.cat(all_probs, dim=0)
+    all_labels = torch.cat(all_labels, dim=0)
 
-        valid_mask = (all_labels >= 0.6) | (all_labels <= 0.1)
-        binary_labels_all = (all_labels >= 0.6).float()
+    valid_mask = (all_labels >= 0.6) | (all_labels <= 0.1)
+    binary_labels_all = (all_labels >= 0.6).float()
 
-        # --- Compute AP per attribute
-        aps = torch.zeros(all_labels.shape[1])
-        for attr_idx in range(all_labels.shape[1]):
-            mask_i = valid_mask[:, attr_idx]
-            if not mask_i.any():
-                continue
-            scores_i = all_probs[mask_i, attr_idx]
-            labels_i = binary_labels_all[mask_i, attr_idx]
-            if labels_i.sum() == 0:
-                continue
-            ap = average_precision_score(labels_i.numpy().astype(int),
-                                         scores_i.numpy())
-            aps[attr_idx] = ap
+    # --- Compute AP per attribute
+    aps = torch.zeros(all_labels.shape[1])
+    for attr_idx in range(all_labels.shape[1]):
+        mask_i = valid_mask[:, attr_idx]
+        if not mask_i.any():
+            continue
+        scores_i = all_probs[mask_i, attr_idx]
+        labels_i = binary_labels_all[mask_i, attr_idx]
+        if labels_i.sum() == 0:
+            continue
+        ap = average_precision_score(labels_i.numpy().astype(int),
+                                     scores_i.numpy())
+        aps[attr_idx] = ap
 
-        valid_aps = aps[aps > 0]
-        mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
+    valid_aps = aps[aps > 0]
+    mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
 
-        # --- Compute per-attribute thresholds ---
-        thresholds = find_optimal_thresholds(all_probs, binary_labels_all, valid_mask, step=0.05)
-        preds_opt = torch.zeros_like(all_probs)
-        for attr_idx in range(all_labels.shape[1]):
-            thr = thresholds[attr_idx].item()
-            preds_opt[:, attr_idx] = (all_probs[:, attr_idx] >= thr).float()
+    # --- Compute accuracy with fixed 0.5 threshold
+    preds = (all_probs >= 0.5).float()
+    correct = ((preds == binary_labels_all).float() * valid_mask).sum().item()
+    total_valid = valid_mask.sum().item()
+    acc = correct / total_valid if total_valid > 0 else 0
 
-        # Compute mAP with optimal thresholds (via AP again)
-        aps_opt = torch.zeros(all_labels.shape[1])
-        for attr_idx in range(all_labels.shape[1]):
-            mask_i = valid_mask[:, attr_idx]
-            if not mask_i.any():
-                continue
-            scores_i = all_probs[mask_i, attr_idx]
-            labels_i = binary_labels_all[mask_i, attr_idx]
-            if labels_i.sum() == 0:
-                continue
-            ap = average_precision_score(labels_i.numpy().astype(int),
-                                         scores_i.numpy())
-            aps_opt[attr_idx] = ap
-        mean_ap_opt = aps_opt[aps_opt > 0].mean().item() if len(aps_opt) > 0 else 0
+    logger.info(f"** Epoch {epoch_num} ---> Validation mAP: {100*mean_ap:.2f}, Accuracy: {100*acc:.2f} **")
 
-        logger.info(f"** Epoch {epoch_num} ---> Validation mAP (thr=0.5): {100*mean_ap:.2f}, "
-                    f"mAP (opt thr): {100*mean_ap_opt:.2f} **")
+    if ckpt is not None:
+        ckpt.save_best(acc=100 * mean_ap, epoch=epoch_num, net=model)
 
-        if ckpt is not None:
-            ckpt.save_best(acc=100 * mean_ap_opt, epoch=epoch_num, net=model)
+    model.train()
 
-        model.train()
-
-    
     # # --- START EVALUATION FUNCTION ---
     # model.eval()
     # all_probs = []
