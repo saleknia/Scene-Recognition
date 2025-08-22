@@ -42,7 +42,7 @@ pos_weight = torch.tensor(neg_counts / (freq + 1e-6), dtype=torch.float32).cuda(
 # ----------------------------
 # Trainer Function
 # ----------------------------
-def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger, pos_weight):
+def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_class, lr_scheduler, logger):
     print(f'Epoch: {epoch_num} ---> Train , lr: {optimizer.param_groups[0]["lr"]}')
     
     model = model.to(device)
