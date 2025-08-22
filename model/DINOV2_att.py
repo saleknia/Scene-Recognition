@@ -12,7 +12,7 @@ class DINOV2_att(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.blocks[10:].parameters():
+        for param in self.model.blocks[-1].parameters():
             param.requires_grad = True
 
         self.head_att = nn.Sequential(
