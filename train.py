@@ -158,7 +158,7 @@ def main(args):
 
         NUM_CLASS = trainset.classes
 
-        data_loader  = {'train':train_loader, 'valid':valid_loader}
+        data_loader  = {'train':train_loader, 'test':valid_loader}
 
     elif TASK_NAME=='Scene-15':
 
