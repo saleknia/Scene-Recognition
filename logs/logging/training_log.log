@@ -29151,3 +29151,70 @@ Epoch: 4 ---> Train , Loss = 0.1799, SoftAcc = 94.72, CatAcc  = 0.21, lr = 0.000
 ** Epoch: 4 ---> Validation mAP: 25.02, Validation Category Accuracy: 0.07 **
 Epoch: 5 ---> Train , Loss = 0.1712, SoftAcc = 94.89, CatAcc  = 0.12, lr = 0.0007718895067235705
 ** Epoch: 5 ---> Validation mAP: 28.09, Validation Category Accuracy: 0.12 **
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════════════╕
+│ Hyperparameter   │ Value                   │
+╞══════════════════╪═════════════════════════╡
+│ Learning Rate    │ 0.01                    │
+├──────────────────┼─────────────────────────┤
+│ Num Classes      │ (102, 717)              │
+├──────────────────┼─────────────────────────┤
+│ Device           │ cuda                    │
+├──────────────────┼─────────────────────────┤
+│ Batch Size       │ 64                      │
+├──────────────────┼─────────────────────────┤
+│ POLY_LR          │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Num Epochs       │ 20                      │
+├──────────────────┼─────────────────────────┤
+│ Num Workers      │ 4                       │
+├──────────────────┼─────────────────────────┤
+│ Image Height     │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Image Width      │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Pin Memory       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Load Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Save Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Download Dataset │ False                   │
+├──────────────────┼─────────────────────────┤
+│ Model Name       │ DINOV2_att              │
+├──────────────────┼─────────────────────────┤
+│ Seed             │ 42                      │
+├──────────────────┼─────────────────────────┤
+│ Task Name        │ SUNAttribute            │
+├──────────────────┼─────────────────────────┤
+│ GPU              │ Tesla T4                │
+├──────────────────┼─────────────────────────┤
+│ Torch            │ 2.6.0+cu124             │
+├──────────────────┼─────────────────────────┤
+│ Torchvision      │ 0.21.0+cu124            │
+├──────────────────┼─────────────────────────┤
+│ Checkpoint Name  │ DINOV2_att_SUNAttribute │
+╘══════════════════╧═════════════════════════╛
+using MLP layer as FFN
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ DINOV2_att      │ 7.72 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 0.2086, SoftAcc = 93.03, CatAcc  = 0.16, lr = 0.009548853816214993
+** Epoch: 1 ---> Validation mAP: 37.42, Validation Category Accuracy: 0.18 **
+Epoch: 2 ---> Train , Loss = 0.1349, SoftAcc = 95.57, CatAcc  = 0.13, lr = 0.009095325760829612
+** Epoch: 2 ---> Validation mAP: 52.42, Validation Category Accuracy: 0.17 **
+Epoch: 3 ---> Train , Loss = 0.1170, SoftAcc = 95.99, CatAcc  = 0.17, lr = 0.008639269723028177
+** Epoch: 3 ---> Validation mAP: 58.33, Validation Category Accuracy: 0.15 **
+Epoch: 4 ---> Train , Loss = 0.1088, SoftAcc = 96.19, CatAcc  = 0.21, lr = 0.008180521460508558
+** Epoch: 4 ---> Validation mAP: 61.49, Validation Category Accuracy: 0.07 **
+Epoch: 5 ---> Train , Loss = 0.1042, SoftAcc = 96.32, CatAcc  = 0.15, lr = 0.007718895067235684
+** Epoch: 5 ---> Validation mAP: 63.62, Validation Category Accuracy: 0.13 **
