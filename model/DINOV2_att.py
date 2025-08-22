@@ -24,7 +24,7 @@ class DINOV2_att(nn.Module):
             nn.Sequential(
                 nn.Dropout(p=0.5),
                 nn.Linear(feature_dim, 1)
-            ) for _ in range(num_attrs)
+            ) for _ in range(self.num_attrs)
         ])
 
     def forward(self, x):
