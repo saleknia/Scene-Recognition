@@ -49,7 +49,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         mask = ((labels >= 0.6) | (labels <= 0.1)).float()
         num_valid_labels = mask.sum()
 
-        loss_per_element = loss_att_func(outputs_att, binary_labels)
+        loss_per_element = loss_att_func(outputs, binary_labels)
         masked_loss      = loss_per_element * mask
         loss_att         = masked_loss.sum() / torch.clamp(num_valid_labels, min=1.0)
 
