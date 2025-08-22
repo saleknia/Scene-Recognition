@@ -56,7 +56,7 @@ CONTINUE   = True
 TEACHER    = False
 
 SAVE_MODEL = True
-POLY_LR    = False
+POLY_LR    = True
 DOWNLOAD   = False
 
 
