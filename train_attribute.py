@@ -88,7 +88,7 @@ def main(args):
 
         # Create dataloader
         train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
-        valid_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
+        valid_loader = DataLoader(validset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
 
         data_loader  = {'train':train_loader, 'valid':valid_loader}
 
