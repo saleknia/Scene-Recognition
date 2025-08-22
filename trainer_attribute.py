@@ -99,7 +99,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
         f'CatAcc  = {100 * metric_train.compute():.2f}, '
         f'lr = {optimizer.param_groups[0]["lr"]}'
     )
-    if epoch_num % 5 == 0:
+    if epoch_num % 1 == 0:
         # --- START OPTIMIZED EVALUATION FUNCTION ---
         model.eval()
         all_probs = []

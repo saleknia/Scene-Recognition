@@ -34,20 +34,20 @@ class ConvNext(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        # for param in self.model.stages[-1].blocks[-1].parameters():
-        #     param.requires_grad = True
+        for param in self.model.stages[-1].blocks[-1].parameters():
+            param.requires_grad = True
 
-        # self.model.head.fc = nn.Sequential(
-        #                             nn.Dropout(p=0.5, inplace=True),
-        #                             nn.Linear(in_features=768, out_features=num_classes, bias=True),
-        #                         )
+        self.model.head.fc = nn.Sequential(
+                                    nn.Dropout(p=0.5, inplace=True),
+                                    nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                )
 
         # self.fc = nn.Sequential(
         #                             nn.Dropout(p=0.5, inplace=True),
         #                             nn.Linear(in_features=2048, out_features=num_classes, bias=True),
         #                         )
 
-        self.pooling = nn.AdaptiveAvgPool1d(512)
+        # self.pooling = nn.AdaptiveAvgPool1d(512)
 
         # for param in self.model.head.parameters():
         #     param.requires_grad = True
@@ -58,9 +58,6 @@ class ConvNext(nn.Module):
     def forward(self, x_in):
 
         features = self.model(x_in)
-        features = self.pooling(features.unsqueeze(1)).squeeze(1)
-
-        # x = self.fc(features)
 
         return features
 
