@@ -29907,3 +29907,80 @@ Training Phase
 **************************************************
 Epoch: 1 ---> Train , Loss = 0.0728, SoftAcc = 79.02, lr = 9.548853816215016e-05
 ** Epoch 1 ---> Validation mAP (thr=0.5): 46.08, mAP (opt thr): 46.08 **
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════════════╕
+│ Hyperparameter   │ Value                   │
+╞══════════════════╪═════════════════════════╡
+│ Learning Rate    │ 0.0001                  │
+├──────────────────┼─────────────────────────┤
+│ Num Classes      │ 102                     │
+├──────────────────┼─────────────────────────┤
+│ Device           │ cuda                    │
+├──────────────────┼─────────────────────────┤
+│ Batch Size       │ 32                      │
+├──────────────────┼─────────────────────────┤
+│ POLY_LR          │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Num Epochs       │ 20                      │
+├──────────────────┼─────────────────────────┤
+│ Num Workers      │ 4                       │
+├──────────────────┼─────────────────────────┤
+│ Image Height     │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Image Width      │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Pin Memory       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Load Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Save Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Download Dataset │ False                   │
+├──────────────────┼─────────────────────────┤
+│ Model Name       │ DINOV2_att              │
+├──────────────────┼─────────────────────────┤
+│ Seed             │ 42                      │
+├──────────────────┼─────────────────────────┤
+│ Task Name        │ SUNAttribute            │
+├──────────────────┼─────────────────────────┤
+│ GPU              │ Tesla T4                │
+├──────────────────┼─────────────────────────┤
+│ Torch            │ 2.6.0+cu124             │
+├──────────────────┼─────────────────────────┤
+│ Torchvision      │ 0.21.0+cu124            │
+├──────────────────┼─────────────────────────┤
+│ Checkpoint Name  │ DINOV2_att_SUNAttribute │
+╘══════════════════╧═════════════════════════╛
+using MLP layer as FFN
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ DINOV2_att      │ 7.17 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 0.5627, SoftAcc = 87.72, lr = 9.548853816215016e-05
+** Epoch 1 ---> Validation mAP: 66.85, Accuracy: 91.95 **
+Epoch: 2 ---> Train , Loss = 0.4106, SoftAcc = 91.61, lr = 9.095325760829648e-05
+** Epoch 2 ---> Validation mAP: 69.41, Accuracy: 92.69 **
+Epoch: 3 ---> Train , Loss = 0.3711, SoftAcc = 92.38, lr = 8.639269723028212e-05
+** Epoch 3 ---> Validation mAP: 70.59, Accuracy: 93.33 **
+Epoch: 4 ---> Train , Loss = 0.3424, SoftAcc = 92.96, lr = 8.180521460508584e-05
+** Epoch 4 ---> Validation mAP: 70.89, Accuracy: 93.92 **
+Epoch: 5 ---> Train , Loss = 0.3225, SoftAcc = 93.34, lr = 7.718895067235707e-05
+** Epoch 5 ---> Validation mAP: 71.49, Accuracy: 94.08 **
+Epoch: 6 ---> Train , Loss = 0.3031, SoftAcc = 93.71, lr = 7.254178469372205e-05
+** Epoch 6 ---> Validation mAP: 71.49, Accuracy: 94.37 **
+Epoch: 7 ---> Train , Loss = 0.2855, SoftAcc = 94.05, lr = 6.78612759258126e-05
+** Epoch 7 ---> Validation mAP: 71.34, Accuracy: 94.56 **
+Epoch: 8 ---> Train , Loss = 0.2726, SoftAcc = 94.29, lr = 6.314458674893547e-05
+** Epoch 8 ---> Validation mAP: 71.50, Accuracy: 94.68 **
+Epoch: 9 ---> Train , Loss = 0.2575, SoftAcc = 94.60, lr = 5.838837929199798e-05
+** Epoch 9 ---> Validation mAP: 71.51, Accuracy: 94.64 **
+Epoch: 10 ---> Train , Loss = 0.2464, SoftAcc = 94.85, lr = 5.358867312681465e-05
+** Epoch 10 ---> Validation mAP: 71.66, Accuracy: 94.88 **
