@@ -6,7 +6,7 @@ import torchvision
 class DINOV2_att(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(DINOV2_att, self).__init__()
-
+        self.num_attrs = num_classes
         # Load DINOv2 backbone
         self.backbone = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
 
@@ -24,7 +24,7 @@ class DINOV2_att(nn.Module):
             nn.Sequential(
                 nn.Dropout(p=0.5),
                 nn.Linear(feature_dim, 1)
-            ) for _ in range(num_classes)
+            ) for _ in range(num_attrs)
         ])
 
     def forward(self, x):
