@@ -134,7 +134,8 @@ def main(args):
         labels      = labels[perm]
 
         transform_train = transforms.Compose([
-            transforms.RandomResizedCrop(224),
+            # transforms.RandomResizedCrop(224),
+            transforms.Resize((224, 224)),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -149,8 +150,8 @@ def main(args):
         # Root directory where SUN images are extracted
         root_dir = "/content/images"
         # Create dataset
-        trainset = SUN_717(image_paths[0:10755], root_dir, transform=transform_train)
-        validset = SUN_717(image_paths[10755:] , root_dir, transform=transform_test)
+        trainset = SUN_717(image_paths[0:7170], root_dir, transform=transform_train)
+        validset = SUN_717(image_paths[7170:] , root_dir, transform=transform_test)
 
         # Create dataloader
         train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
