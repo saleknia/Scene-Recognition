@@ -146,7 +146,7 @@ elif task_id==4:
     TASK_NAME = 'Scene-15'
 
 elif task_id==5:
-    NUM_CLASS = (102, 717)
+    NUM_CLASS = 102
     TASK_NAME = 'SUNAttribute'
 
 elif task_id==6:
