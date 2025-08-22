@@ -156,6 +156,8 @@ def main(args):
         train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
         valid_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
 
+        NUM_CLASS = len(trainset.classes)
+        
         data_loader  = {'train':train_loader, 'valid':valid_loader}
 
     elif TASK_NAME=='Scene-15':
