@@ -27,6 +27,8 @@ class SUN_717(Dataset):
             if not (category in self.categories):
                 self.categories[category] = index
                 index = index + 1
+        
+        self.classes = len(self.categories.keys())
 
     def __len__(self):
         return len(self.image_paths)
