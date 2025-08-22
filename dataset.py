@@ -16,17 +16,6 @@ class SUN_717(Dataset):
         self.image_paths = image_paths
         self.root_dir = root_dir
         self.transform = transform
-
-        self.categories = {}
-        index      = 0
-        for image in image_paths:
-            if len(image.split('/'))==3:
-                category = image.split('/')[1]
-            if len(image.split('/'))==4:
-                category = image.split('/')[1] + '/' + image.split('/')[2]
-            if not (category in self.categories):
-                self.categories[category] = index
-                index = index + 1
         
         self.classes = len(self.categories.keys())
 
@@ -68,17 +57,6 @@ class SUNAttributeDataset(Dataset):
         self.root_dir = root_dir
         self.transform = transform
 
-        self.categories = {}
-        index      = 0
-        for image in image_paths:
-            if len(image.split('/'))==3:
-                category = image.split('/')[1]
-            if len(image.split('/'))==4:
-                category = image.split('/')[1] + '/' + image.split('/')[2]
-            if not (category in self.categories):
-                self.categories[category] = index
-                index = index + 1
-
     def __len__(self):
         return len(self.image_paths)
 
@@ -95,16 +73,8 @@ class SUNAttributeDataset(Dataset):
 
         # Get label & category
         label    = self.labels[idx]
-        
-        if len(self.image_paths[idx].split('/'))==3:
-            c = self.image_paths[idx].split('/')[1]
-        if len(self.image_paths[idx].split('/'))==4:
-            c = self.image_paths[idx].split('/')[1] + '/' + self.image_paths[idx].split('/')[2]
 
-        category = self.categories[c]
-        category = torch.tensor(category, dtype=torch.float32)
-
-        return image, (label, category)
+        return image, label
 
 # Your superclass arrays
 superclass_1 = np.array(['airport_inside', 'auditorium', 'bar', 'bowling', 'casino',
