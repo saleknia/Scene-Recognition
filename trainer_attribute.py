@@ -67,7 +67,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
             lr_scheduler.step() 
 
         with torch.no_grad():
-            probs = torch.sigmoid(outputs_att)
+            probs = torch.sigmoid(outputs)
             preds = (probs >= 0.5).float()
             correct = ((preds == binary_labels).float() * mask).sum().item()
             batch_accuracy = correct / num_valid_labels.item() if num_valid_labels > 0 else 0
@@ -99,8 +99,8 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
                 inputs = inputs.to(device)
                 labels = labels.to(device)
 
-                outputs_att, outputs_cat = model(inputs)
-                probs = torch.sigmoid(outputs_att)
+                outputs = model(inputs)
+                probs = torch.sigmoid(outputs)
                 all_probs.append(probs.cpu())
                 all_labels.append(labels.cpu())
 
