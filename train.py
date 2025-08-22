@@ -148,10 +148,9 @@ def main(args):
 
         # Root directory where SUN images are extracted
         root_dir = "/content/images"
-
         # Create dataset
-        trainset = SUN_717(image_paths[0:10755], labels[0:10755], root_dir, transform=transform_train)
-        validset = SUN_717(image_paths[10755:] , labels[10755:] , root_dir, transform=transform_test)
+        trainset = SUN_717(image_paths[0:10755], root_dir, transform=transform_train)
+        validset = SUN_717(image_paths[10755:] , root_dir, transform=transform_test)
 
         # Create dataloader
         train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
