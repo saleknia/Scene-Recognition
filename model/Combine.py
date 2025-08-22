@@ -104,5 +104,5 @@ class Combine(nn.Module):
         s = self.scene_branch(x_in).softmax(dim=1)
         x = (s + o)
         
-        return x
+        return o
 

@@ -5,6 +5,53 @@ from torch.utils.data import Dataset
 from PIL import Image
 import os
 
+class SUN_717(Dataset):
+    def __init__(self, image_paths, root_dir, transform=None):
+        """
+        Args:
+            image_paths (list): list of relative image paths
+            root_dir (str): directory where SUN images are stored
+            transform (callable, optional): torchvision transforms
+        """
+        self.image_paths = image_paths
+        self.root_dir = root_dir
+        self.transform = transform
+
+        self.categories = {}
+        index      = 0
+        for image in image_paths:
+            if len(image.split('/'))==3:
+                category = image.split('/')[1]
+            if len(image.split('/'))==4:
+                category = image.split('/')[1] + '/' + image.split('/')[2]
+            if not (category in self.categories):
+                self.categories[category] = index
+                index = index + 1
+
+    def __len__(self):
+        return len(self.image_paths)
+
+    def __getitem__(self, idx):
+        # Full path
+        img_path = os.path.join(self.root_dir, self.image_paths[idx])
+
+        # Load image
+        image = Image.open(img_path).convert("RGB")
+
+        # Apply transforms
+        if self.transform:
+            image = self.transform(image)
+        
+        if len(self.image_paths[idx].split('/'))==3:
+            c = self.image_paths[idx].split('/')[1]
+        if len(self.image_paths[idx].split('/'))==4:
+            c = self.image_paths[idx].split('/')[1] + '/' + self.image_paths[idx].split('/')[2]
+
+        category = self.categories[c]
+        category = torch.tensor(category, dtype=torch.float32)
+
+        return image, category
+
 class SUNAttributeDataset(Dataset):
     def __init__(self, image_paths, labels, root_dir, transform=None):
         """

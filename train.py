@@ -19,6 +19,7 @@ from torchvision import transforms
 import torchvision.transforms.functional as TF
 from torch.utils.data import random_split
 import torch.optim as optim
+import scipy.io as sio
 
 from model.Mobile_netV2 import Mobile_netV2
 from model.Mobile_netV2_loss import Mobile_netV2_loss
@@ -35,7 +36,7 @@ from utils import color
 from utils import Save_Checkpoint_accuracy
 from trainer import trainer_func
 from tester import tester_func
-from dataset import superclasses, Fine_Grained_Dataset, Coarse_Grained_Dataset
+from dataset import superclasses, Fine_Grained_Dataset, Coarse_Grained_Dataset, SUN_717
 from config import *
 from tabulate import tabulate
 import warnings
@@ -111,6 +112,52 @@ def main(args):
             NUM_CLASS = 512
 
         data_loader  = {'train':train_loader,'valid':valid_loader, 'test':test_loader}
+
+    elif TASK_NAME=='SUN_717':
+
+        # Load .mat files
+        mat_data_images = sio.loadmat("/content/SUNAttributeDB/images.mat")
+        mat_data_labels = sio.loadmat("/content/SUNAttributeDB/attributeLabels_continuous.mat")
+
+        # Extract arrays
+        image_paths = mat_data_images["images"]   # shape (14340, 1), each entry is array(['path'], dtype='<U..')
+        labels = mat_data_labels["labels_cv"]     # shape (14340, 102)
+
+        # Convert image_paths to a simple list of strings
+        image_paths = [p[0][0] for p in image_paths]  # flatten
+        image_paths = np.array([str(p) for p in image_paths])
+
+        perm = np.random.permutation(len(image_paths))
+
+        # apply the same shuffle to both arrays
+        image_paths = image_paths[perm]
+        labels      = labels[perm]
+
+        transform_train = transforms.Compose([
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
+
+        transform_test = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
+
+        # Root directory where SUN images are extracted
+        root_dir = "/content/images"
+
+        # Create dataset
+        trainset = SUN_717(image_paths[0:10755], labels[0:10755], root_dir, transform=transform_train)
+        validset = SUN_717(image_paths[10755:] , labels[10755:] , root_dir, transform=transform_test)
+
+        # Create dataloader
+        train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
+        valid_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
+
+        data_loader  = {'train':train_loader, 'valid':valid_loader}
 
     elif TASK_NAME=='Scene-15':
 
