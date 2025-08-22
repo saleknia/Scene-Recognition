@@ -6,34 +6,45 @@ import torchvision
 class DINOV2_att(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(DINOV2_att, self).__init__()
-        self.num_attrs = num_classes
-        # Load DINOv2 backbone
-        self.backbone = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
 
-        # Freeze all parameters except last transformer block
-        for param in self.backbone.parameters():
+        self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+
+        for param in self.model.parameters():
             param.requires_grad = False
-        for param in self.backbone.blocks[-1].parameters():
+
+        for param in self.model.blocks[-1].parameters():
             param.requires_grad = True
 
-        # Feature dimension (ViT-B/14 default)
-        feature_dim = 768
 
-        # 102 independent linear heads
-        self.heads = nn.ModuleList([
-            nn.Sequential(
-                nn.Dropout(p=0.5),
-                nn.Linear(feature_dim, 1)
-            ) for _ in range(self.num_attrs)
-        ])
+        # loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth', map_location='cuda', weights_only=False)
+        # pretrained  = loaded_data['net']
+        # model2_dict = self.state_dict()
+        # state_dict  = {k:v for k,v in pretrained.items() if ((k in model2_dict.keys()) and (v.shape==model2_dict[k].shape))}
 
-    def forward(self, x):
-        # Extract patch token features
-        features = self.backbone.forward_features(x)['x_norm_patchtokens']  # [B, N, D]
-        features = features.mean(dim=1)  # Global average pooling over patches -> [B, D]
+        # model2_dict.update(state_dict)
+        # self.load_state_dict(model2_dict)
 
-        # Forward through 102 heads
-        logits = [head(features) for head in self.heads]  # list of [B,1]
-        logits = torch.cat(logits, dim=1)                 # [B, 102]
+        # for param in self.model.parameters():
+        #     param.requires_grad = False
+        
+        self.head = nn.Sequential(
+                                     nn.Dropout(p=0.5, inplace=True),
+                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                )
 
-        return logits
+        # loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_MIT-67_best.pth', map_location='cuda', weights_only=False)
+        # pretrained  = loaded_data['net']
+        # model2_dict = self.state_dict()
+        # state_dict  = {k:v for k,v in pretrained.items() if ((k in model2_dict.keys()) and (v.shape==model2_dict[k].shape))}
+
+        # model2_dict.update(state_dict)
+        # self.load_state_dict(model2_dict)
+
+    def forward(self, x_in):
+
+        features = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
+        features = features.mean(dim=1)
+
+        x = self.head(features)
+
+        return x
