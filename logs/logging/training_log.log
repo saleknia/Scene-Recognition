@@ -28232,3 +28232,4 @@ Epoch: 9 ---> Train , Loss = 0.0673, SoftAcc = 97.53, CatAcc  = 0.14, lr = 0.000
 Epoch: 10 ---> Train , Loss = 0.0654, SoftAcc = 97.59, CatAcc  = 0.18, lr = 0.000535886731268145
 ** Epoch: 10 ---> Validation mAP: 71.05, Validation Category Accuracy: 0.13 **
 Epoch: 11 ---> Train , Loss = 0.0625, SoftAcc = 97.68, CatAcc  = 0.09, lr = 0.00048740643917899326
+Logging Directory: ./logs/logging
