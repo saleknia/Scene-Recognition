@@ -30410,3 +30410,158 @@ Epoch: 6 ---> Train , Loss = 0.3205, SoftAcc = 92.47, lr = 7.2541784693722e-05
 ** Epoch: 6 ---> Validation mAP (thr=0.5): 71.04 **
 Epoch: 7 ---> Train , Loss = 0.2994, SoftAcc = 92.98, lr = 6.786127592581261e-05
 ** Epoch: 7 ---> Validation mAP (thr=0.5): 70.92 **
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════════════╕
+│ Hyperparameter   │ Value                   │
+╞══════════════════╪═════════════════════════╡
+│ Learning Rate    │ 0.0001                  │
+├──────────────────┼─────────────────────────┤
+│ Num Classes      │ 102                     │
+├──────────────────┼─────────────────────────┤
+│ Device           │ cuda                    │
+├──────────────────┼─────────────────────────┤
+│ Batch Size       │ 64                      │
+├──────────────────┼─────────────────────────┤
+│ POLY_LR          │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Num Epochs       │ 20                      │
+├──────────────────┼─────────────────────────┤
+│ Num Workers      │ 4                       │
+├──────────────────┼─────────────────────────┤
+│ Image Height     │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Image Width      │ 224                     │
+├──────────────────┼─────────────────────────┤
+│ Pin Memory       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Load Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Save Model       │ True                    │
+├──────────────────┼─────────────────────────┤
+│ Download Dataset │ False                   │
+├──────────────────┼─────────────────────────┤
+│ Model Name       │ DINOV2_att              │
+├──────────────────┼─────────────────────────┤
+│ Seed             │ 42                      │
+├──────────────────┼─────────────────────────┤
+│ Task Name        │ SUNAttribute            │
+├──────────────────┼─────────────────────────┤
+│ GPU              │ Tesla T4                │
+├──────────────────┼─────────────────────────┤
+│ Torch            │ 2.6.0+cu124             │
+├──────────────────┼─────────────────────────┤
+│ Torchvision      │ 0.21.0+cu124            │
+├──────────────────┼─────────────────────────┤
+│ Checkpoint Name  │ DINOV2_att_SUNAttribute │
+╘══════════════════╧═════════════════════════╛
+using MLP layer as FFN
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ DINOV2_att      │ 7.17 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/DINOV2_att_SUNAttribute_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 0.0203, SoftAcc = 94.18, lr = 9.548853816215001e-05
+** Epoch: 1 ---> Validation mAP (thr=0.5): 61.93 **
+Epoch: 2 ---> Train , Loss = 0.0117, SoftAcc = 95.90, lr = 9.09532576082962e-05
+** Epoch: 2 ---> Validation mAP (thr=0.5): 67.91 **
+Epoch: 3 ---> Train , Loss = 0.0104, SoftAcc = 96.19, lr = 8.639269723028174e-05
+** Epoch: 3 ---> Validation mAP (thr=0.5): 70.05 **
+Epoch: 4 ---> Train , Loss = 0.0098, SoftAcc = 96.38, lr = 8.180521460508574e-05
+** Epoch: 4 ---> Validation mAP (thr=0.5): 71.11 **
+Epoch: 5 ---> Train , Loss = 0.0093, SoftAcc = 96.51, lr = 7.718895067235703e-05
+** Epoch: 5 ---> Validation mAP (thr=0.5): 71.97 **
+Epoch: 6 ---> Train , Loss = 0.0089, SoftAcc = 96.62, lr = 7.2541784693722e-05
+** Epoch: 6 ---> Validation mAP (thr=0.5): 72.27 **
+Epoch: 7 ---> Train , Loss = 0.0086, SoftAcc = 96.72, lr = 6.786127592581261e-05
+** Epoch: 7 ---> Validation mAP (thr=0.5): 72.52 **
+Epoch: 8 ---> Train , Loss = 0.0084, SoftAcc = 96.77, lr = 6.314458674893555e-05
+** Epoch: 8 ---> Validation mAP (thr=0.5): 72.67 **
+Epoch: 9 ---> Train , Loss = 0.0081, SoftAcc = 96.85, lr = 5.838837929199799e-05
+** Epoch: 9 ---> Validation mAP (thr=0.5): 72.75 **
+Epoch: 10 ---> Train , Loss = 0.0080, SoftAcc = 96.92, lr = 5.358867312681459e-05
+** Epoch: 10 ---> Validation mAP (thr=0.5): 72.66 **
+Epoch: 11 ---> Train , Loss = 0.0077, SoftAcc = 96.99, lr = 4.8740643917899474e-05
+** Epoch: 11 ---> Validation mAP (thr=0.5): 72.86 **
+Epoch: 12 ---> Train , Loss = 0.0076, SoftAcc = 97.04, lr = 4.3838329055408724e-05
+** Epoch: 12 ---> Validation mAP (thr=0.5): 73.01 **
+Epoch: 13 ---> Train , Loss = 0.0073, SoftAcc = 97.12, lr = 3.887417987987638e-05
+** Epoch: 13 ---> Validation mAP (thr=0.5): 72.93 **
+Epoch: 14 ---> Train , Loss = 0.0072, SoftAcc = 97.16, lr = 3.383834619016503e-05
+** Epoch: 14 ---> Validation mAP (thr=0.5): 73.16 **
+Epoch: 15 ---> Train , Loss = 0.0071, SoftAcc = 97.22, lr = 2.8717458874925887e-05
+** Epoch: 15 ---> Validation mAP (thr=0.5): 73.03 **
+Epoch: 16 ---> Train , Loss = 0.0069, SoftAcc = 97.27, lr = 2.3492378861760376e-05
+** Epoch: 16 ---> Validation mAP (thr=0.5): 72.94 **
+Epoch: 17 ---> Train , Loss = 0.0067, SoftAcc = 97.32, lr = 1.813352073136743e-05
+** Epoch: 17 ---> Validation mAP (thr=0.5): 72.87 **
+Epoch: 18 ---> Train , Loss = 0.0066, SoftAcc = 97.39, lr = 1.2589254117941648e-05
+** Epoch: 18 ---> Validation mAP (thr=0.5): 72.86 **
+Epoch: 19 ---> Train , Loss = 0.0065, SoftAcc = 97.41, lr = 6.746414238367813e-06
+** Epoch: 19 ---> Validation mAP (thr=0.5): 72.86 **
+Epoch: 20 ---> Train , Loss = 0.0064, SoftAcc = 97.44, lr = 0.0
+** Epoch: 20 ---> Validation mAP (thr=0.5): 72.81 **
+Logging Directory: ./logs/logging
+╒══════════════════╤═══════════════════╕
+│ Hyperparameter   │ Value             │
+╞══════════════════╪═══════════════════╡
+│ Learning Rate    │ 0.0001            │
+├──────────────────┼───────────────────┤
+│ Num Classes      │ 67                │
+├──────────────────┼───────────────────┤
+│ Device           │ cuda              │
+├──────────────────┼───────────────────┤
+│ Batch Size       │ 64                │
+├──────────────────┼───────────────────┤
+│ POLY_LR          │ True              │
+├──────────────────┼───────────────────┤
+│ Num Epochs       │ 20                │
+├──────────────────┼───────────────────┤
+│ Num Workers      │ 4                 │
+├──────────────────┼───────────────────┤
+│ Image Height     │ 224               │
+├──────────────────┼───────────────────┤
+│ Image Width      │ 224               │
+├──────────────────┼───────────────────┤
+│ Pin Memory       │ True              │
+├──────────────────┼───────────────────┤
+│ Load Model       │ True              │
+├──────────────────┼───────────────────┤
+│ Save Model       │ True              │
+├──────────────────┼───────────────────┤
+│ Download Dataset │ False             │
+├──────────────────┼───────────────────┤
+│ Model Name       │ DINOV2_att        │
+├──────────────────┼───────────────────┤
+│ Seed             │ 42                │
+├──────────────────┼───────────────────┤
+│ Task Name        │ MIT-67            │
+├──────────────────┼───────────────────┤
+│ GPU              │ Tesla T4          │
+├──────────────────┼───────────────────┤
+│ Torch            │ 2.6.0+cu124       │
+├──────────────────┼───────────────────┤
+│ Torchvision      │ 0.21.0+cu124      │
+├──────────────────┼───────────────────┤
+│ Checkpoint Name  │ DINOV2_att_MIT-67 │
+╘══════════════════╧═══════════════════╛
+using MLP layer as FFN
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ DINOV2_att      │ 0.05 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/DINOV2_att_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 4.3487, Accuracy = 2.37 , lr = 9.548853816214998e-05
