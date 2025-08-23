@@ -145,6 +145,7 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
 
         valid_aps = aps[aps > 0]
         mean_ap = valid_aps.mean().item() if len(valid_aps) > 0 else 0
+        print(mean_ap)
         logger.info(f'** Epoch: {epoch_num} ---> Validation mAP (thr=0.5): {100 * mean_ap:.2f} **')
 
         # Save checkpoint based on validation mAP
