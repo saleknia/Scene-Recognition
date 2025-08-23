@@ -39,6 +39,33 @@ total = 14340
 neg_counts = total - freq
 pos_weight = torch.tensor(neg_counts / (freq + 1e-6), dtype=torch.float32).cuda()
 
+class FocalLoss(nn.Module):
+    def __init__(self, alpha=None, gamma=2.0, reduction="mean"):
+        super(FocalLoss, self).__init__()
+        self.alpha = alpha  # tensor of per-class weights or scalar
+        self.gamma = gamma
+        self.reduction = reduction
+
+    def forward(self, logits, targets):
+        bce_loss = F.binary_cross_entropy_with_logits(
+            logits, targets, reduction="none"
+        )
+        probs = torch.sigmoid(logits)
+        pt = torch.where(targets == 1, probs, 1 - probs)  # prob of correct class
+        focal_weight = (1 - pt) ** self.gamma
+
+        if self.alpha is not None:
+            alpha_t = torch.where(targets == 1, self.alpha, 1 - self.alpha)
+            focal_weight = focal_weight * alpha_t
+
+        loss = focal_weight * bce_loss
+        if self.reduction == "mean":
+            return loss.mean()
+        elif self.reduction == "sum":
+            return loss.sum()
+        else:
+            return loss
+
 # ----------------------------
 # Trainer Function
 # ----------------------------
@@ -53,8 +80,9 @@ def trainer_func(epoch_num, model, dataloader, optimizer, device, ckpt, num_clas
     soft_acc_total = utils.AverageMeter()
 
     # BCE loss with per-attribute pos_weight
-    loss_att_func = nn.BCEWithLogitsLoss(reduction='none', pos_weight=pos_weight)
-
+    # loss_att_func = nn.BCEWithLogitsLoss(reduction='none', pos_weight=pos_weight)
+    loss_att_func = FocalLoss(alpha=0.25, gamma=2.0, reduction="none")
+    
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
 
