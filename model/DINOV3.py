@@ -18,6 +18,9 @@ class DINOV3(nn.Module):
         for param in self.parameters():
             param.requires_grad = False
 
+        for param in self.stages[-1][-1].parameters():
+            param.requires_grad = True
+
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
