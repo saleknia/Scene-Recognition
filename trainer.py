@@ -13,6 +13,32 @@ from torcheval.metrics import MulticlassAccuracy
 from torch.nn.modules.loss import CrossEntropyLoss
 # labels = torch.load('/content/Scene-Recognition/labels.pt').cuda()
 
+'''
+AT with sum of absolute values with power p
+'''
+class AT(nn.Module):
+	'''
+	Paying More Attention to Attention: Improving the Performance of Convolutional
+	Neural Netkworks wia Attention Transfer
+	https://arxiv.org/pdf/1612.03928.pdf
+	'''
+	def __init__(self, p=2):
+		super(AT, self).__init__()
+		self.p = p
+
+	def forward(self, fm_s, fm_t):
+		loss = F.mse_loss(self.attention_map(fm_s), self.attention_map(fm_t))
+
+		return loss
+
+	def attention_map(self, fm, eps=1e-6):
+		am = torch.pow(torch.abs(fm), self.p)
+		am = torch.sum(am, dim=1, keepdim=True)
+		norm = torch.norm(am, dim=(2,3), keepdim=True)
+		am = torch.div(am, norm+eps)
+
+		return am
+
 class SP(nn.Module):
 	'''
 	Similarity-Preserving Knowledge Distillation
@@ -112,7 +138,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
     # accuracy = mAPMeter()
 
     loss_ce = CrossEntropyLoss(label_smoothing=0.0)
-    loss_di = RKD()
+    loss_di = AT()
 
     total_batchs = len(dataloader['train'])
     loader       = dataloader['train'] 
@@ -136,11 +162,11 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             # ce_loss = loss_ce(outputs[0], targets.long())
             # di_loss = F.kl_div(F.log_softmax(outputs[0]/T, dim=1), F.softmax(outputs[1]/T, dim=1), reduction='batchmean') * T * T
 
-            targets = outputs[1].argmax(dim=1)
-
             # ce_loss = loss_ce(outputs[0], targets)
-            ce_loss = F.kl_div(F.log_softmax(outputs[0], dim=1), torch.softmax(outputs[1], dim=1), reduction='batchmean')
-            di_loss = 0.0 #loss_di(*outputs[1])
+            # ce_loss = F.kl_div(F.log_softmax(outputs[0], dim=1), torch.softmax(outputs[1], dim=1), reduction='batchmean')
+
+            di_loss = loss_di(*outputs[1])
+
             loss    = ce_loss + di_loss
         else:
             predictions = torch.argmax(input=torch.softmax(outputs, dim=1),dim=1).long()

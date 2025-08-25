@@ -6,6 +6,9 @@ from .ConvNext import ConvNext
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/object.pth', map_location='cuda')
 # obj.load_state_dict(checkpoint['net'])
 
+obj = ConvNext().cuda()
+obj = obj.eval()
+
 class DINOV3(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(DINOV3, self).__init__()
@@ -18,7 +21,7 @@ class DINOV3(nn.Module):
         for param in self.parameters():
             param.requires_grad = False
 
-        for param in self.stages[-1][-1].parameters():
+        for param in self.stages[-1].parameters():
             param.requires_grad = True
 
         self.head = nn.Sequential(
@@ -28,12 +31,19 @@ class DINOV3(nn.Module):
 
     def forward(self, x):
     
+        features_t = obj(x) 
+
         for i in range(4):
             x = self.downsample_layers[i](x)
             x = self.stages[i](x)
+
+        features_s = x
 
         x_pool = x.mean([-2, -1])  # global average pooling, (N, C, H, W) -> (N, C)
 
         x = self.head(x_pool)
         
-        return x
+        if self.training:
+            return x, (features_s, features_t)
+        else:
+            return x
