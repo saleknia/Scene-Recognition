@@ -165,7 +165,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
             ce_loss = loss_ce(outputs[0], targets.long())
             # ce_loss = F.kl_div(F.log_softmax(outputs[0], dim=1), torch.softmax(outputs[1], dim=1), reduction='batchmean')
 
-            di_loss = loss_di(*outputs[1])
+            di_loss = loss_di(*outputs[1]) * 100
 
             loss    = ce_loss + di_loss
         else:
