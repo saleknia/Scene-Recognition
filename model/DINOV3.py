@@ -12,19 +12,11 @@ class DINOV3(nn.Module):
 
         model = torch.hub.load('/content/dinov3', 'dinov3_convnext_tiny', source='local', weights='/content/drive/MyDrive/dinov3_convnext_tiny_pretrain_lvd1689m-21b726bb.pth')
         
-        self.model = model
-        
-        for param in self.model.parameters():
+        self.downsample_layers = model.downsample_layers
+        self.stages            = model.stages
+
+        for param in self.parameters():
             param.requires_grad = False
-
-        for param in self.model.stages[-1].parameters():
-            param.requires_grad = True
-
-        for param in self.model.norm.parameters():
-            param.requires_grad = True
-
-        for param in self.model.norms.parameters():
-            param.requires_grad = True
 
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
@@ -33,15 +25,12 @@ class DINOV3(nn.Module):
 
     def forward(self, x_in):
     
-        x = self.head(self.model(x_in))
+        for i in range(4):
+            x = self.downsample_layers[i](x)
+            x = self.stages[i](x)
 
-        # x_t = obj(x_in)
+        x_pool = x.mean([-2, -1])  # global average pooling, (N, C, H, W) -> (N, C)
 
-        # x = self.head(self.model(x_in))
-
-        # if self.training:
-        #     return x, x_t
-        # else:
-        #     return x
+        x = self.head(x_pool)
         
         return x
