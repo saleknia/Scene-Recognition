@@ -23,7 +23,7 @@ class DINOV3(nn.Module):
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
 
-    def forward(self, x_in):
+    def forward(self, x):
     
         for i in range(4):
             x = self.downsample_layers[i](x)
