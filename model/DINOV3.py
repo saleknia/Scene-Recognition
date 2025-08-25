@@ -10,14 +10,14 @@ class DINOV3(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(DINOV3, self).__init__()
 
-        model = torch.hub.load('/content/dinov3', 'dinov3_convnext_small', source='local', weights='/content/drive/MyDrive/dinov3_convnext_small_pretrain_lvd1689m-296db49d.pth')
+        model = torch.hub.load('/content/dinov3', 'dinov3_convnext_tiny', source='local', weights='/content/drive/MyDrive/dinov3_convnext_tiny_pretrain_lvd1689m-296db49d.pth')
         
         self.model = model
         
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.stages[-1][-1].parameters():
+        for param in self.model.stages[-1].parameters():
             param.requires_grad = True
 
         for param in self.model.norm.parameters():
