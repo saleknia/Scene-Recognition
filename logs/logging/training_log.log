@@ -31964,3 +31964,90 @@ No Such file : /content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_best.pth
 **************************************************
 Training Phase
 **************************************************
+Logging Directory: ./logs/logging
+╒══════════════════╤═════════════════════╕
+│ Hyperparameter   │ Value               │
+╞══════════════════╪═════════════════════╡
+│ Learning Rate    │ 0.0001              │
+├──────────────────┼─────────────────────┤
+│ Num Classes      │ 67                  │
+├──────────────────┼─────────────────────┤
+│ Device           │ cuda                │
+├──────────────────┼─────────────────────┤
+│ Batch Size       │ 64                  │
+├──────────────────┼─────────────────────┤
+│ POLY_LR          │ False               │
+├──────────────────┼─────────────────────┤
+│ Num Epochs       │ 20                  │
+├──────────────────┼─────────────────────┤
+│ Num Workers      │ 4                   │
+├──────────────────┼─────────────────────┤
+│ Image Height     │ 224                 │
+├──────────────────┼─────────────────────┤
+│ Image Width      │ 224                 │
+├──────────────────┼─────────────────────┤
+│ Pin Memory       │ True                │
+├──────────────────┼─────────────────────┤
+│ Load Model       │ True                │
+├──────────────────┼─────────────────────┤
+│ Save Model       │ True                │
+├──────────────────┼─────────────────────┤
+│ Download Dataset │ False               │
+├──────────────────┼─────────────────────┤
+│ Model Name       │ Mobile_NetV2        │
+├──────────────────┼─────────────────────┤
+│ Seed             │ 42                  │
+├──────────────────┼─────────────────────┤
+│ Task Name        │ MIT-67              │
+├──────────────────┼─────────────────────┤
+│ GPU              │ Tesla T4            │
+├──────────────────┼─────────────────────┤
+│ Torch            │ 2.6.0+cu124         │
+├──────────────────┼─────────────────────┤
+│ Torchvision      │ 0.21.0+cu124        │
+├──────────────────┼─────────────────────┤
+│ Checkpoint Name  │ Mobile_NetV2_MIT-67 │
+╘══════════════════╧═════════════════════╛
+using MLP layer as FFN
+╒═════════════════╤═══════════════╤══════════╕
+│ Builded Model   │ #Parameters   │ Device   │
+╞═════════════════╪═══════════════╪══════════╡
+│ Mobile_NetV2    │ 1.80 M        │ cuda     │
+╘═════════════════╧═══════════════╧══════════╛
+Loading Checkpoint...
+No Such file : /content/drive/MyDrive/checkpoint/Mobile_NetV2_MIT-67_best.pth
+
+
+**************************************************
+Training Phase
+**************************************************
+Epoch: 1 ---> Train , Loss = 2.1698, Accuracy = 46.24 , lr = 0.0001
+Epoch: 2 ---> Train , Loss = 0.8083, Accuracy = 76.07 , lr = 0.0001
+Epoch: 3 ---> Train , Loss = 0.5829, Accuracy = 82.04 , lr = 0.0001
+Epoch: 4 ---> Train , Loss = 0.5044, Accuracy = 84.94 , lr = 0.0001
+Epoch: 5 ---> Train , Loss = 0.4219, Accuracy = 87.50 , lr = 0.0001
+Epoch: 6 ---> Train , Loss = 0.3500, Accuracy = 89.34 , lr = 0.0001
+Epoch: 7 ---> Train , Loss = 0.3324, Accuracy = 89.24 , lr = 0.0001
+Epoch: 8 ---> Train , Loss = 0.2935, Accuracy = 90.96 , lr = 0.0001
+Epoch: 9 ---> Train , Loss = 0.2594, Accuracy = 91.57 , lr = 0.0001
+Epoch: 10 ---> Train , Loss = 0.2353, Accuracy = 92.22 , lr = 0.0001
+Epoch: 11 ---> Train , Loss = 0.2089, Accuracy = 93.63 , lr = 0.0001
+Epoch: 12 ---> Train , Loss = 0.1992, Accuracy = 93.71 , lr = 0.0001
+Epoch: 13 ---> Train , Loss = 0.1695, Accuracy = 94.67 , lr = 0.0001
+Epoch: 14 ---> Train , Loss = 0.1715, Accuracy = 94.39 , lr = 0.0001
+Epoch: 15 ---> Train , Loss = 0.1510, Accuracy = 95.38 , lr = 0.0001
+Epoch: 16 ---> Train , Loss = 0.1341, Accuracy = 95.70 , lr = 0.0001
+Epoch: 17 ---> Train , Loss = 0.1413, Accuracy = 95.77 , lr = 0.0001
+Epoch: 18 ---> Train , Loss = 0.1006, Accuracy = 96.79 , lr = 0.0001
+Epoch: 19 ---> Train , Loss = 0.1092, Accuracy = 96.60 , lr = 0.0001
+Epoch: 20 ---> Train , Loss = 0.0976, Accuracy = 97.17 , lr = 0.0001
+**************************************************
+Best Acc Over Validation Set: 97.17
+Best Epoch: 20
+**************************************************
+Inference Phase
+**************************************************
+Final Test ---> Loss = 0.5160 , Accuracy = 87.17
+**************************************************
+
+
