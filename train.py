@@ -312,8 +312,8 @@ def main(args):
 
     if args.train=='True':
         #######################################################################################################################################
-        # optimizer      = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE, momentum=0.9, weight_decay=0.0001)   
-        optimizer      = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE)
+        optimizer      = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE, momentum=0.9, weight_decay=0.0001)   
+        # optimizer      = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE)
         total_batchs   = len(data_loader['train'])
         max_iterations = NUM_EPOCHS * total_batchs
         #######################################################################################################################################
