@@ -29,10 +29,12 @@ class ConvNext(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(ConvNext, self).__init__()
 
-        self.model = timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True, features_only=True)
+        self.model = timm.create_model("timm/convnext_tiny.fb_in22k", pretrained=True)
 
         for param in self.model.parameters():
             param.requires_grad = False
+
+        self.model.head.fc = nn.Identity()
 
         # for param in self.model.stages[-1].blocks[-1].parameters():
         #     param.requires_grad = True
@@ -57,8 +59,7 @@ class ConvNext(nn.Module):
 
     def forward(self, x_in):
 
-        # features = self.model(x_in)
-        features = self.model(x_in)[-1]
+        features = self.model(x_in)
 
         return features
 

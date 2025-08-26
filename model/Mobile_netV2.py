@@ -41,8 +41,8 @@ from .Hybrid import Hybrid
 # scene.load_state_dict(checkpoint['net'])
 # scene.model.fc = nn.Identity()
 
-# obj = ConvNext().cuda()
-# obj = obj.eval()
+obj = ConvNext().cuda()
+obj = obj.eval()
 
 # checkpoint = torch.load('/content/drive/MyDrive/checkpoint/obj.pth', map_location='cuda')
 # obj.load_state_dict(checkpoint['net'])
@@ -88,14 +88,17 @@ class Mobile_netV2(nn.Module):
 
         # x = self.head(self.model(x_in))
 
+        features_t = obj(x_in)
+
         features = self.model.forward_features(x_in)['x_norm_patchtokens'] # [B, No, D]
         features = features.mean(dim=1)
 
         x = self.head(features)
 
-        return x
-
-        # x_t = obj(x_in)
+        if self.training:
+            return x, (features, features_t)
+        else:
+            return x
 
         # if self.training:
         #     return x, x_t
