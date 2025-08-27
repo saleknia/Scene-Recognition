@@ -37,7 +37,7 @@ class ResNet(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in self.model.layer4[-1].parameters():
+        for param in self.model.layer4.parameters():
             param.requires_grad = True
 
         self.model.fc   = nn.Sequential(
