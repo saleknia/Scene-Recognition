@@ -55,7 +55,7 @@ def main(args):
                 class_to_super[cls] = idx
 
         transform_train = transforms.Compose([
-            transforms.RandomResizedCrop(size=384, scale=(0.2, 1)),
+            transforms.RandomResizedCrop(size=384),
             transforms.RandomHorizontalFlip(),
             transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
             transforms.RandomGrayscale(p=0.2),
