@@ -46,7 +46,4 @@ class DINOV3(nn.Module):
 
         x = self.head(x_pool)
         
-        if self.training:
-            return x
-        else:
-            return x
+        return x
