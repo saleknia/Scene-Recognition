@@ -21,8 +21,8 @@ class DINOV3(nn.Module):
         for param in self.parameters():
             param.requires_grad = False
 
-        # for param in self.stages[-1].parameters():
-        #     param.requires_grad = True
+        for param in self.stages[-1].parameters():
+            param.requires_grad = True
 
         self.head = nn.Sequential(
                                     nn.Dropout(p=0.5, inplace=True),
@@ -31,19 +31,19 @@ class DINOV3(nn.Module):
 
     def forward(self, x):
     
-        features_t = obj(x) 
+        # features_t = obj(x) 
 
         for i in range(4):
             x = self.downsample_layers[i](x)
             x = self.stages[i](x)
 
-        features_s = x
+        # features_s = x
 
         x_pool = x.mean([-2, -1])  # global average pooling, (N, C, H, W) -> (N, C)
 
         x = self.head(x_pool)
         
         if self.training:
-            return x, (features_s, features_t)
+            return x
         else:
             return x
