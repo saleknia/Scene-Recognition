@@ -29,6 +29,9 @@ class DINOV3(nn.Module):
                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
                                 )
 
+        nn.init.normal_(self.head[1].weight, mean=0.0, std=0.01)
+        nn.init.constant_(self.head[1].bias, 0.0)
+
     def forward(self, x):
     
         # features_t = obj(x) 

@@ -182,8 +182,7 @@ def trainer_func(epoch_num,model,dataloader,optimizer,device,ckpt,num_class,lr_s
 
         optimizer.zero_grad()
         loss.backward()
-        if epoch_num == 1:
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
 
         if lr_scheduler is not None:
