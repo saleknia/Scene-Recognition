@@ -70,7 +70,7 @@ def main(args):
         ])
 
 
-        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
+        trainset = torchvision.datasets.ImageFolder(root='/content/content/drive0/MyDrive/MIT-67-S/train', transform=transform_train)
         validset = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
         testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
 
@@ -241,8 +241,8 @@ def main(args):
     elif MODEL_NAME == 'DINOV3':
         model = DINOV3(num_classes=NUM_CLASS).to(DEVICE)
 
-    elif MODEL_NAME == 'DINOV2_att':
-        model = DINOV2_att(num_classes=NUM_CLASS).to(DEVICE)
+    elif MODEL_NAME == 'DINOV2':
+        model = DINOV2(num_classes=NUM_CLASS).to(DEVICE)
         
     else: 
         raise TypeError('Please enter a valid name for the model type')
