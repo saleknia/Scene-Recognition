@@ -168,7 +168,7 @@ model_table = tabulate(
                         ['Hybrid'           , 6],
                         ['seg'              , 7],
                         ['DINOV3'           , 8],
-                        ['DINOV2_att'       , 9]],
+                        ['DINOV2'       , 9]],
                     headers=['Model Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
