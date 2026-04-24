@@ -41,7 +41,7 @@ if log:
     logger.info(f'Logging Directory: {logging_log}')   
 ##########################################################################
 
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.01
 DEVICE        = "cuda" if torch.cuda.is_available() else "cpu"
 BATCH_SIZE    = 64
 NUM_EPOCHS    = 20
@@ -138,7 +138,7 @@ elif task_id==2:
     TASK_NAME = 'BU101+'
 
 elif task_id==3:
-    NUM_CLASS = 67
+    NUM_CLASS = 5
     TASK_NAME = 'MIT-67'
 
 elif task_id==4:
@@ -203,7 +203,7 @@ elif model_id==8:
     MODEL_NAME = 'DINOV3'
 
 elif model_id==9:
-    MODEL_NAME = 'DINOV2_att'
+    MODEL_NAME = 'DINOV2'
 
 if NORMAL_TRAINING:
     CKPT_NAME = MODEL_NAME + '_' + TASK_NAME

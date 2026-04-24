@@ -30,7 +30,7 @@ from model.Combine import Combine
 from model.Hybrid import Hybrid
 from model.seg import seg
 from model.DINOV3 import DINOV3
-from model.DINOV2_att import DINOV2_att
+from model.DINOV2 import DINOV2
 import utils
 from utils import color
 from utils import Save_Checkpoint_accuracy
@@ -46,16 +46,10 @@ def main(args):
 
     # LOAD_DATA
 
-    if TASK_NAME=='MIT-67' or TASK_NAME=='ImageNet':
-
-        # Create a mapping: {original_class -> superclass_index}
-        class_to_super = {}
-        for idx, superclass in enumerate(superclasses):
-            for cls in superclass:
-                class_to_super[cls] = idx
+    if TASK_NAME=='MIT-67':
 
         transform_train = transforms.Compose([
-            transforms.RandomResizedCrop(size=384),
+            transforms.RandomResizedCrop(size=224),
             transforms.RandomHorizontalFlip(),
             transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
             transforms.RandomGrayscale(p=0.2),
@@ -64,48 +58,28 @@ def main(args):
         ])
 
         transform_valid = transforms.Compose([
-            transforms.Resize((384, 384)),
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            # transforms.Resize(256),
-            # transforms.CenterCrop(224),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
 
         transform_test = transforms.Compose([
-            transforms.Resize((384, 384)),
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
-        if COARSE_GRAINED:
-            trainset     = Coarse_Grained_Dataset('/content/MIT-67/train', class_to_super=class_to_super,transform=transform_train)
-            validset     = Coarse_Grained_Dataset('/content/MIT-67/valid', class_to_super=class_to_super,transform=transform_test)
-            testset      = Coarse_Grained_Dataset('/content/MIT-67/test' , class_to_super=class_to_super,transform=transform_test)
-        
-        elif FINE_GRAINED:
 
-            trainset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
-            validset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_test)
-            testset      = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)
-
-            trainset     = Fine_Grained_Dataset(trainset, superclasses[SUPER_CLASS_INDEX-1])
-            validset     = Fine_Grained_Dataset(validset, superclasses[SUPER_CLASS_INDEX-1])
-            testset      = Fine_Grained_Dataset(testset , superclasses[SUPER_CLASS_INDEX-1])
-
-        else:
-            trainset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
-            validset     = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_test)
-            testset      = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
+        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
+        validset = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
+        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
 
 
         train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
         valid_loader = torch.utils.data.DataLoader(validset, batch_size = BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
         test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
 
-        if TASK_NAME=='MIT-67':
-            NUM_CLASS = len(trainset.classes)
-        else:
-            NUM_CLASS = 512
+        NUM_CLASS = len(trainset.classes)
 
         data_loader  = {'train':train_loader,'valid':valid_loader, 'test':test_loader}
 
@@ -308,9 +282,9 @@ def main(args):
 
     if args.train=='True':
         #######################################################################################################################################
-        # optimizer      = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE, momentum=0.9, weight_decay=0.0001)   
+        optimizer      = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE, momentum=0.9, weight_decay=0.0001)   
         # optimizer      = optim.RMSprop(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE, weight_decay=1e-4, momentum=0.9)
-        optimizer      = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE)
+        # optimizer      = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE)
         total_batchs   = len(data_loader['train'])
         max_iterations = NUM_EPOCHS * total_batchs
         #######################################################################################################################################
