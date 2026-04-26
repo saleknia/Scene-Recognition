@@ -138,7 +138,7 @@ elif task_id==2:
     TASK_NAME = 'BU101+'
 
 elif task_id==3:
-    NUM_CLASS = 5
+    NUM_CLASS = 12
     TASK_NAME = 'MIT-67'
 
 elif task_id==4:

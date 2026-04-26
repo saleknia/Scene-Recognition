@@ -70,7 +70,7 @@ def main(args):
         ])
 
 
-        trainset = torchvision.datasets.ImageFolder(root='/content/content/drive0/MyDrive/MIT-67-S/train', transform=transform_train)
+        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
         validset = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
         testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
 
