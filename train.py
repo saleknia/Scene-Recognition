@@ -70,9 +70,9 @@ def main(args):
         ])
 
 
-        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67/train/', transform=transform_train)
+        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67-Store/train/', transform=transform_train)
         validset = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
-        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
+        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67-Store/test/' , transform=transform_test)       
 
 
         train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
