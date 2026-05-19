@@ -20,7 +20,7 @@ class DINOV2(nn.Module):
         
         self.head = nn.Sequential(
                                      nn.Dropout(p=0.5, inplace=True),
-                                     nn.Linear(in_features=768, out_features=num_classes, bias=True),
+                                     nn.Linear(in_features=384, out_features=num_classes, bias=True),
                                 )
 
         # loaded_data = torch.load('/content/drive/MyDrive/checkpoint/DINOV2_att_MIT-67_best.pth', map_location='cuda', weights_only=False)
