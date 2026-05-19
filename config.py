@@ -110,16 +110,13 @@ if task_id == 3:
 
 os.environ['PYTHONHASHSEED'] = str(SEED)
 
-task_ids = ['1','2','3','4','5','6','7']
+task_ids = ['1','2','3','4']
 task_table = tabulate(
                     tabular_data=[
-                        ['Standford40'  , 1],
-                        ['BU101+'       , 2],
-                        ['MIT-67'       , 3],
-                        ['Scene-15'     , 4],
-                        ['SUNAttribute' , 5],
-                        ['ImageNet'     , 6],
-                        ['SUN_717'      , 7]],
+                        ['MIT-20'             , 1],
+                        ['MIT-20-Synthetic'   , 2],
+                        ['SUN397'             , 3],
+                        ['PLACES365'          , 4]],
                     headers=['Task Name', 'ID'],
                     tablefmt="fancy_grid"
                     )
@@ -130,32 +127,21 @@ assert (task_id in task_ids),'ID is Incorrect.'
 task_id = int(task_id)
 
 if task_id==1:
-    NUM_CLASS = 40
-    TASK_NAME = 'Standford40'
+    NUM_CLASS = 20
+    TASK_NAME = 'MIT-20'
 
 elif task_id==2:
-    NUM_CLASS = 101
-    TASK_NAME = 'BU101+'
+    NUM_CLASS = 20
+    TASK_NAME = 'MIT-20-Synthetic'
 
 elif task_id==3:
-    NUM_CLASS = 12
-    TASK_NAME = 'MIT-67'
+    NUM_CLASS = 20
+    TASK_NAME = 'SUN397'
 
 elif task_id==4:
-    NUM_CLASS = 15
-    TASK_NAME = 'Scene-15'
+    NUM_CLASS = 20
+    TASK_NAME = 'PLACES365'
 
-elif task_id==5:
-    NUM_CLASS = 102
-    TASK_NAME = 'SUNAttribute'
-
-elif task_id==6:
-    NUM_CLASS = 512
-    TASK_NAME = 'ImageNet'
-
-elif task_id==7:
-    NUM_CLASS = 717
-    TASK_NAME = 'SUN_717'
 
 model_ids = ['1','2','3','4','5','6','7','8', '9']
 model_table = tabulate(

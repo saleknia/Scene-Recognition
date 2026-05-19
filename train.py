@@ -46,7 +46,7 @@ def main(args):
 
     # LOAD_DATA
 
-    if TASK_NAME=='MIT-67':
+    if TASK_NAME=='MIT-20':
 
         transform_train = transforms.Compose([
             transforms.RandomResizedCrop(size=224),
@@ -69,44 +69,29 @@ def main(args):
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
-
-        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67-Store/train/', transform=transform_train)
-        validset = torchvision.datasets.ImageFolder(root='/content/MIT-67/valid/', transform=transform_valid)
-        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67-Store/test/' , transform=transform_test)       
-
+        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-20/train/', transform=transform_train)
+        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-20/test/' , transform=transform_test)       
 
         train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
-        valid_loader = torch.utils.data.DataLoader(validset, batch_size = BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
         test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
 
         NUM_CLASS = len(trainset.classes)
 
-        data_loader  = {'train':train_loader,'valid':valid_loader, 'test':test_loader}
+        data_loader  = {'train':train_loader,'valid':test_loader, 'test':test_loader}
 
-    elif TASK_NAME=='SUN_717':
-
-        # Load .mat files
-        mat_data_images = sio.loadmat("/content/SUNAttributeDB/images.mat")
-        mat_data_labels = sio.loadmat("/content/SUNAttributeDB/attributeLabels_continuous.mat")
-
-        # Extract arrays
-        image_paths = mat_data_images["images"]   # shape (14340, 1), each entry is array(['path'], dtype='<U..')
-        labels = mat_data_labels["labels_cv"]     # shape (14340, 102)
-
-        # Convert image_paths to a simple list of strings
-        image_paths = [p[0][0] for p in image_paths]  # flatten
-        image_paths = np.array([str(p) for p in image_paths])
-
-        perm = np.random.permutation(len(image_paths))
-
-        # apply the same shuffle to both arrays
-        image_paths = image_paths[perm]
-        labels      = labels[perm]
+    elif TASK_NAME=='MIT-20-Synthetic':
 
         transform_train = transforms.Compose([
-            # transforms.RandomResizedCrop(224),
-            transforms.Resize((224, 224)),
+            transforms.RandomResizedCrop(size=224),
             transforms.RandomHorizontalFlip(),
+            transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
+            transforms.RandomGrayscale(p=0.2),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
+
+        transform_valid = transforms.Compose([
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
@@ -114,106 +99,52 @@ def main(args):
         transform_test = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
-
-        # Root directory where SUN images are extracted
-        root_dir = "/content/images"
-        # Create dataset
-        trainset = SUN_717(image_paths[0:7170], root_dir, transform=transform_train)
-        validset = SUN_717(image_paths[7170:] , root_dir, transform=transform_test)
-
-        # Create dataloader
-        train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
-        valid_loader = DataLoader(validset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
-
-        NUM_CLASS = trainset.classes
-
-        data_loader  = {'train':train_loader, 'test':valid_loader}
-
-    elif TASK_NAME=='Scene-15':
-
-        transform_train = transforms.Compose([
-            # transforms.Resize((256, 256)),
-            # transforms.CenterCrop(224),
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
-            transforms.RandomGrayscale(p=0.2),
-            transforms.ToTensor(),
-            # transforms.RandomErasing(p=1.0),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
-        transform_test = transforms.Compose([
-            transforms.Resize((384, 384)),
-            transforms.ToTensor(),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
-        ])
+        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-20-Synthetic/train/', transform=transform_train)
+        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-20-Synthetic/test/' , transform=transform_test)       
 
-        trainset = torchvision.datasets.ImageFolder(root='/content/Scene-15/train/', transform=transform_train)
-        train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
-
-        testset = torchvision.datasets.ImageFolder(root='/content/Scene-15/test/', transform=transform_test)
-        test_loader = torch.utils.data.DataLoader(testset  , batch_size = 1         , shuffle=True, num_workers=NUM_WORKERS)
-
-        data_loader={'train':train_loader,'valid':test_loader}
-        
-    elif TASK_NAME=='Standford40':
-
-        transform_train = transforms.Compose([
-            transforms.RandomResizedCrop(224),
-            # transforms.Resize((224, 224)),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
-            transforms.RandomGrayscale(p=0.2),
-            transforms.ToTensor(),
-            # transforms.RandomErasing(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        ])
-
-        transform_test = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        ])
-
-        trainset = torchvision.datasets.ImageFolder(root='/content/StanfordActionDataset/train/',
-                                        transform=transform_train)
-        train_loader = torch.utils.data.DataLoader(
-            trainset, batch_size = BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
-
-        testset = torchvision.datasets.ImageFolder(root='/content/StanfordActionDataset/test/', transform=transform_test)
-        test_loader = torch.utils.data.DataLoader(testset, batch_size =  1, shuffle=True, num_workers=NUM_WORKERS)
+        train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
+        test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
 
         NUM_CLASS = len(trainset.classes)
 
-        data_loader={'train':train_loader,'valid':test_loader}
+        data_loader  = {'train':train_loader,'valid':test_loader, 'test':test_loader}
 
-    elif TASK_NAME=='BU101+':
+    elif TASK_NAME=='SUN397':
 
         transform_train = transforms.Compose([
-            transforms.RandomResizedCrop(224),
+            transforms.RandomResizedCrop(size=224),
             transforms.RandomHorizontalFlip(),
             transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
             transforms.RandomGrayscale(p=0.2),
             transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
+
+        transform_valid = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
 
         transform_test = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
-        trainset = torchvision.datasets.ImageFolder(root='/content/BU101/train/', transform=transform_train)
-        train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
+        trainset = torchvision.datasets.ImageFolder(root='/content/SUN397/train/', transform=transform_train)
+        testset  = torchvision.datasets.ImageFolder(root='/content/SUN397/test/' , transform=transform_test)       
 
-        testset = torchvision.datasets.ImageFolder(root='/content/BU101/test/', transform=transform_test)
-        test_loader = torch.utils.data.DataLoader(testset, batch_size = BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
+        train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
+        test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
 
-        data_loader={'train':train_loader,'valid':test_loader}
+        NUM_CLASS = len(trainset.classes)
+
+        data_loader  = {'train':train_loader,'valid':test_loader, 'test':test_loader}
+
 
     # MODEL_INITIALIZE
 

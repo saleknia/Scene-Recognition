@@ -7,16 +7,16 @@ class DINOV2(nn.Module):
     def __init__(self, num_classes=67, pretrained=True):
         super(DINOV2, self).__init__()
 
-        self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
+        self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14')
 
         for param in self.model.parameters():
             param.requires_grad = False
 
-        # for param in self.model.blocks[-1].parameters():
-        #     param.requires_grad = True
+        for param in self.model.blocks[-1].parameters():
+            param.requires_grad = True
 
-        for param in self.model.parameters():
-            param.requires_grad = False
+        # for param in self.model.parameters():
+        #     param.requires_grad = False
         
         self.head = nn.Sequential(
                                      nn.Dropout(p=0.5, inplace=True),
