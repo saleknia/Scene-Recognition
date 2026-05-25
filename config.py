@@ -114,7 +114,7 @@ task_ids = ['1','2','3','4']
 task_table = tabulate(
                     tabular_data=[
                         ['MIT-20'             , 1],
-                        ['MIT-20-Synthetic'   , 2],
+                        ['MIT-67'             , 2],
                         ['SUN397'             , 3],
                         ['PLACES365'          , 4]],
                     headers=['Task Name', 'ID'],
@@ -131,8 +131,8 @@ if task_id==1:
     TASK_NAME = 'MIT-20'
 
 elif task_id==2:
-    NUM_CLASS = 20
-    TASK_NAME = 'MIT-20-Synthetic'
+    NUM_CLASS = 67
+    TASK_NAME = 'MIT-67'
 
 elif task_id==3:
     NUM_CLASS = 20
