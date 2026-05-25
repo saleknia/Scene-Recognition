@@ -40,6 +40,7 @@ from dataset import superclasses, Fine_Grained_Dataset, Coarse_Grained_Dataset, 
 from config import *
 from tabulate import tabulate
 import warnings
+from torch.utils.data import ConcatDataset
 warnings.filterwarnings('ignore')
 
 from torch.utils.data import Subset
@@ -135,11 +136,16 @@ def main(args):
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
-        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67-S/train', transform=transform_train)
-        trainset = get_stratified_subset(trainset, samples_per_class=80)
+        trainset_real = torchvision.datasets.ImageFolder(root='/content/MIT-67/train'  , transform=transform_train)
+        trainset_synt = torchvision.datasets.ImageFolder(root='/content/MIT-67-S/train', transform=transform_train)
+
+        # Combine them
+        combined_trainset = ConcatDataset([trainset_real, trainset_synt])
+
+        # trainset = get_stratified_subset(trainset, samples_per_class=80)
         testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
 
-        train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
+        train_loader = torch.utils.data.DataLoader(combined_trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
         test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
 
         NUM_CLASS = 40
