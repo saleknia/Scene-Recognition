@@ -59,13 +59,13 @@ def tester_func(model, dataloader, device, ckpt, num_class, logger):
         logger.info(f'Final Test ---> Loss = {loss_ce_total.avg:.4f} , Macro Accuracy = {Acc_macro:.2f}')
         logger.info('Per-class accuracies:')
         
-        for class_idx in range(num_class):
-            logger.info(f'  Class {class_idx}: {Acc_per_class[class_idx]:.2f}%')
+        # for class_idx in range(num_class):
+        #     logger.info(f'  Class {class_idx}: {Acc_per_class[class_idx]:.2f}%')
         
         # Also print to console
         print('\n' + '='*50)
         print(f'Per-class Accuracies:')
-        for class_idx in enumerate(dataloader.dataset.classes):
+        for class_idx in enumerate(dataloader['test'].dataset.classes):
             print(f'  Class {class_idx}: {Acc_per_class[class_idx]:.2f}%')
         print('='*50)
 
