@@ -131,7 +131,7 @@ if task_id==1:
     TASK_NAME = 'MIT-20'
 
 elif task_id==2:
-    NUM_CLASS = 67
+    NUM_CLASS = 40
     TASK_NAME = 'MIT-67'
 
 elif task_id==3:
