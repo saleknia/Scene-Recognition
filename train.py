@@ -42,6 +42,39 @@ from tabulate import tabulate
 import warnings
 warnings.filterwarnings('ignore')
 
+from torch.utils.data import Subset
+import numpy as np
+from collections import defaultdict
+
+def get_stratified_subset(dataset, samples_per_class):
+    """
+    Get exactly `samples_per_class` from each class
+    """
+    # Get class indices for each sample
+    # For ImageFolder, targets are in dataset.targets
+    targets = np.array(dataset.targets)
+    unique_classes = np.unique(targets)
+    
+    selected_indices = []
+    
+    for class_id in unique_classes:
+        # Get all indices for this class
+        class_indices = np.where(targets == class_id)[0]
+        
+        # Randomly select exactly `samples_per_class` from this class
+        if len(class_indices) >= samples_per_class:
+            selected = np.random.choice(class_indices, samples_per_class, replace=False)
+        else:
+            # If class has fewer samples, take all (or handle as needed)
+            print(f"Warning: Class {class_id} has only {len(class_indices)} samples")
+            selected = class_indices
+        
+        selected_indices.extend(selected)
+    
+    return Subset(dataset, selected_indices)
+
+
+
 def main(args):
 
     # LOAD_DATA
@@ -102,8 +135,9 @@ def main(args):
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
-        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67/train', transform=transform_train)
-        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67-S/test/' , transform=transform_test)       
+        trainset = torchvision.datasets.ImageFolder(root='/content/MIT-67-S/train', transform=transform_train)
+        trainset = get_stratified_subset(trainset, samples_per_class=80)
+        testset  = torchvision.datasets.ImageFolder(root='/content/MIT-67/test/' , transform=transform_test)       
 
         train_loader = torch.utils.data.DataLoader(trainset, batch_size = BATCH_SIZE, shuffle=True , num_workers=NUM_WORKERS)
         test_loader  = torch.utils.data.DataLoader(testset , batch_size = 1         , shuffle=False, num_workers=NUM_WORKERS)
