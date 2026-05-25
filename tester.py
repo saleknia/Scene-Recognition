@@ -65,8 +65,8 @@ def tester_func(model, dataloader, device, ckpt, num_class, logger):
         # Also print to console
         print('\n' + '='*50)
         print(f'Per-class Accuracies:')
-        for class_idx in enumerate(dataloader['test'].dataset.classes):
-            print(f'  Class {class_idx}: {Acc_per_class[class_idx]:.2f}%')
+        for class_idx, class_name in enumerate(dataloader['test'].dataset.classes):
+            print(f'  Class {class_name}: {Acc_per_class[class_idx]:.2f}%')
         print('='*50)
 
         return Acc_macro, Acc_per_class
